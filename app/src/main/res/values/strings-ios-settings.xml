@@ -2,4 +2,26 @@
 <!-- SPDX-License-Identifier: GPL-3.0-only -->
 <resources>
     <string name="ios_back">Back</string>
+    <string name="ios_app_name" translatable="false">Glasskey</string>
+    <string name="ios_enable">Enable Glasskey</string>
+    <string name="ios_enable_footer">Turn Glasskey on and choose it as your keyboard.</string>
+    <string name="ios_keyboards">Keyboards</string>
+    <string name="ios_add_keyboard">Add New Keyboard…</string>
+    <string name="ios_text_replacement">Text Replacement</string>
+    <string name="ios_appearance">Appearance</string>
+    <string name="ios_all_keyboards">ALL KEYBOARDS</string>
+    <string name="ios_auto_cap">Auto-Capitalization</string>
+    <string name="ios_auto_correction">Auto-Correction</string>
+    <string name="ios_predictive">Predictive</string>
+    <string name="ios_character_preview">Character Preview</string>
+    <string name="ios_period_shortcut">“.” Shortcut</string>
+    <string name="ios_period_shortcut_footer">Double tapping the space bar will insert a period followed by a space.</string>
+    <string name="ios_feedback">FEEDBACK</string>
+    <string name="ios_sound">Sound</string>
+    <string name="ios_vibration">Haptics</string>
+    <string name="ios_about">About Glasskey</string>
+    <string name="ios_font">Font</string>
+    <string name="ios_theme">Theme</string>
+    <string name="ios_number_row">Number Row</string>
+    <string name="ios_no_results">No Results</string>
 </resources>

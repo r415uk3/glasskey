@@ -40,16 +40,14 @@ import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.BackButton
 import helium314.keyboard.latin.utils.DeviceProtectedUtils
 import helium314.keyboard.latin.utils.ExecutorUtils
-import helium314.keyboard.latin.utils.GestureDataGatheringSettings
 import helium314.keyboard.latin.utils.IntentUtils
-import helium314.keyboard.latin.utils.JniUtils
 import helium314.keyboard.latin.utils.Theme
 import helium314.keyboard.latin.utils.UncachedInputMethodManagerUtils
 import helium314.keyboard.latin.utils.prefs
 import helium314.keyboard.settings.dialogs.ConfirmationDialog
 import helium314.keyboard.settings.dialogs.NewDictionaryDialog
-import helium314.keyboard.settings.screens.gesturedata.END_DATE_EPOCH_MILLIS
-import helium314.keyboard.settings.screens.gesturedata.TWO_WEEKS_IN_MILLIS
+import helium314.keyboard.settings.ios.IosSettingsNavHost
+import helium314.keyboard.settings.ios.IosSettingsTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.io.BufferedOutputStream
 import java.io.File
@@ -64,6 +62,8 @@ open class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPre
     private val dictUriFlow = MutableStateFlow<Uri?>(null)
     private val cachedDictionaryFile by lazy { File(this.cacheDir.path + File.separator + "temp_dict") }
     private val crashReportFiles = MutableStateFlow<List<File>>(emptyList())
+    private val imm by lazy { getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager }
+    private val needsEnablingFlow = MutableStateFlow(false)
     private var paused = true
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -75,7 +75,7 @@ open class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPre
         }
         ExecutorUtils.getBackgroundExecutor(ExecutorUtils.KEYBOARD).execute { cleanUnusedMainDicts(this) }
         crashReportFiles.value = findCrashReports(!BuildConfig.DEBUG && !DebugFlags.DEBUG_ENABLED)
-        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        checkEnabled()
         if (!UncachedInputMethodManagerUtils.isThisImeCurrent(this, imm))
             KeyboardIconsSet.instance.loadIcons(this) // otherwise we may crash when displaying toolbar keys
 
@@ -91,10 +91,7 @@ open class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPre
                     val dictUri by dictUriFlow.collectAsState()
                     val crashReports by crashReportFiles.collectAsState()
                     val crashFilePicker = filePicker { saveCrashReports(it) }
-                    var showWelcomeWizard by rememberSaveable { mutableStateOf(
-                        !UncachedInputMethodManagerUtils.isThisImeCurrent(this, imm)
-                                || !UncachedInputMethodManagerUtils.isThisImeEnabled(this, imm)
-                    ) }
+                    var showWelcomeWizard by rememberSaveable { mutableStateOf(false) }
                     if (spellchecker)
                         Scaffold(contentWindowInsets = WindowInsets.safeDrawing) { innerPadding ->
                             Column(Modifier.padding(innerPadding)) {
@@ -112,9 +109,16 @@ open class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPre
                             }
                         }
                     else {
-                        SettingsNavHost(onClickBack = { this.finish() })
+                        val needsEnabling by needsEnablingFlow.collectAsState()
+                        IosSettingsTheme {
+                            IosSettingsNavHost(
+                                onClickBack = { this.finish() },
+                                needsEnabling = needsEnabling,
+                                onEnable = { showWelcomeWizard = true },
+                            )
+                        }
                         if (showWelcomeWizard) {
-                            WelcomeWizard(close = { showWelcomeWizard = false }, finish = this::finish)
+                            WelcomeWizard(close = { showWelcomeWizard = false; checkEnabled() }, finish = this::finish)
                         } else if (crashReports.isNotEmpty()) {
                             val ctx = LocalContext.current
                             ConfirmationDialog(
@@ -131,8 +135,6 @@ open class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPre
                                 },
                                 content = { Text("Crash report files found") },
                             )
-                        } else if (JniUtils.sHaveGestureLib && System.currentTimeMillis() < END_DATE_EPOCH_MILLIS + TWO_WEEKS_IN_MILLIS) {
-                            GestureDataGatheringSettings.GestureDataPromotionReminderDialog()
                         }
                     }
                     if (dictUri != null) {
@@ -177,6 +179,18 @@ open class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPre
     override fun onResume() {
         super.onResume()
         paused = false
+        checkEnabled()
+    }
+
+    // the input method picker is a dialog over this activity, so there is no onResume when it closes
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) checkEnabled()
+    }
+
+    private fun checkEnabled() {
+        needsEnablingFlow.value = !UncachedInputMethodManagerUtils.isThisImeCurrent(this, imm)
+                || !UncachedInputMethodManagerUtils.isThisImeEnabled(this, imm)
     }
 
     fun setForceTheme(theme: String?, night: Boolean?) {

@@ -2,4 +2,25 @@
 <!-- SPDX-License-Identifier: GPL-3.0-only -->
 <resources>
     <string name="ios_back">Назад</string>
+    <string name="ios_enable">Включить Glasskey</string>
+    <string name="ios_enable_footer">Включите Glasskey и выберите его клавиатурой по умолчанию.</string>
+    <string name="ios_keyboards">Клавиатуры</string>
+    <string name="ios_add_keyboard">Добавить клавиатуру…</string>
+    <string name="ios_text_replacement">Замена текста</string>
+    <string name="ios_appearance">Оформление</string>
+    <string name="ios_all_keyboards">ВСЕ КЛАВИАТУРЫ</string>
+    <string name="ios_auto_cap">Автопрописные</string>
+    <string name="ios_auto_correction">Автокоррекция</string>
+    <string name="ios_predictive">Предиктивный набор</string>
+    <string name="ios_character_preview">Просмотр символов</string>
+    <string name="ios_period_shortcut">Быстрая клавиша «.»</string>
+    <string name="ios_period_shortcut_footer">Двойное нажатие пробела вставляет точку и пробел.</string>
+    <string name="ios_feedback">ОТКЛИК</string>
+    <string name="ios_sound">Звук</string>
+    <string name="ios_vibration">Вибрация</string>
+    <string name="ios_about">О Glasskey</string>
+    <string name="ios_font">Шрифт</string>
+    <string name="ios_theme">Тема</string>
+    <string name="ios_number_row">Ряд цифр</string>
+    <string name="ios_no_results">Нет результатов</string>
 </resources>

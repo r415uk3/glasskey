@@ -2,4 +2,25 @@
 <!-- SPDX-License-Identifier: GPL-3.0-only -->
 <resources>
     <string name="ios_back">Артқа</string>
+    <string name="ios_enable">Glasskey қосу</string>
+    <string name="ios_enable_footer">Glasskey-ді қосып, оны әдепкі пернетақта ретінде таңдаңыз.</string>
+    <string name="ios_keyboards">Пернетақталар</string>
+    <string name="ios_add_keyboard">Пернетақта қосу…</string>
+    <string name="ios_text_replacement">Мәтінді ауыстыру</string>
+    <string name="ios_appearance">Безендіру</string>
+    <string name="ios_all_keyboards">БАРЛЫҚ ПЕРНЕТАҚТАЛАР</string>
+    <string name="ios_auto_cap">Автобас әріп</string>
+    <string name="ios_auto_correction">Автотүзету</string>
+    <string name="ios_predictive">Болжамды теру</string>
+    <string name="ios_character_preview">Таңбаларды алдын ала қарау</string>
+    <string name="ios_period_shortcut">«.» жылдам пернесі</string>
+    <string name="ios_period_shortcut_footer">Бос орынды екі рет басу нүкте мен бос орын қояды.</string>
+    <string name="ios_feedback">КЕРІ БАЙЛАНЫС</string>
+    <string name="ios_sound">Дыбыс</string>
+    <string name="ios_vibration">Діріл</string>
+    <string name="ios_about">Glasskey туралы</string>
+    <string name="ios_font">Қаріп</string>
+    <string name="ios_theme">Тақырып</string>
+    <string name="ios_number_row">Сандар қатары</string>
+    <string name="ios_no_results">Нәтиже жоқ</string>
 </resources>
