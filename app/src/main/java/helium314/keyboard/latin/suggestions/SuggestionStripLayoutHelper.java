@@ -421,7 +421,8 @@ final class SuggestionStripLayoutHelper {
     private TextView layoutWord(final Context context, final int positionInStrip, final int width) {
         final TextView wordView = mWordViews.get(positionInStrip);
         final CharSequence word = wordView.getText();
-        if (positionInStrip == mCenterPositionInStrip && mMoreSuggestionsAvailable) {
+        // iOS shows no "more suggestions" dots under the middle word
+        if (positionInStrip == mCenterPositionInStrip && mMoreSuggestionsAvailable && !mIsIos) {
             wordView.setCompoundDrawablesWithIntrinsicBounds(null, null, null, mMoreSuggestionsHint);
             // HACK: Align with other TextViews that have no compound drawables.
             wordView.setCompoundDrawablePadding(-mMoreSuggestionsHint.getIntrinsicHeight());
