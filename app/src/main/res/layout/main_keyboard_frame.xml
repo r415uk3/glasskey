@@ -73,6 +73,7 @@
             android:layout_gravity="top"
             />
     </helium314.keyboard.latin.KeyboardWrapperView>
+    <include layout="@layout/ios_bottom_bar" />
     <LinearLayout
         android:id="@+id/float_handle_container"
         android:orientation="horizontal"

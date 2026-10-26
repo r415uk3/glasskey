@@ -49,6 +49,7 @@ import helium314.keyboard.latin.RichInputMethodSubtype;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.settings.SettingsKt;
 import helium314.keyboard.latin.settings.SettingsValues;
+import helium314.keyboard.latin.ios.IosBottomBar;
 import helium314.keyboard.latin.suggestions.SuggestionStripView;
 import helium314.keyboard.latin.utils.CapsModeUtils;
 import helium314.keyboard.latin.utils.FloatingKeyboardUtils;
@@ -66,6 +67,7 @@ public final class KeyboardSwitcher {
 
     private InputView mCurrentInputView;
     private KeyboardWrapperView mKeyboardViewWrapper;
+    private IosBottomBar mIosBottomBar;
     private View mMainKeyboardFrame;
     private MainKeyboardView mKeyboardView;
     private EmojiPalettesView mEmojiPalettesView;
@@ -497,6 +499,11 @@ public final class KeyboardSwitcher {
         return mKeyboardViewWrapper;
     }
 
+    /** height of the iOS strip under the keys, 0 when it is not shown */
+    public int getIosBottomBarHeight() {
+        return mIosBottomBar != null && mIosBottomBar.getVisibility() == View.VISIBLE ? mIosBottomBar.getHeight() : 0;
+    }
+
     public View getEmojiTabStrip() {
         return mEmojiTabStripView;
     }
@@ -554,6 +561,13 @@ public final class KeyboardSwitcher {
 
         mKeyboardViewWrapper = mCurrentInputView.findViewById(R.id.keyboard_view_wrapper);
         mKeyboardViewWrapper.setKeyboardActionListener(mLatinIME.mKeyboardActionListener);
+        mIosBottomBar = mCurrentInputView.findViewById(R.id.ios_bottom_bar);
+        final SettingsValues sv = Settings.getValues();
+        if (KeyboardTheme.STYLE_IOS.equals(sv.mColors.getThemeStyle()) && !sv.mIsFloatingKeyboard) {
+            mIosBottomBar.setVisibility(View.VISIBLE);
+            mIosBottomBar.bind(mLatinIME.mKeyboardActionListener, () -> { mLatinIME.showInputPickerDialog(); return kotlin.Unit.INSTANCE; });
+            mIosBottomBar.updateColors(sv.mColors);
+        }
         mKeyboardView = mCurrentInputView.findViewById(R.id.keyboard_view);
         mKeyboardView.setHardwareAcceleratedDrawingEnabled(isHardwareAcceleratedDrawingEnabled);
         mKeyboardView.setKeyboardActionListener(mLatinIME.mKeyboardActionListener);

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    SPDX-License-Identifier: GPL-3.0-only
+    iOS-style strip under the keys: globe on the left, mic on the right (mic arrives with voice input).
+    The gesture-navigation inset is added as bottom padding by IosBottomBar.
+-->
+<helium314.keyboard.latin.ios.IosBottomBar xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ios_bottom_bar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:minHeight="@dimen/config_ios_bottom_bar_height"
+    android:paddingStart="14dp"
+    android:paddingEnd="14dp"
+    android:visibility="gone">
+    <ImageButton
+        android:id="@+id/ios_globe"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/show_language_switch_key"
+        android:scaleType="center"
+        android:src="@drawable/ic_ios_globe_large" />
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+    <ImageButton
+        android:id="@+id/ios_mic"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/voice"
+        android:scaleType="center"
+        android:src="@drawable/ic_ios_mic_large"
+        android:visibility="invisible" />
+</helium314.keyboard.latin.ios.IosBottomBar>
