@@ -10,6 +10,7 @@ import helium314.keyboard.keyboard.KeyboardSwitcher
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode
 import helium314.keyboard.latin.LatinIME
 import helium314.keyboard.latin.RichInputMethodManager
+import helium314.keyboard.latin.common.Constants.Separators
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.SubtypeSettings
 import helium314.keyboard.latin.utils.locale
@@ -22,6 +23,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowLooper
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 @Config(shadows = [ShadowInputMethodService::class, ShadowLooper::class])
@@ -82,6 +84,17 @@ class IosGlobeSwitchTest {
         latinIME.switchToNextSubtypeInOrder()
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks()
         assertEquals("en-US", currentLanguage())
+    }
+
+    @Test fun disablingTheCurrentLanguageOnUntouchedDefaultsSwitchesAway() {
+        assertEquals("ru", currentLanguage())
+        val ru = SubtypeSettings.getEnabledSubtypes()[0]
+        assertTrue(SubtypeSettings.removeEnabledSubtype(latinIME, ru))
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks()
+        assertEquals(listOf("en-US", "kk"), SubtypeSettings.getEnabledSubtypes().map { it.locale().toLanguageTag() })
+        assertEquals("en-US", currentLanguage())
+        // switched for real, not just the fallback to the first enabled language
+        assertEquals("en-US", latinIME.prefs().getString(Settings.PREF_SELECTED_SUBTYPE, "")!!.substringBefore(Separators.SET))
     }
 
     @After fun restoreDefaults() {

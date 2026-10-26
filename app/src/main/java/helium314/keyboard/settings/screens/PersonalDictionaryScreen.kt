@@ -195,7 +195,7 @@ private fun EditWordDialog(word: Word, locale: Locale?, onDismissRequest: () -> 
     )
 }
 
-internal fun deleteWord(wordDetails: Word, locale: Locale?, resolver: ContentResolver) {
+private fun deleteWord(wordDetails: Word, locale: Locale?, resolver: ContentResolver) {
     val (word, shortcut, weightInt) = wordDetails
     val weight = weightInt.toString()
     if (shortcut.isNullOrBlank()) {
@@ -259,10 +259,10 @@ fun Locale?.getLocaleDisplayNameForUserDictSettings(context: Context) =
     this?.localizedDisplayName(context.resources) ?: context.resources.getString(R.string.user_dict_settings_all_languages)
 
 // weight is frequency but different name towards user
-internal data class Word(val word: String, val shortcut: String?, val weight: Int?)
+private data class Word(val word: String, val shortcut: String?, val weight: Int?)
 
 // getting all words instead of reading directly cursor, because filteredItems expects a list
-internal fun getAll(locale: Locale?, context: Context): List<Word> {
+private fun getAll(locale: Locale?, context: Context): List<Word> {
     val cursor = createCursor(locale, context) ?: return emptyList()
 
     if (!cursor.moveToFirst()) return emptyList()

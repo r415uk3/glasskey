@@ -5,6 +5,7 @@ import androidx.core.content.edit
 import helium314.keyboard.keyboard.KeyboardTheme
 import helium314.keyboard.latin.LatinIME
 import helium314.keyboard.latin.ios.IosBlur
+import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.settings.SettingsSubtype.Companion.toSettingsSubtype
 import helium314.keyboard.latin.utils.LayoutType
@@ -72,6 +73,24 @@ class IosSettingsDataTest {
         SubtypeUtilsAdditional.changeAdditionalSubtype(en.toSettingsSubtype(), to, latinIME)
         assertEquals(listOf("ru", "en-US", "kk"), tags())
         assertEquals(to, SubtypeSettings.getEnabledSubtypes()[1].toSettingsSubtype())
+    }
+
+    @Test fun defaultsAreInResourceForm() {
+        val stored = SubtypeSettings.createSettingsSubtypes(Defaults.PREF_ENABLED_SUBTYPES)
+        assertEquals(SubtypeSettings.getEnabledSubtypes().map { it.toSettingsSubtype() }, stored)
+        val ru = SubtypeSettings.getEnabledSubtypes()[0]
+        assertEquals(ru, SubtypeSettings.getSelectedSubtype(prefs))
+        SubtypeSettings.moveEnabledSubtype(latinIME, 1, 0) // ru no longer first: still selected
+        assertEquals(ru, SubtypeSettings.getSelectedSubtype(prefs))
+    }
+
+    @Test fun editingRuOnUntouchedDefaultsKeepsItEnabledAndSelected() {
+        val ru = SubtypeSettings.getEnabledSubtypes()[0]
+        val to = ru.toSettingsSubtype().withLayout(LayoutType.SYMBOLS, "symbols_arabic")
+        SubtypeUtilsAdditional.changeAdditionalSubtype(ru.toSettingsSubtype(), to, latinIME)
+        assertEquals(listOf("ru", "en-US", "kk"), tags())
+        assertEquals(to, SubtypeSettings.getEnabledSubtypes()[0].toSettingsSubtype())
+        assertEquals(to, SubtypeSettings.getSelectedSubtype(prefs).toSettingsSubtype())
     }
 
     @Test fun themeChoiceRoundTrip() {
