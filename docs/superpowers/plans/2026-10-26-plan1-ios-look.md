@@ -14,9 +14,9 @@
 
 ## Global Constraints
 
-- applicationId `io.github.r415uk3.pernetaqta` (release), `.debug` suffix kept for debug types; Kotlin/Java packages and `namespace = "helium314.keyboard.latin"` stay unchanged. App/IME label: **Пернетақта** (Kazakh for "keyboard"; user may rename later).
+- applicationId `io.github.r415uk3.glasskey` (release), `.debug` suffix kept for debug types; Kotlin/Java packages and `namespace = "helium314.keyboard.latin"` stay unchanged. App/IME label: **Glasskey** (user decision 2026-10-26).
 - Keep GPL-3.0 and all existing copyright headers; new files get `SPDX-License-Identifier: GPL-3.0-only`.
-- Never ship Apple fonts or SF Symbols. Font: **Inter** (SIL OFL 1.1) bundled in `res/font/`, OFL text in `app/src/main/assets/licenses/inter-OFL.txt`.
+- Never ship Apple fonts or SF Symbols. Fonts (user decision): selectable in settings — System, **Inter** (default), Golos Text, Onest, Noto Sans; all SIL OFL 1.1, bundled in `res/font/`; HeliBoard's "custom font from file" stays and overrides the selection.
 - Figma values (pt → dp 1:1, from file `yhjiyzvjaydTpc7tqsEyg2`):
   - Dark: panel `#DB1C1C1C` (rgba 28,28,28,.86); keys incl. functional `#45FFFFFF` (white .27); text `#FFFFFFFF`; suggestion divider `#4DFFFFFF`.
   - Light: panel `#BFDADADA` (rgba 218,218,218,.75) — use opaque `#DADADA`-ish only if translucency shows app content badly; keys `#E3FFFFFF` (white .89); text `#A6000000` (black .65); suggestion divider `#1A000000`.
@@ -40,23 +40,23 @@
 ### Task 1: Rebrand so it installs next to HeliBoard
 
 **Files:**
-- Modify: `app/build.gradle.kts:13` (applicationId), `:69` (APK name `Pernetaqta_${versionName}-${buildType}.apk`)
-- Modify: `app/src/main/res/values/donottranslate.xml:73` (`english_ime_name` → `Пернетақта`)
-- Modify: `app/src/main/res/values/clip_provider.xml:3` → `io.github.r415uk3.pernetaqta.clipprovider`; `app/src/main/res/values/gesture_data.xml:3` → `io.github.r415uk3.pernetaqta.provider`; same two in `src/debug/res/values/` and `src/debugNoMinify/res/values/` with `.debug` inserted before the last segment.
-- Modify: `src/debug/res/values/strings.xml:6-8` labels to `Пернетақта debug`.
+- Modify: `app/build.gradle.kts:13` (applicationId), `:69` (APK name `Glasskey_${versionName}-${buildType}.apk`)
+- Modify: `app/src/main/res/values/donottranslate.xml:73` (`english_ime_name` → `Glasskey`)
+- Modify: `app/src/main/res/values/clip_provider.xml:3` → `io.github.r415uk3.glasskey.clipprovider`; `app/src/main/res/values/gesture_data.xml:3` → `io.github.r415uk3.glasskey.provider`; same two in `src/debug/res/values/` and `src/debugNoMinify/res/values/` with `.debug` inserted before the last segment.
+- Modify: `src/debug/res/values/strings.xml:6-8` labels to `Glasskey debug`.
 - Test: `app/src/test/java/helium314/keyboard/RebrandTest.kt`
 
-**Interfaces:** Produces nothing code-level; later tasks rely on the app being installable as `io.github.r415uk3.pernetaqta.debug`.
+**Interfaces:** Produces nothing code-level; later tasks rely on the app being installable as `io.github.r415uk3.glasskey.debug`.
 
 - [ ] **Step 1: Write the failing test** — Robolectric `RebrandTest`:
-  - `applicationIdIsOurs`: `assertTrue(BuildConfig.APPLICATION_ID.startsWith("io.github.r415uk3.pernetaqta"))`
+  - `applicationIdIsOurs`: `assertTrue(BuildConfig.APPLICATION_ID.startsWith("io.github.r415uk3.glasskey"))`
   - `authoritiesAreNotHeliboards`: for `R.string.clipboard_provider_authority` and `R.string.gesture_data_provider_authority`, `assertFalse(value.startsWith("helium314.keyboard"))`
-  - `imeNameIsPernetaqta`: `assertEquals("Пернетақта", context.getString(R.string.english_ime_name))` (default config; debug variant label is checked on device)
+  - `imeNameIsGlasskey`: `assertEquals("Glasskey", context.getString(R.string.english_ime_name))` (default config; debug variant label is checked on device)
 - [ ] **Step 2: Run** `./gradlew testDebugNoMinifyUnitTest --tests '*RebrandTest*'` — expect 3 FAIL.
 - [ ] **Step 3: Apply the changes listed under Files.** Also grep `src/` for `"helium314.keyboard.clipprovider"`/`"helium314.keyboard.provider"` literals and route them through the string resources.
 - [ ] **Step 4: Run the test** — PASS. Run the full unit suite `./gradlew testDebugNoMinifyUnitTest` and record the baseline failures that already exist upstream (CI uses the `runTests` variant because some tests are known to fail) in the commit message; no new failures allowed from here on.
-- [ ] **Step 5: Device check** — `./gradlew assembleDebugNoMinify && adb install -r app/build/outputs/apk/debugNoMinify/*.apk`; `adb shell ime list -a -s` lists both `helium314.keyboard/...` and `io.github.r415uk3.pernetaqta.debug/...`.
-- [ ] **Step 6: Commit** `feat: rebrand to Пернетақта with own applicationId and authorities`
+- [ ] **Step 5: Device check** — `./gradlew assembleDebugNoMinify && adb install -r app/build/outputs/apk/debugNoMinify/*.apk`; `adb shell ime list -a -s` lists both `helium314.keyboard/...` and `io.github.r415uk3.glasskey.debug/...`.
+- [ ] **Step 6: Commit** `feat: rebrand to Glasskey with own applicationId and authorities`
 
 ### Task 2: iOS theme style and color sets
 
@@ -114,8 +114,13 @@
 ### Task 4: Font and icons
 
 **Files:**
-- Create: `app/src/main/res/font/inter_regular.ttf`, `inter_medium.ttf` (from github.com/rsms/inter release 4.x, static TTFs), `app/src/main/assets/licenses/inter-OFL.txt`.
-- Modify: `app/src/main/java/helium314/keyboard/latin/utils/KeyboardTypeface.kt:24-28` — if no custom font file exists and style is iOS, use `ResourcesCompat.getFont(ctx, R.font.inter_regular)`; labels like `123`/`ABC`/`.com` (multi-char, functional) use `inter_medium`. `drawKeyPopupHint` (`KeyboardView.java:561`) also goes through `KeyboardTypeface.resolve`.
+- Create fonts in `app/src/main/res/font/` — Regular + Medium static TTFs of each, all SIL OFL 1.1, license texts in `app/src/main/assets/licenses/<font>-OFL.txt`:
+  - `inter_*` (github.com/rsms/inter 4.x), `golos_text_*` (Google Fonts "Golos Text"), `onest_*` (Google Fonts "Onest"), `noto_sans_*` (Google Fonts "Noto Sans").
+  - A font is only bundled if it has glyphs for all of `ә ғ қ ң ө ұ ү һ і Ә Ғ Қ Ң Ө Ұ Ү Һ І ё ъ` — checked by the test below; one that fails is dropped from the list (note it in the commit), not patched.
+- Create: `app/src/main/java/helium314/keyboard/latin/utils/KeyboardFont.kt` — `enum class KeyboardFont(val prefValue: String, @FontRes val regular: Int?, @FontRes val medium: Int?, @StringRes val title: Int) { SYSTEM("system", null, null, …), INTER("inter", …), GOLOS("golos", …), ONEST("onest", …), NOTO_SANS("noto_sans", …) }` + `fun fromPref(value: String?): KeyboardFont` (unknown → `INTER`).
+- Modify: `Settings.java` / `Defaults.kt` — new pref `PREF_KEYBOARD_FONT = "keyboard_font"`, default `"inter"` (applies to every style, not only iOS).
+- Modify: `app/src/main/java/helium314/keyboard/latin/utils/KeyboardTypeface.kt:24-28` — order: user custom font file (existing HeliBoard feature) → selected `KeyboardFont` (`SYSTEM` = today's behaviour, i.e. the key's own default typeface) → default. Multi-char functional labels (`123`, `ABC`, `.com`, `#+=`) use the font's `medium`. `drawKeyPopupHint` (`KeyboardView.java:561`) also goes through `KeyboardTypeface.resolve`. Changing the pref calls `KeyboardTypeface.clearCache()` and reloads the keyboard.
+- Modify: `app/src/main/java/helium314/keyboard/settings/screens/AppearanceScreen.kt:~88` — a list preference "Шрифт / Font" right above the existing custom-font entry, items rendered each in its own font, values from `KeyboardFont.entries`. Strings in `values/strings.xml` (en) and `values-ru/strings.xml` (ru).
 - Create vector drawables (24dp viewport, 1.6–1.8dp stroke, rounded caps, drawn fresh — SF-Symbols-like, not copied): `ic_ios_shift.xml`, `ic_ios_shift_filled.xml` (shifted), `ic_ios_caps_lock.xml` (filled + underline), `ic_ios_delete.xml`, `ic_ios_return.xml`, `ic_ios_emoji.xml`, `ic_ios_globe.xml`, `ic_ios_mic.xml`, `ic_ios_go.xml` (→), `ic_ios_search.xml`.
 - Modify: `KeyboardIconsSet.kt` — `ios` set mapping shift/shift_shifted/caps_lock/delete/enter/emoji/language_switch/search/go(next) to the above; anything unmapped falls back to Rounded.
 - Modify: `TextKeyData.kt:442,446` / `KeyboardTheme.getThemeActionAndEmojiKeyLabelFlags` — iOS: action key shows an icon (return arrow / go arrow / search), never a text label like "Go".
@@ -126,11 +131,14 @@
 - Produces: drawable names above; `R.drawable.ic_ios_globe` and `R.drawable.ic_ios_mic` are used by Task 7.
 
 - [ ] **Step 1: Failing tests**:
-  - `iosUsesInter`: `KeyboardTypeface.resolve("a", Typeface.DEFAULT)` != `Typeface.DEFAULT` with style iOS and no custom font file
-  - `customFontStillWins`: with a custom font file present (copy `inter_medium.ttf` to `Settings.getCustomFontFile`), resolve returns that file's typeface (assert not equal to the iOS default instance)
+  - `defaultFontIsInter`: fresh prefs → `KeyboardFont.fromPref(prefs.getString(PREF_KEYBOARD_FONT, …)) == INTER` and `KeyboardTypeface.resolve("a", Typeface.DEFAULT)` != `Typeface.DEFAULT`
+  - `systemFontKeepsDefault`: pref `"system"` → `resolve("a", Typeface.DEFAULT) === Typeface.DEFAULT`
+  - `unknownPrefFallsBackToInter`: `fromPref("comic") == INTER`
+  - `everyBundledFontCoversKazakh`: for each entry with `regular != null`, `Paint().apply { typeface = ResourcesCompat.getFont(ctx, regular) }.hasGlyph(c)` is true for every char in the Kazakh/Russian set above (Robolectric's Paint may not implement `hasGlyph` — if so, run this one as an instrumented test in `app/src/androidTest/` on the phone via `./gradlew connectedDebugNoMinifyAndroidTest`)
+  - `customFontStillWins`: with a custom font file present (copy any bundled TTF to `Settings.getCustomFontFile`), resolve returns that file's typeface, not the selected `KeyboardFont`'s
   - `iosIconsResolve`: `KeyboardIconsSet` for style iOS returns non-null drawables for `shift`, `delete`, `enter`, `emoji`, `language_switch`
 - [ ] **Step 2: Run** — FAIL. **Step 3: Implement.** **Step 4: Run** — PASS, suite clean.
-- [ ] **Step 5: Commit** `feat: Inter font and iOS-style icons for the iOS style`
+- [ ] **Step 5: Commit** `feat: selectable keyboard font (Inter default) and iOS-style icons`
 
 ### Task 5: iOS layouts (bottom row variants, symbols, numpad)
 
@@ -191,7 +199,7 @@
   - `toolbarModeIsSuggestionStrip`: `Settings.getValues().mToolbarMode == ToolbarMode.SUGGESTION_STRIP` after `Settings.loadSettings`
   - `kkDictionaryIsBundled`: `DictionaryInfoUtils.getAssetsDictionaryList(ctx)` contains `main_kk.dict`
 - [ ] **Step 2: Run** — FAIL. **Step 3: Implement.** **Step 4: Run** — PASS, suite clean.
-- [ ] **Step 5: Device check** — `adb shell pm clear io.github.r415uk3.pernetaqta.debug`, enable + switch to it (`adb shell ime enable …; ime set …`), type "сәлем" → suggestions appear; globe-less switching still possible through the system picker for now.
+- [ ] **Step 5: Device check** — `adb shell pm clear io.github.r415uk3.glasskey.debug`, enable + switch to it (`adb shell ime enable …; ime set …`), type "сәлем" → suggestions appear; globe-less switching still possible through the system picker for now.
 - [ ] **Step 6: Commit** `feat: iOS defaults — ru/en/kk enabled, no toolbar, bundled kk dictionary`
 
 ### Task 7: Bottom strip with globe (mic slot reserved)
