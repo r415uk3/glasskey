@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 package helium314.keyboard.settings.ios
 
+import android.net.Uri
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
@@ -15,6 +16,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.settings.getTransitionAnimationScale
+import helium314.keyboard.settings.ios.screens.IosAddKeyboardScreen
+import helium314.keyboard.settings.ios.screens.IosKeyboardsScreen
+import helium314.keyboard.settings.ios.screens.IosLayoutScreen
 import helium314.keyboard.settings.ios.screens.IosMainScreen
 import helium314.keyboard.settings.screens.DictionaryScreen
 
@@ -51,9 +55,15 @@ fun IosSettingsNavHost(onClickBack: () -> Unit, needsEnabling: Boolean, onEnable
     ) {
         composable(IosRoute.Main) { IosMainScreen(needsEnabling, onEnable, navigate) }
         // placeholders, filled in by the following screens
-        composable(IosRoute.Keyboards) { IosScreen(stringResource(R.string.ios_keyboards), ::goBack) {} }
-        composable(IosRoute.AddKeyboard) { IosScreen(stringResource(R.string.ios_add_keyboard), ::goBack) {} }
-        composable(IosRoute.Layout + "{subtype}") { IosScreen(stringResource(R.string.ios_keyboards), ::goBack) {} }
+        composable(IosRoute.Keyboards) { IosKeyboardsScreen(::goBack, navigate) }
+        composable(IosRoute.AddKeyboard) { IosAddKeyboardScreen(::goBack, navigate) }
+        composable(IosRoute.Layout + "{subtype}") {
+            IosLayoutScreen(
+                Uri.decode(it.arguments?.getString("subtype")!!),
+                ::goBack,
+                onAdded = { navController.popBackStack(IosRoute.Keyboards, inclusive = false) },
+            )
+        }
         composable(IosRoute.TextReplacement) { IosScreen(stringResource(R.string.ios_text_replacement), ::goBack) {} }
         composable(IosRoute.Appearance) { IosScreen(stringResource(R.string.ios_appearance), ::goBack) {} }
         composable(IosRoute.About) { IosScreen(stringResource(R.string.ios_about), ::goBack) {} }

@@ -130,13 +130,15 @@ private fun dictsAvailable(locale: Locale, context: Context): Boolean {
     return hasInternal || dicts.isNotEmpty()
 }
 
+/** System locales, each replaced by its best match among [availableLocales] (null if none). */
+internal fun matchingSystemLocales(availableLocales: Set<Locale>): List<Locale?> =
+    SubtypeSettings.getSystemLocales().map { LocaleUtils.getBestMatch(it, availableLocales) { st -> st } }
+
 // sorting by display name is still slow, even with the cache... but probably good enough
 private fun getSortedSubtypes(context: Context): List<InputMethodSubtype> {
     val availableSubtypes = SubtypeSettings.getAllAvailableSubtypes()
     val availableLocales = availableSubtypes.mapTo(HashSet()) { it.locale() }
-    val systemLocales = SubtypeSettings.getSystemLocales().map {
-        LocaleUtils.getBestMatch(it, availableLocales) { st -> st }
-    }
+    val systemLocales = matchingSystemLocales(availableLocales)
     val enabledSubtypes = SubtypeSettings.getEnabledSubtypes(true)
     val localesWithDictionary = DictionaryInfoUtils.getCacheDirectories(context).mapNotNull { dir ->
         if (dir.list()?.any { it.endsWith(DictionaryInfoUtils.USER_DICTIONARY_SUFFIX) } == true)

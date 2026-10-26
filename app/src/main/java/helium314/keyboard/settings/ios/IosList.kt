@@ -11,6 +11,7 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -66,35 +67,45 @@ data class IosRowIcon(val background: Color, val vector: ImageVector? = null, va
 /** One glass panel with optional grey header above and footer below; separators are drawn between [rows]. */
 fun LazyListScope.iosGroup(header: String? = null, footer: String? = null, rows: List<@Composable () -> Unit>) {
     item {
-        val colors = LocalIosColors.current
-        Column(Modifier.fillMaxWidth().padding(bottom = 22.dp)) {
-            if (header != null)
-                BasicText(
-                    header,
-                    Modifier.padding(start = sideInset * 2, end = sideInset * 2, bottom = 7.dp),
-                    style = TextStyle(color = colors.secondaryText, fontSize = 13.sp, fontWeight = FontWeight.Medium)
-                )
-            if (rows.isNotEmpty())
-                Column(
-                    Modifier.padding(horizontal = sideInset).fillMaxWidth()
-                        .iosPanel(IosGroupShape)
-                        .clip(IosGroupShape)
-                ) {
-                    rows.forEachIndexed { i, row ->
-                        if (i > 0) Box(
-                            Modifier.padding(start = sideInset).fillMaxWidth().height(0.5.dp).background(colors.separator)
-                        )
-                        row()
-                    }
-                }
-            if (footer != null)
-                BasicText(
-                    footer,
-                    Modifier.padding(start = sideInset * 2, end = sideInset * 2, top = 8.dp),
-                    style = TextStyle(color = colors.secondaryText, fontSize = 13.sp, lineHeight = 17.sp)
-                )
+        IosGroupBox(header, footer, panel = rows.isNotEmpty()) {
+            rows.forEachIndexed { i, row ->
+                if (i > 0) IosSeparator()
+                row()
+            }
         }
     }
+}
+
+/** Layout of [iosGroup] for callers that lay out the rows themselves (e.g. a reorderable column). */
+@Composable
+fun IosGroupBox(header: String?, footer: String?, panel: Boolean = true, content: @Composable ColumnScope.() -> Unit) {
+    val colors = LocalIosColors.current
+    Column(Modifier.fillMaxWidth().padding(bottom = 22.dp)) {
+        if (header != null)
+            BasicText(
+                header,
+                Modifier.padding(start = sideInset * 2, end = sideInset * 2, bottom = 7.dp),
+                style = TextStyle(color = colors.secondaryText, fontSize = 13.sp, fontWeight = FontWeight.Medium)
+            )
+        if (panel)
+            Column(
+                Modifier.padding(horizontal = sideInset).fillMaxWidth()
+                    .iosPanel(IosGroupShape)
+                    .clip(IosGroupShape),
+                content = content,
+            )
+        if (footer != null)
+            BasicText(
+                footer,
+                Modifier.padding(start = sideInset * 2, end = sideInset * 2, top = 8.dp),
+                style = TextStyle(color = colors.secondaryText, fontSize = 13.sp, lineHeight = 17.sp)
+            )
+    }
+}
+
+@Composable
+fun IosSeparator() {
+    Box(Modifier.padding(start = sideInset).fillMaxWidth().height(0.5.dp).background(LocalIosColors.current.separator))
 }
 
 /** [chevron] defaults to shown when the row is clickable. */
@@ -108,7 +119,8 @@ fun IosRow(
     onClick: (() -> Unit)? = null,
     trailing: (@Composable () -> Unit)? = null,
     modifier: Modifier = Modifier,
-) = IosRowImpl(title, value, icon, chevron ?: (onClick != null), titleColor, onClick, trailing, modifier)
+    leading: (@Composable () -> Unit)? = null,
+) = IosRowImpl(title, value, icon, chevron ?: (onClick != null), titleColor, onClick, trailing, modifier, leading)
 
 @Composable
 private fun IosRowImpl(
@@ -120,6 +132,7 @@ private fun IosRowImpl(
     onClick: (() -> Unit)?,
     trailing: (@Composable () -> Unit)?,
     modifier: Modifier,
+    leading: (@Composable () -> Unit)?,
 ) {
     val colors = LocalIosColors.current
     val interaction = remember { MutableInteractionSource() }
@@ -134,6 +147,10 @@ private fun IosRowImpl(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
+        if (leading != null) {
+            leading()
+            Spacer(Modifier.width(4.dp))
+        }
         if (icon != null) {
             RowIcon(icon)
             Spacer(Modifier.width(6.dp)) // 12dp to the title together with the arrangement spacing

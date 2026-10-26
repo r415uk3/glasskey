@@ -24,4 +24,14 @@
     <string name="ios_theme">Theme</string>
     <string name="ios_number_row">Number Row</string>
     <string name="ios_no_results">No Results</string>
+    <string name="ios_edit">Edit</string>
+    <string name="ios_done">Done</string>
+    <string name="ios_delete">Delete</string>
+    <string name="ios_reorder">Reorder</string>
+    <string name="ios_keyboards_footer">The globe key switches languages in this order.</string>
+    <string name="ios_dictionaries">Dictionaries</string>
+    <string name="ios_dictionaries_footer">Suggestions for languages without a built-in dictionary.</string>
+    <string name="ios_layout">LAYOUT</string>
+    <string name="ios_choose_layout">Choose a layout to add this keyboard.</string>
+    <string name="ios_suggested_languages">SUGGESTED</string>
 </resources>

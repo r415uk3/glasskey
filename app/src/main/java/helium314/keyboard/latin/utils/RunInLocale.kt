@@ -20,5 +20,10 @@ fun <T> runInLocale(resources: Resources, locale: Locale, run: (Resources) -> T)
     val config = Configuration(resources.configuration)
     config.setLocale(locale)
     @Suppress("deprecation") val res = Resources(resources.assets, resources.displayMetrics, config)
-    return run(res)
+    try {
+        return run(res)
+    } finally {
+        // the new Resources set its locale on the shared AssetManager; put the original configuration back
+        @Suppress("deprecation") resources.updateConfiguration(resources.configuration, resources.displayMetrics)
+    }
 }

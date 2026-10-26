@@ -23,4 +23,14 @@
     <string name="ios_theme">Тема</string>
     <string name="ios_number_row">Ряд цифр</string>
     <string name="ios_no_results">Нет результатов</string>
+    <string name="ios_edit">Изменить</string>
+    <string name="ios_done">Готово</string>
+    <string name="ios_delete">Удалить</string>
+    <string name="ios_reorder">Переместить</string>
+    <string name="ios_keyboards_footer">Глобус переключает языки в этом порядке.</string>
+    <string name="ios_dictionaries">Словари</string>
+    <string name="ios_dictionaries_footer">Подсказки для языков без встроенного словаря.</string>
+    <string name="ios_layout">РАСКЛАДКА</string>
+    <string name="ios_choose_layout">Выберите раскладку, чтобы добавить клавиатуру.</string>
+    <string name="ios_suggested_languages">ПРЕДЛАГАЕМЫЕ</string>
 </resources>

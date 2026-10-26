@@ -105,23 +105,8 @@ fun SubtypeScreen(
         currentSubtypeString = subtype.toPref()
     }
     LaunchedEffect(currentSubtypeString) {
-        if (ScriptUtils.scriptSupportsUppercase(currentSubtype.locale)) return@LaunchedEffect
-        // update the noShiftKey extra value
-        val mainLayout = currentSubtype.mainLayoutName()
-        val noShiftKey = if (mainLayout != null && LayoutUtilsCustom.isCustomLayout(mainLayout)) {
-            // determine from layout
-            val content = LayoutUtilsCustom.getLayoutFile(mainLayout, LayoutType.MAIN, ctx).readText()
-            !content.contains("\"shift_state_selector\"")
-        } else {
-            // determine from subtype with same layout
-            SubtypeSettings.getResourceSubtypesForLocale(currentSubtype.locale)
-                .firstOrNull { it.mainLayoutName() == mainLayout }
-                ?.containsExtraValueKey(ExtraValue.NO_SHIFT_KEY) ?: false
-        }
-        if (!noShiftKey && currentSubtype.hasExtraValueOf(ExtraValue.NO_SHIFT_KEY))
-            setCurrentSubtype(currentSubtype.without(ExtraValue.NO_SHIFT_KEY))
-        else if (noShiftKey && !currentSubtype.hasExtraValueOf(ExtraValue.NO_SHIFT_KEY))
-            setCurrentSubtype(currentSubtype.with(ExtraValue.NO_SHIFT_KEY))
+        val adjusted = currentSubtype.withMatchingNoShiftKey(ctx)
+        if (adjusted != currentSubtype) setCurrentSubtype(adjusted)
     }
 
     val availableLocalesForScript = getAvailableSecondaryLocales(ctx, currentSubtype.locale).sortedBy { it.toLanguageTag() }
@@ -394,6 +379,32 @@ private fun PopupOrderDialog(
     )
 }
 
+internal fun SettingsSubtype.withMainLayout(layout: String): SettingsSubtype =
+    // if the locale defaults to qwerty, use it as implicit default to avoid creating unnecessary additional subtypes
+    if (layout == SubtypeLocaleUtils.QWERTY
+        && SubtypeSettings.getResourceSubtypesForLocale(locale).any { it.mainLayoutName() == null })
+        withoutLayout(LayoutType.MAIN)
+    else withLayout(LayoutType.MAIN, layout)
+
+/** Sets or clears the noShiftKey extra value to match the main layout, for scripts without uppercase. */
+internal fun SettingsSubtype.withMatchingNoShiftKey(context: Context): SettingsSubtype {
+    if (ScriptUtils.scriptSupportsUppercase(locale)) return this
+    val mainLayout = mainLayoutName()
+    val noShiftKey = if (mainLayout != null && LayoutUtilsCustom.isCustomLayout(mainLayout)) {
+        // determine from layout
+        val content = LayoutUtilsCustom.getLayoutFile(mainLayout, LayoutType.MAIN, context).readText()
+        !content.contains("\"shift_state_selector\"")
+    } else {
+        // determine from subtype with same layout
+        SubtypeSettings.getResourceSubtypesForLocale(locale)
+            .firstOrNull { it.mainLayoutName() == mainLayout }
+            ?.containsExtraValueKey(ExtraValue.NO_SHIFT_KEY) ?: false
+    }
+    return if (!noShiftKey && hasExtraValueOf(ExtraValue.NO_SHIFT_KEY)) without(ExtraValue.NO_SHIFT_KEY)
+    else if (noShiftKey && !hasExtraValueOf(ExtraValue.NO_SHIFT_KEY)) with(ExtraValue.NO_SHIFT_KEY)
+    else this
+}
+
 @Composable
 private fun MainLayoutRow(
     currentSubtype: SettingsSubtype,
@@ -411,13 +422,7 @@ private fun MainLayoutRow(
         DropDownField(
             items = appLayouts + customLayouts,
             selectedItem = currentSubtype.mainLayoutName() ?: SubtypeLocaleUtils.QWERTY,
-            onSelected = { layout ->
-                // if the locale defaults to qwerty, use it as implicit default to avoid creating unnecessary additional subtypes
-                if (layout == SubtypeLocaleUtils.QWERTY
-                    && SubtypeSettings.getResourceSubtypesForLocale(currentSubtype.locale).any { it.mainLayoutName() == null })
-                    setCurrentSubtype(currentSubtype.withoutLayout(LayoutType.MAIN))
-                else setCurrentSubtype(currentSubtype.withLayout(LayoutType.MAIN, layout))
-            },
+            onSelected = { layout -> setCurrentSubtype(currentSubtype.withMainLayout(layout)) },
             extraButton = {
                 IconButton({ showAddLayoutDialog = true })
                 { Icon(painterResource(R.drawable.ic_plus), stringResource(R.string.button_title_add_custom_layout)) }

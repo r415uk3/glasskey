@@ -31,7 +31,8 @@ class App : Application() {
             SupportedEmojis.load(this@App)
             ExpandableDictionaryUtils.initUpToDateDicts(this@App)
             LayoutUtilsCustom.removeMissingLayouts(this@App)
-            val packageInfo = packageManager.getPackageInfo(packageName, 0)
+            // missing under Robolectric; an exception here would surface in unrelated tests
+            val packageInfo = runCatching { packageManager.getPackageInfo(packageName, 0) }.getOrNull() ?: return@launch
             @Suppress("DEPRECATION")
             Log.i(
                 "startup", "Starting ${applicationInfo.processName} version ${packageInfo.versionName} (${

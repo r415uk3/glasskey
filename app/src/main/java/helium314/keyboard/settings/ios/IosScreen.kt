@@ -81,6 +81,7 @@ fun IosScreen(
     title: String,
     onBack: (() -> Unit)?,
     bottomBar: (@Composable () -> Unit)? = null,
+    action: (@Composable () -> Unit)? = null,
     content: LazyListScope.() -> Unit,
 ) {
     val colors = LocalIosColors.current
@@ -141,6 +142,10 @@ fun IosScreen(
             )
             if (onBack != null)
                 BackButton(onBack, screenBackdrop, Modifier.align(Alignment.BottomStart).padding(start = 16.dp, bottom = 6.dp))
+            if (action != null)
+                Box(Modifier.align(Alignment.BottomEnd).padding(end = 16.dp, bottom = 6.dp)) {
+                    CompositionLocalProvider(LocalIosBackdrop provides screenBackdrop, content = action)
+                }
         }
 
         if (bottomBar != null)
@@ -152,6 +157,22 @@ fun IosScreen(
             ) {
                 CompositionLocalProvider(LocalIosBackdrop provides screenBackdrop, content = bottomBar)
             }
+    }
+}
+
+/** Glass capsule with a tint text label for the top bar, e.g. «Изменить». */
+@Composable
+fun IosBarButton(text: String, onClick: () -> Unit) {
+    val capsule = RoundedCornerShape(percent = 50)
+    Box(
+        Modifier
+            .height(44.dp)
+            .iosPanel(capsule)
+            .clickable(remember { MutableInteractionSource() }, indication = null, role = Role.Button, onClick = onClick)
+            .padding(horizontal = 16.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        BasicText(text, style = TextStyle(color = LocalIosColors.current.tint, fontSize = 17.sp, fontWeight = FontWeight.SemiBold))
     }
 }
 

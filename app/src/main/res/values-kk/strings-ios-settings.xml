@@ -23,4 +23,14 @@
     <string name="ios_theme">Тақырып</string>
     <string name="ios_number_row">Сандар қатары</string>
     <string name="ios_no_results">Нәтиже жоқ</string>
+    <string name="ios_edit">Өзгерту</string>
+    <string name="ios_done">Дайын</string>
+    <string name="ios_delete">Жою</string>
+    <string name="ios_reorder">Жылжыту</string>
+    <string name="ios_keyboards_footer">Глобус тілдерді осы ретпен ауыстырады.</string>
+    <string name="ios_dictionaries">Сөздіктер</string>
+    <string name="ios_dictionaries_footer">Кірістірілген сөздігі жоқ тілдерге арналған ұсыныстар.</string>
+    <string name="ios_layout">ОРНАЛАСУ</string>
+    <string name="ios_choose_layout">Пернетақтаны қосу үшін орналасуды таңдаңыз.</string>
+    <string name="ios_suggested_languages">ҰСЫНЫЛАТЫН</string>
 </resources>
