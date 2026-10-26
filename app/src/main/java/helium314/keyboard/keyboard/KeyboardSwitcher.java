@@ -565,7 +565,9 @@ public final class KeyboardSwitcher {
         final SettingsValues sv = Settings.getValues();
         if (KeyboardTheme.STYLE_IOS.equals(sv.mColors.getThemeStyle()) && !sv.mIsFloatingKeyboard) {
             mIosBottomBar.setVisibility(View.VISIBLE);
-            mIosBottomBar.bind(mLatinIME.mKeyboardActionListener, () -> { mLatinIME.showInputPickerDialog(); return kotlin.Unit.INSTANCE; });
+            mIosBottomBar.bind(
+                    () -> { mLatinIME.switchToNextSubtypeInOrder(); return kotlin.Unit.INSTANCE; },
+                    () -> { mLatinIME.showInputPickerDialog(); return kotlin.Unit.INSTANCE; });
             mIosBottomBar.updateColors(sv.mColors);
         }
         mKeyboardView = mCurrentInputView.findViewById(R.id.keyboard_view);

@@ -48,6 +48,17 @@ class IosGlobeSwitchTest {
 
     private fun currentLanguage() = RichInputMethodManager.getInstance().currentSubtype.locale.toLanguageTag()
 
+    @Test fun globeCyclesThroughAllLanguagesEvenAfterTyping() {
+        val seen = mutableListOf(currentLanguage())
+        repeat(3) {
+            press('a'.code) // typing marks the language as used; stock HeliBoard would then toggle back
+            latinIME.switchToNextSubtypeInOrder()
+            ShadowLooper.runUiThreadTasksIncludingDelayedTasks()
+            seen.add(currentLanguage())
+        }
+        assertEquals(listOf("ru", "en-US", "kk", "ru"), seen)
+    }
+
     @Test fun globeFromShiftedSymbolsGoesToNextLanguageAlphabet() {
         assertEquals("ru", currentLanguage())
         press(KeyCode.SYMBOL_ALPHA)

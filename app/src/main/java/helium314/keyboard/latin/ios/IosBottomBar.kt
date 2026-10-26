@@ -9,7 +9,6 @@ import android.widget.LinearLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import helium314.keyboard.keyboard.KeyboardActionListener
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.common.ColorType
 import helium314.keyboard.latin.common.Colors
@@ -28,11 +27,8 @@ class IosBottomBar(context: Context, attrs: AttributeSet?) : LinearLayout(contex
         }
     }
 
-    fun bind(listener: KeyboardActionListener, showPicker: () -> Unit) {
-        val controller = GlobeController(
-            onCode = { listener.onCodeInput(it, -1, -1, false) },
-            showPicker = showPicker,
-        )
+    fun bind(switchToNext: () -> Unit, showPicker: () -> Unit) {
+        val controller = GlobeController(switchToNext, showPicker)
         globe.setOnClickListener { controller.onTap() }
         globe.setOnLongClickListener {
             it.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)

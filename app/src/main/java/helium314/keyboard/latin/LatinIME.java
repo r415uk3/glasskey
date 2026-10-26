@@ -1297,6 +1297,13 @@ public class LatinIME extends InputMethodService implements
     }
 
     // called when language switch key is pressed (either the keyboard key, or long-press comma)
+    /** iOS globe: always the next enabled language in list order (the language key toggles back to the last used one) */
+    public void switchToNextSubtypeInOrder() {
+        final InputMethodSubtype next = mRichImm.getNextSubtypeInThisIme(true);
+        if (next != null && !next.equals(mRichImm.getCurrentSubtype().getRawSubtype()))
+            switchToSubtype(next);
+    }
+
     public void switchToNextSubtype() {
         final boolean switchSubtype = mSettings.getCurrent().mLanguageSwitchKeyToOtherSubtypes;
         final boolean switchIme = mSettings.getCurrent().mLanguageSwitchKeyToOtherImes;
