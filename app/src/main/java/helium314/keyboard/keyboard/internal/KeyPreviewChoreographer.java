@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import helium314.keyboard.keyboard.Key;
+import helium314.keyboard.keyboard.KeyboardTheme;
 import helium314.keyboard.latin.common.ColorType;
 import helium314.keyboard.latin.common.Colors;
 import helium314.keyboard.latin.common.CoordinateUtils;
@@ -89,6 +90,12 @@ public final class KeyPreviewChoreographer {
         mParams.setGeometry(keyPreviewView);
         int previewWidth = keyPreviewView.getMeasuredWidth();
         int previewHeight = keyPreviewView.getMeasuredHeight();
+        if (KeyboardTheme.STYLE_IOS.equals(Settings.getValues().mColors.getThemeStyle())) {
+            // iOS balloon: head 12dp wider than the key on each side, stem covers the pressed key
+            final float density = keyPreviewView.getResources().getDisplayMetrics().density;
+            previewWidth = key.getDrawWidth() + Math.round(24 * density);
+            previewHeight = Math.round(key.getHeight() * 2.1f);
+        }
         int keyDrawWidth = key.getDrawWidth();
         int originX = CoordinateUtils.x(originCoords);
         // The key preview is horizontally aligned with the center of the visible part of the

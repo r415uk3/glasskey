@@ -396,6 +396,8 @@ class DefaultColors (
     private val keyTextFilter: ColorFilter
     private val suggestionTextFilter = colorFilter(suggestionText)
     private val accentColorFilter = colorFilter(accent)
+    /** iOS: the preview balloon has the key color, made opaque against the keyboard background */
+    private val iosKeyPreviewFilter = colorFilter(ColorUtils.compositeColors(keyBackground, background))
 
     /** color filter for the white action key icons in material theme, switches to gray if necessary for contrast */
     private val actionKeyIconColorFilter: ColorFilter?
@@ -533,7 +535,8 @@ class DefaultColors (
         if (view.background == null)
             view.setBackgroundColor(Color.WHITE) // set white to make the color filters work
         when (color) {
-            KEY_PREVIEW_BACKGROUND, POPUP_KEYS_BACKGROUND -> view.background.colorFilter = adjustedBackgroundFilter
+            KEY_PREVIEW_BACKGROUND -> view.background.colorFilter = if (themeStyle == STYLE_IOS) iosKeyPreviewFilter else adjustedBackgroundFilter
+            POPUP_KEYS_BACKGROUND -> view.background.colorFilter = adjustedBackgroundFilter
             FUNCTIONAL_KEY_BACKGROUND, KEY_BACKGROUND, MORE_SUGGESTIONS_WORD_BACKGROUND, SPACE_BAR_BACKGROUND, STRIP_BACKGROUND, CLIPBOARD_SUGGESTION_BACKGROUND -> setColor(view.background, color)
             ONE_HANDED_MODE_BUTTON -> setColor(view.background, if (keyboardBackground == null) MAIN_BACKGROUND else STRIP_BACKGROUND)
             MORE_SUGGESTIONS_BACKGROUND -> view.background.colorFilter = backgroundFilter
