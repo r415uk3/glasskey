@@ -4,6 +4,21 @@ package helium314.keyboard.settings.ios
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.click
+import androidx.compose.ui.test.swipeLeft
+import androidx.compose.ui.test.swipeRight
+import androidx.compose.ui.test.swipeUp
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -89,5 +104,55 @@ class IosComponentsTest {
         compose.onNode(hasSetTextAction()).performTextInput("звук")
         compose.waitForIdle()
         assertEquals("звук", q)
+    }
+
+    @Test fun tapOnSwitchTogglesOnce() {
+        compose.setContent { IosSettingsTheme(dark = true) { IosSwitchRow("Звук", Settings.PREF_SOUND_ON, false) } }
+        val switch = compose.onNodeWithTag(IosSwitchTag, useUnmergedTree = true)
+        switch.performTouchInput { click(center) }
+        compose.waitForIdle()
+        assertTrue(context.prefs().getBoolean(Settings.PREF_SOUND_ON, false))
+        switch.performTouchInput { click(center) }
+        compose.waitForIdle()
+        assertFalse(context.prefs().getBoolean(Settings.PREF_SOUND_ON, true))
+    }
+
+    @Test fun horizontalSwipeSettlesBySide() {
+        val changes = mutableListOf<Boolean>()
+        compose.setContent {
+            IosSettingsTheme(dark = true) {
+                var checked by remember { mutableStateOf(false) }
+                IosSwitch(checked, { checked = it; changes += it })
+            }
+        }
+        val switch = compose.onNodeWithTag(IosSwitchTag)
+        switch.performTouchInput { swipeRight(startX = centerX - 40f, endX = centerX + 200f) }
+        compose.waitForIdle()
+        assertEquals(listOf(true), changes)
+        // dragging further towards the end it already is at changes nothing
+        switch.performTouchInput { swipeRight(startX = centerX - 40f, endX = centerX + 200f) }
+        compose.waitForIdle()
+        assertEquals(listOf(true), changes)
+        switch.performTouchInput { swipeLeft(startX = centerX + 40f, endX = centerX - 200f) }
+        compose.waitForIdle()
+        assertEquals(listOf(true, false), changes)
+    }
+
+    @Test fun verticalSwipeOnSwitchScrollsListInsteadOfToggling() {
+        lateinit var state: LazyListState
+        compose.setContent {
+            IosSettingsTheme(dark = true) {
+                state = rememberLazyListState()
+                LazyColumn(Modifier.height(300.dp), state = state) {
+                    item { IosSwitchRow("Звук", Settings.PREF_SOUND_ON, false) }
+                    items(40) { IosRow("Строка $it") }
+                }
+            }
+        }
+        compose.onNodeWithTag(IosSwitchTag, useUnmergedTree = true)
+            .performTouchInput { swipeUp(startY = centerY, endY = centerY - 500f) }
+        compose.waitForIdle()
+        assertFalse(context.prefs().getBoolean(Settings.PREF_SOUND_ON, false))
+        assertTrue(state.firstVisibleItemIndex > 0 || state.firstVisibleItemScrollOffset > 0)
     }
 }

@@ -44,6 +44,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.toggleableState
 import androidx.compose.ui.state.ToggleableState
@@ -199,7 +200,7 @@ fun IosSwitchRow(title: String, prefKey: String, default: Boolean) {
         title,
         chevron = false,
         onClick = { set(!checked) },
-        trailing = { IosSwitch(checked, set, Modifier.clearAndSetSemantics { }) },
+        trailing = { IosSwitch(checked, set, Modifier.clearAndSetSemantics { testTag = IosSwitchTag }) },
         modifier = Modifier.semantics {
             role = Role.Switch
             toggleableState = ToggleableState(checked)

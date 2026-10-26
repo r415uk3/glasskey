@@ -26,8 +26,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.isOutOfBounds
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.role
@@ -48,6 +50,8 @@ private val pressedThumbWidth = 46.dp
 private val pressedThumbHeight = 35.dp
 private val thumbTravel = trackWidth - thumbInset * 2 - thumbWidth
 private val pill = RoundedCornerShape(percent = 50)
+
+const val IosSwitchTag = "ios_switch"
 
 /** iOS pill switch; while pressed the thumb grows into a glass lens over the track. */
 @Composable
@@ -72,6 +76,7 @@ fun IosSwitch(
 
     Box(
         modifier
+            .testTag(IosSwitchTag)
             .size(trackWidth, trackHeight)
             .semantics {
                 role = Role.Switch
@@ -83,33 +88,44 @@ fun IosSwitch(
                     val down = awaitFirstDown()
                     down.consume()
                     pressed = true
-                    val start = if (checked) 1f else 0f
-                    var frac = start
-                    var moved = false
-                    var released = false
-                    while (true) {
-                        val event = awaitPointerEvent()
-                        val change = event.changes.firstOrNull { it.id == down.id } ?: break
-                        change.consume()
-                        if (!change.pressed) {
-                            released = true
-                            break
+                    try {
+                        val start = if (checked) 1f else 0f
+                        var frac = start
+                        var moved = false
+                        var released = false
+                        while (true) {
+                            val change = awaitPointerEvent().changes.firstOrNull { it.id == down.id } ?: break
+                            if (change.isConsumed) break // someone else (e.g. a scroll) took the gesture
+                            if (!change.pressed) {
+                                change.consume()
+                                released = true
+                                break
+                            }
+                            val delta = change.position - down.position
+                            if (!moved) {
+                                val slop = viewConfiguration.touchSlop
+                                // vertical movement first: leave the events unconsumed so the list scrolls
+                                if (abs(delta.y) > slop && abs(delta.y) >= abs(delta.x)) break
+                                if (abs(delta.x) > slop) {
+                                    moved = true
+                                    dragging = true
+                                } else if (change.isOutOfBounds(size, extendedTouchPadding)) {
+                                    break
+                                }
+                            }
+                            if (moved) {
+                                change.consume()
+                                frac = (start + delta.x / travelPx).coerceIn(0f, 1f)
+                                dragFraction = frac
+                            }
                         }
-                        val dx = change.position.x - down.position.x
-                        if (!moved && abs(dx) > viewConfiguration.touchSlop) {
-                            moved = true
-                            dragging = true
+                        if (released) {
+                            val result = IosSwitchLogic.checkedAfterRelease(checked, frac, moved)
+                            if (result != checked) onChange(result)
                         }
-                        if (moved) {
-                            frac = (start + dx / travelPx).coerceIn(0f, 1f)
-                            dragFraction = frac
-                        }
-                    }
-                    pressed = false
-                    dragging = false
-                    if (released) {
-                        val result = IosSwitchLogic.checkedAfterRelease(checked, frac, moved)
-                        if (result != checked) onChange(result)
+                    } finally {
+                        pressed = false
+                        dragging = false
                     }
                 }
             }
