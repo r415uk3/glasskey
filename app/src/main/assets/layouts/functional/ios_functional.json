@@ -9,18 +9,15 @@
   [
     { "label": "symbol_alpha", "width": 0.225 },
     { "label": "emoji", "width": 0.11 },
-    { "$": "variation_selector",
-      "default": { "label": "space" },
-      "uri": { "label": ".", "width": 0.13 }
-    },
+    { "label": "space" },
     { "$": "variation_selector",
       "email": { "label": "@", "width": 0.11 },
-      "uri": { "label": "/", "width": 0.13 },
+      "uri": { "label": "period", "width": 0.11 },
       "search": { "label": ".", "width": 0.11 }
     },
     { "$": "variation_selector",
       "email": { "label": ".", "width": 0.11 },
-      "uri": { "label": "com", "width": 0.17 }
+      "uri": { "label": "/", "width": 0.11 }
     },
     { "label": "action", "width": 0.225, "labelFlags": 1073741824 }
   ]

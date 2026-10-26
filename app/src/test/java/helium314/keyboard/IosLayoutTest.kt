@@ -78,12 +78,11 @@ class IosLayoutTest {
         assertEquals(listOf(KeyCode.SYMBOL_ALPHA, KeyCode.EMOJI, ' '.code, '@'.code, '.'.code, enter), row.codes())
     }
 
-    @Test fun urlRow() {
+    @Test fun urlRowKeepsSpaceForBrowserAddressBars() {
+        // Android browsers declare their address bar as a URL field, but people type searches there too
         val row = rows(mode = KeyboardMode.URL).last()
-        assertEquals(listOf(KeyCode.SYMBOL_ALPHA, KeyCode.EMOJI, '.'.code, '/'.code), row.codes().take(4))
-        assertEquals(".com", row[4].label)
-        assertEquals(enter, row.last().code)
-        assertFalse(row.any { it.code == ' '.code })
+        assertEquals(listOf(KeyCode.SYMBOL_ALPHA, KeyCode.EMOJI, ' '.code, '.'.code, '/'.code, enter), row.codes())
+        assertTrue(row.first { it.code == '.'.code }.popupKeys.orEmpty().any { it.mLabel == ".com" })
     }
 
     @Test fun searchRow() {
