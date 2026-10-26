@@ -81,7 +81,7 @@ class IosLayoutTest {
     @Test fun urlRowKeepsSpaceForBrowserAddressBars() {
         // Android browsers declare their address bar as a URL field, but people type searches there too
         val row = rows(mode = KeyboardMode.URL).last()
-        assertEquals(listOf(KeyCode.SYMBOL_ALPHA, KeyCode.EMOJI, ' '.code, '.'.code, '/'.code, enter), row.codes())
+        assertEquals(listOf(KeyCode.SYMBOL_ALPHA, KeyCode.EMOJI, ' '.code, '.'.code, enter), row.codes()) // like Safari's address bar
         assertTrue(row.first { it.code == '.'.code }.popupKeys.orEmpty().any { it.mLabel == ".com" })
     }
 
