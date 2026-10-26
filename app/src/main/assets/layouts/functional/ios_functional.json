@@ -1,0 +1,27 @@
+[
+  [
+    { "label": "shift", "width": 0.12 },
+    { "type": "placeholder", "width": 0.025 },
+    { "type": "placeholder" },
+    { "type": "placeholder", "width": 0.025 },
+    { "label": "delete", "width": 0.12 }
+  ],
+  [
+    { "label": "symbol_alpha", "width": 0.225 },
+    { "label": "emoji", "width": 0.11 },
+    { "$": "variation_selector",
+      "default": { "label": "space" },
+      "uri": { "label": ".", "width": 0.13, "groupId": 2 }
+    },
+    { "$": "variation_selector",
+      "email": { "label": "@", "width": 0.11, "groupId": 1 },
+      "uri": { "label": "/", "width": 0.13, "groupId": 1 },
+      "search": { "label": ".", "width": 0.11, "groupId": 2 }
+    },
+    { "$": "variation_selector",
+      "email": { "label": ".", "width": 0.11, "groupId": 2 },
+      "uri": { "label": "com", "width": 0.17 }
+    },
+    { "label": "action", "width": 0.225, "labelFlags": 1073741824 }
+  ]
+]

@@ -14,11 +14,12 @@ private const val POPUP_KEYS_LANGUAGE_PRIORITY = "language_priority"
 const val POPUP_KEYS_LAYOUT = "layout"
 private const val POPUP_KEYS_SYMBOLS = "symbols"
 private const val POPUP_KEYS_LANGUAGE = "language"
-const val POPUP_KEYS_LABEL_DEFAULT = POPUP_KEYS_NUMBER + Separators.KV + true + Separators.ENTRY + POPUP_KEYS_LANGUAGE_PRIORITY +
-        Separators.KV + false + Separators.ENTRY + POPUP_KEYS_LAYOUT + Separators.KV + true + Separators.ENTRY +
-        POPUP_KEYS_SYMBOLS + Separators.KV + true + Separators.ENTRY + POPUP_KEYS_LANGUAGE + Separators.KV + false
+// Glasskey: iOS shows no hint glyphs and only accent / language variants in letter popups
+const val POPUP_KEYS_LABEL_DEFAULT = POPUP_KEYS_NUMBER + Separators.KV + false + Separators.ENTRY + POPUP_KEYS_LANGUAGE_PRIORITY +
+        Separators.KV + false + Separators.ENTRY + POPUP_KEYS_LAYOUT + Separators.KV + false + Separators.ENTRY +
+        POPUP_KEYS_SYMBOLS + Separators.KV + false + Separators.ENTRY + POPUP_KEYS_LANGUAGE + Separators.KV + false
 const val POPUP_KEYS_ORDER_DEFAULT = POPUP_KEYS_LANGUAGE_PRIORITY + Separators.KV + true + Separators.ENTRY + POPUP_KEYS_NUMBER +
-        Separators.KV + true + Separators.ENTRY + POPUP_KEYS_SYMBOLS + Separators.KV + true + Separators.ENTRY +
+        Separators.KV + false + Separators.ENTRY + POPUP_KEYS_SYMBOLS + Separators.KV + false + Separators.ENTRY +
         POPUP_KEYS_LAYOUT + Separators.KV + true + Separators.ENTRY + POPUP_KEYS_LANGUAGE + Separators.KV + true
 
 private val allPopupKeyTypes = listOf(POPUP_KEYS_NUMBER, POPUP_KEYS_LAYOUT, POPUP_KEYS_SYMBOLS, POPUP_KEYS_LANGUAGE, POPUP_KEYS_LANGUAGE_PRIORITY)

@@ -5,6 +5,7 @@
  */
 package helium314.keyboard.keyboard.internal.keyboard_parser.floris
 
+import android.view.inputmethod.EditorInfo
 import helium314.keyboard.keyboard.KeyboardElement
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -172,12 +173,15 @@ data class VariationSelector(
     val date: AbstractKeyData? = null,
     val time: AbstractKeyData? = null,
     val datetime: AbstractKeyData? = null,
+    // Glasskey: text fields whose action is search (iOS adds a period key there)
+    val search: AbstractKeyData? = null,
 ) : AbstractKeyData {
     override fun compute(params: KeyboardParams, isPopup: Boolean): KeyData? {
         return when {
             params.mId.isPasswordInput -> password ?: default
             params.mId.mode == KeyboardMode.EMAIL -> email ?: default
             params.mId.mode == KeyboardMode.URL -> uri ?: default
+            params.mId.imeAction == EditorInfo.IME_ACTION_SEARCH -> search ?: normal ?: default
             params.mId.mode == KeyboardMode.DATE -> date ?: default
             params.mId.mode == KeyboardMode.TIME -> time ?: default
             params.mId.mode == KeyboardMode.DATETIME -> datetime ?: default

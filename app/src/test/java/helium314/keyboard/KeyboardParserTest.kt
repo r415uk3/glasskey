@@ -466,11 +466,11 @@ f""", // no newline at the end
         val (_, keys) = buildKeyboard(editorInfo, subtype, KeyboardElement.ALPHABET)
         assertEquals(11, keys[0].size)
         assertEquals(11, keys[1].size)
-        assertEquals(10, keys[2].size)
+        assertEquals(12, keys[2].size) // Glasskey: ios_functional adds a spacer on each side of the letters
         val (_, keys2) = buildKeyboard(editorInfo, subtype, KeyboardElement.ALPHABET_AUTOMATIC_SHIFTED)
         assertEquals(11, keys2[0].size)
         assertEquals(11, keys2[1].size)
-        assertEquals(10, keys2[2].size)
+        assertEquals(12, keys2[2].size)
     }
 
     @Test fun `popup key count does not depend on shift for (for simple layout)`() {
@@ -510,7 +510,7 @@ f""", // no newline at the end
             f blah
             tab timestamp
     """).flatMap { row -> row.mapNotNull { it.compute(params)?.toKeyParams(params) } }
-        assertEquals("?123", keys[0].mPopupKeys?.first()?.mLabel)
+        assertEquals("123", keys[0].mPopupKeys?.first()?.mLabel)
         assertEquals(KeyCode.SYMBOL_ALPHA, keys[0].mPopupKeys?.first()?.mCode)
         assertEquals("ESC", keys[1].mPopupKeys?.first()?.mLabel)
         assertEquals(KeyCode.ESCAPE, keys[1].mPopupKeys?.first()?.mCode)

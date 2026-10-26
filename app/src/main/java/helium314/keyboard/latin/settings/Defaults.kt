@@ -29,15 +29,16 @@ object Defaults {
     // must correspond to a file name
     val LayoutType.default get() = when (this) {
         LayoutType.MAIN -> "qwerty"
-        LayoutType.SYMBOLS -> "symbols"
-        LayoutType.MORE_SYMBOLS -> "symbols_shifted"
-        LayoutType.FUNCTIONAL -> if (Settings.getInstance().isTablet) "functional_keys_tablet" else "functional_keys"
-        LayoutType.NUMBER -> "number"
+        // Glasskey: iOS layouts are the defaults for every style; stock ones stay selectable
+        LayoutType.SYMBOLS -> "ios_symbols"
+        LayoutType.MORE_SYMBOLS -> "ios_symbols_shifted"
+        LayoutType.FUNCTIONAL -> "ios_functional"
+        LayoutType.NUMBER -> "ios_number"
         LayoutType.NUMBER_ROW -> "number_row"
         LayoutType.NUMPAD -> "numpad"
         LayoutType.NUMPAD_LANDSCAPE -> "numpad_landscape"
         LayoutType.DPAD -> "dpad"
-        LayoutType.PHONE -> "phone"
+        LayoutType.PHONE -> "ios_phone"
         LayoutType.PHONE_SYMBOLS -> "phone_symbols"
         LayoutType.EMOJI_BOTTOM -> "emoji_bottom_row"
         LayoutType.CLIPBOARD_BOTTOM -> "clip_bottom_row"

@@ -407,6 +407,11 @@ sealed interface KeyData : AbstractKeyData {
         }
     }
 
+    // iOS colors only "real" actions (go, search, send...) blue; a plain return key looks like the other functional keys
+    private fun isPlainEnterInIosStyle(params: KeyboardParams) =
+        Settings.getValues().mColors.themeStyle == KeyboardTheme.STYLE_IOS
+            && (params.mId.imeAction == EditorInfo.IME_ACTION_NONE || params.mId.imeAction == EditorInfo.IME_ACTION_UNSPECIFIED)
+
     private fun getDefaultBackground(params: KeyboardParams): Int {
         // functional keys
         when (label) { // or use code?
@@ -414,7 +419,7 @@ sealed interface KeyData : AbstractKeyData {
             KeyLabel.COM, KeyLabel.LANGUAGE_SWITCH, KeyLabel.NUMPAD, KeyLabel.DPAD, KeyLabel.CTRL, KeyLabel.ALT,
             KeyLabel.FN, KeyLabel.META, KeyLabel.EMOJI_SEARCH, toolbarKeyStrings[ToolbarKey.EMOJI] -> return Key.BACKGROUND_TYPE_FUNCTIONAL
             KeyLabel.SPACE, KeyLabel.ZWNJ -> return Key.BACKGROUND_TYPE_SPACEBAR
-            KeyLabel.ACTION -> return Key.BACKGROUND_TYPE_ACTION
+            KeyLabel.ACTION -> return if (isPlainEnterInIosStyle(params)) Key.BACKGROUND_TYPE_FUNCTIONAL else Key.BACKGROUND_TYPE_ACTION
             KeyLabel.SHIFT -> return Key.BACKGROUND_TYPE_FUNCTIONAL
         }
         if (type == KeyType.PLACEHOLDER) return Key.BACKGROUND_TYPE_EMPTY

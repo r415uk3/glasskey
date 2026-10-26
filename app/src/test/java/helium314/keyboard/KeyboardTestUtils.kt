@@ -7,6 +7,7 @@ import helium314.keyboard.keyboard.Keyboard
 import helium314.keyboard.keyboard.KeyboardElement
 import helium314.keyboard.keyboard.KeyboardId
 import helium314.keyboard.keyboard.KeyboardLayoutSet
+import helium314.keyboard.keyboard.KeyboardMode
 import helium314.keyboard.keyboard.internal.KeyboardBuilder
 import helium314.keyboard.keyboard.internal.KeyboardParams
 import helium314.keyboard.keyboard.internal.UniqueKeysCache
@@ -22,6 +23,7 @@ fun buildTestKeyboard(
     element: KeyboardElement,
     width: Int = 500,
     height: Int = 300,
+    mode: KeyboardMode = KeyboardMode.TEXT,
 ): Pair<Keyboard, List<List<KeyParams>>> {
     val layoutParams = KeyboardLayoutSet.Params()
     fun set(name: String, value: Any) = KeyboardLayoutSet.Params::class.java.getDeclaredField(name)
@@ -30,6 +32,7 @@ fun buildTestKeyboard(
     set("subtype", RichInputMethodSubtype.get(subtype))
     set("keyboardWidth", width)
     set("keyboardHeight", height)
+    layoutParams.mode = mode
 
     val keysInRowsField = KeyboardBuilder::class.java.getDeclaredField("keysInRows").apply { isAccessible = true }
     val id = KeyboardId(element, layoutParams)
