@@ -550,4 +550,6 @@
     <string name="recent_emojis_cleared">Недавние эмодзи очищены</string>
     <string name="prefs_enable_hardware_keyboard">Поддержка аппаратной клавиатуры</string>
     <string name="accent_shifted_icon">Акцентный цвет значка Shift</string>
+    <string name="keyboard_font">Шрифт</string>
+    <string name="keyboard_font_system">Системный</string>
 </resources>

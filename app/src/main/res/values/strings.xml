@@ -714,6 +714,14 @@ New dictionary:
     <!-- Style name for Rounded style -->
     <string name="style_name_Rounded" tools:keep="@string/style_name_Rounded">Rounded</string>
     <string name="style_name_iOS" tools:keep="@string/style_name_iOS">iOS</string>
+    <!-- Title of the setting to pick the keyboard font -->
+    <string name="keyboard_font">Font</string>
+    <!-- Font option: use the system font -->
+    <string name="keyboard_font_system">System</string>
+    <string name="keyboard_font_inter" translatable="false">Inter</string>
+    <string name="keyboard_font_golos_text" translatable="false">Golos Text</string>
+    <string name="keyboard_font_onest" translatable="false">Onest</string>
+    <string name="keyboard_font_noto_sans" translatable="false">Noto Sans</string>
     <!-- Option for choosing colors -->
     <string name="theme_colors">Colors</string>
     <!-- Option for choosing colors for night mode -->

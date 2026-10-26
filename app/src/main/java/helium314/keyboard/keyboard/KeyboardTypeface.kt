@@ -7,7 +7,11 @@ import android.graphics.Typeface
 import android.widget.TextView
 import androidx.compose.ui.text.font.FontFamily
 import helium314.keyboard.latin.common.isEmoji
+import androidx.core.content.res.ResourcesCompat
+import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.settings.Settings
+import helium314.keyboard.latin.utils.KeyboardFont
+import helium314.keyboard.latin.utils.prefs
 
 object KeyboardTypeface {
     private val lock = Any()
@@ -21,10 +25,13 @@ object KeyboardTypeface {
     @Volatile
     private var emojiTypefaceLoaded = false
 
+    /** user font file first (existing feature), then the font picked in settings; null = keep default typeface */
     private fun loadCustomTypeface(context: Context): Typeface? {
-        return runCatching {
-            Typeface.createFromFile(Settings.getCustomFontFile(context))
-        }.getOrNull()
+        val file = Settings.getCustomFontFile(context)
+        if (file.exists()) runCatching { Typeface.createFromFile(file) }.getOrNull()?.let { return it }
+        val prefs = context.prefs()
+        val font = KeyboardFont.fromPref(prefs.getString(Settings.PREF_KEYBOARD_FONT, Defaults.PREF_KEYBOARD_FONT))
+        return font.regular?.let { runCatching { ResourcesCompat.getFont(context, it) }.getOrNull() }
     }
 
     private fun loadCustomEmojiTypeface(context: Context): Typeface? {

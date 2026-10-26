@@ -55,6 +55,7 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
 
     // theme-related stuff
     public static final String PREF_THEME_STYLE = "theme_style";
+    public static final String PREF_KEYBOARD_FONT = "keyboard_font";
     public static final String PREF_ICON_STYLE = "icon_style";
     public static final String PREF_ACCENT_SHIFTED_ICON = "accent_shifted_icon";
     public static final String PREF_THEME_COLORS = "theme_colors";

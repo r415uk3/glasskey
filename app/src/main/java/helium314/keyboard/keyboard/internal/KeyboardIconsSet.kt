@@ -24,7 +24,8 @@ class KeyboardIconsSet private constructor() {
         val iconStyle = prefs.getString(Settings.PREF_ICON_STYLE, Defaults.PREF_ICON_STYLE(prefs))
         val defaultIds = when (iconStyle) {
             KeyboardTheme.STYLE_HOLO -> keyboardIconsHolo
-            KeyboardTheme.STYLE_ROUNDED, KeyboardTheme.STYLE_IOS -> keyboardIconsRounded
+            KeyboardTheme.STYLE_ROUNDED -> keyboardIconsRounded
+            KeyboardTheme.STYLE_IOS -> keyboardIconsIos
             else -> keyboardIconsMaterial
         }
         val overrideIds = customIconIds(context, prefs)
@@ -225,6 +226,23 @@ class KeyboardIconsSet private constructor() {
             }
         } }
 
+        // iOS style: own glyphs where iOS differs, Rounded for everything else
+        private val keyboardIconsIos by lazy { HashMap(keyboardIconsRounded).apply {
+            put(NAME_SHIFT_KEY, R.drawable.ic_ios_shift)
+            put(NAME_SHIFT_KEY_SHIFTED, R.drawable.ic_ios_shift_filled)
+            put(NAME_SHIFT_KEY_LOCKED, R.drawable.ic_ios_caps_lock)
+            put(NAME_DELETE_KEY, R.drawable.ic_ios_delete)
+            put(NAME_ENTER_KEY, R.drawable.ic_ios_return)
+            put(NAME_GO_KEY, R.drawable.ic_ios_go)
+            put(NAME_NEXT_KEY, R.drawable.ic_ios_go)
+            put(NAME_SEND_KEY, R.drawable.ic_ios_go)
+            put(NAME_DONE_KEY, R.drawable.ic_ios_return)
+            put(NAME_SEARCH_KEY, R.drawable.ic_ios_search)
+            put(NAME_LANGUAGE_SWITCH_KEY, R.drawable.ic_ios_globe)
+            put(ToolbarKey.EMOJI.name.lowercase(Locale.US), R.drawable.ic_ios_emoji)
+            put(ToolbarKey.VOICE.name.lowercase(Locale.US), R.drawable.ic_ios_mic)
+        } }
+
         private val keyboardIconsRounded by lazy { hashMapOf(
             NAME_SHIFT_KEY to                   R.drawable.sym_keyboard_shift_rounded,
             NAME_SHIFT_KEY_SHIFTED to           R.drawable.sym_keyboard_shifted_rounded,
@@ -295,7 +313,8 @@ class KeyboardIconsSet private constructor() {
             val iconsMap = keyboardIconsMaterial.entries.associateTo(HashMap()) { (name, id) ->
                 name to when (iconStyle) {
                     KeyboardTheme.STYLE_HOLO -> listOfNotNull(keyboardIconsHolo[name], keyboardIconsRounded[name], id)
-                    KeyboardTheme.STYLE_ROUNDED, KeyboardTheme.STYLE_IOS -> listOfNotNull(keyboardIconsRounded[name], id, keyboardIconsHolo[name])
+                    KeyboardTheme.STYLE_ROUNDED -> listOfNotNull(keyboardIconsRounded[name], id, keyboardIconsHolo[name])
+                    KeyboardTheme.STYLE_IOS -> listOfNotNull(keyboardIconsIos[name], keyboardIconsRounded[name], id, keyboardIconsHolo[name]).distinct()
                     else -> listOfNotNull(id, keyboardIconsRounded[name], keyboardIconsHolo[name])
                 }
             }
