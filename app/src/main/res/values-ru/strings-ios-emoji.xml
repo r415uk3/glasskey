@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-only -->
+<resources>
+    <string name="ios_emoji_section_recents">Часто используемые</string>
+    <string name="ios_emoji_section_smileys">Смайлики и люди</string>
+    <string name="ios_emoji_section_nature">Животные и природа</string>
+    <string name="ios_emoji_section_food">Еда и напитки</string>
+    <string name="ios_emoji_section_activity">Активность</string>
+    <string name="ios_emoji_section_travel">Путешествия и места</string>
+    <string name="ios_emoji_section_objects">Предметы</string>
+    <string name="ios_emoji_section_symbols">Символы</string>
+    <string name="ios_emoji_section_flags">Флаги</string>
+</resources>

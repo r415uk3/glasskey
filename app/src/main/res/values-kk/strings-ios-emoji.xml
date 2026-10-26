@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-only -->
+<resources>
+    <string name="ios_emoji_section_recents">Жиі қолданылатын</string>
+    <string name="ios_emoji_section_smileys">Смайликтер және адамдар</string>
+    <string name="ios_emoji_section_nature">Жануарлар және табиғат</string>
+    <string name="ios_emoji_section_food">Тағам және сусын</string>
+    <string name="ios_emoji_section_activity">Белсенділік</string>
+    <string name="ios_emoji_section_travel">Саяхат және орындар</string>
+    <string name="ios_emoji_section_objects">Заттар</string>
+    <string name="ios_emoji_section_symbols">Таңбалар</string>
+    <string name="ios_emoji_section_flags">Жалаулар</string>
+</resources>
