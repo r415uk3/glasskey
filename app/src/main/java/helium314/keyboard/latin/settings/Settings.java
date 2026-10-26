@@ -572,7 +572,8 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
 
     // "default" layout as in this is used if nothing else is specified in the subtype
     public static String readDefaultLayoutName(final LayoutType type, final SharedPreferences prefs) {
-        return prefs.getString(PREF_LAYOUT_PREFIX + type.name(), Defaults.INSTANCE.getDefault(type));
+        return prefs.getString(PREF_LAYOUT_PREFIX + type.name(),
+                Defaults.INSTANCE.defaultForStyle(type, prefs.getString(PREF_THEME_STYLE, Defaults.PREF_THEME_STYLE)));
     }
 
     public static void writeDefaultLayoutName(@Nullable final String name, final LayoutType type, final SharedPreferences prefs) {

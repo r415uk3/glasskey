@@ -237,16 +237,21 @@ class KeyboardParser(private val params: KeyboardParams, private val context: Co
         // replace comma / period if 2 keys in normal bottom row
         if (baseKeys.last().size == 2) {
             val newComma = baseKeys.last()[0]
+            val newPeriod = baseKeys.last()[1]
+            val commaSlot = functionalKeysBottom.any { it.label == KeyLabel.COMMA || it.groupId == KeyData.GROUP_COMMA }
+            val periodSlot = functionalKeysBottom.any { it.label == KeyLabel.PERIOD || it.groupId == KeyData.GROUP_PERIOD }
             functionalKeysBottom.replaceFirst(
                 { it.label == KeyLabel.COMMA || it.groupId == KeyData.GROUP_COMMA},
                 { newComma.copy(newGroupId = 1, newType = newComma.type, newLabelFlags = it.labelFlags or newComma.labelFlags) }
             )
-            val newPeriod = baseKeys.last()[1]
             functionalKeysBottom.replaceFirst(
                 { it.label == KeyLabel.PERIOD || it.groupId == KeyData.GROUP_PERIOD},
                 { newPeriod.copy(newGroupId = 2, newType = newPeriod.type, newLabelFlags = it.labelFlags or newPeriod.labelFlags) }
             )
             baseKeys.removeAt(baseKeys.lastIndex)
+            // functional rows without comma / period (e.g. Glasskey ios_functional): keep the letters in the row above
+            if (!commaSlot) baseKeys.last().add(newComma)
+            if (!periodSlot) baseKeys.last().add(newPeriod)
         }
         // add zwnj key next to space if necessary
         val spaceIndex = functionalKeysBottom.indexOfFirst { it.label == KeyLabel.SPACE && it.width <= 0 } // width could be 0 or -1

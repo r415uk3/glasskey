@@ -26,10 +26,9 @@ object Defaults {
     // must correspond to a file name
     val LayoutType.default get() = when (this) {
         LayoutType.MAIN -> "qwerty"
-        // Glasskey: iOS layouts are the defaults for every style; stock ones stay selectable
-        LayoutType.SYMBOLS -> "ios_symbols"
-        LayoutType.MORE_SYMBOLS -> "ios_symbols_shifted"
-        LayoutType.FUNCTIONAL -> "ios_functional"
+        LayoutType.SYMBOLS -> "symbols"
+        LayoutType.MORE_SYMBOLS -> "symbols_shifted"
+        LayoutType.FUNCTIONAL -> if (Settings.getInstance().isTablet) "functional_keys_tablet" else "functional_keys"
         LayoutType.NUMBER -> "number"
         LayoutType.NUMBER_ROW -> "number_row"
         LayoutType.NUMPAD -> "numpad"
@@ -39,6 +38,14 @@ object Defaults {
         LayoutType.PHONE_SYMBOLS -> "phone_symbols"
         LayoutType.EMOJI_BOTTOM -> "emoji_bottom_row"
         LayoutType.CLIPBOARD_BOTTOM -> "clip_bottom_row"
+    }
+
+    // Glasskey: iOS layouts are the defaults only for the iOS style; other styles keep HeliBoard's
+    fun LayoutType.defaultForStyle(style: String?) = if (style != KeyboardTheme.STYLE_IOS) default else when (this) {
+        LayoutType.SYMBOLS -> "ios_symbols"
+        LayoutType.MORE_SYMBOLS -> "ios_symbols_shifted"
+        LayoutType.FUNCTIONAL -> "ios_functional"
+        else -> default
     }
 
     private const val DEFAULT_SIZE_SCALE = 1.0f // 100%
@@ -155,7 +162,7 @@ object Defaults {
     const val PREF_SHOW_POPUP_HINTS = false
     const val PREF_SHOW_TLD_POPUP_KEYS = true
     const val PREF_MORE_POPUP_KEYS = "main"
-    const val PREF_SPACE_TO_CHANGE_LANG = false
+    const val PREF_SPACE_TO_CHANGE_LANG = true // iOS style overrides this in SettingsValues
     const val PREF_LANGUAGE_SWIPE_DISTANCE = 5
     const val PREF_TOUCHPAD_SENSITIVITY = 50
     const val PREF_TOUCHPAD_EDGE_SCROLL = true

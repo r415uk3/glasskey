@@ -46,7 +46,7 @@ class IosDefaultsTest {
     }
 
     @Test fun iosBehaviourDefaults() {
-        assertEquals(false, Defaults.PREF_SPACE_TO_CHANGE_LANG)
+        assertEquals(false, Settings.getValues().mSpaceForLangChange)
         assertEquals(false, Defaults.PREF_SHOW_HINTS)
         assertEquals(true, Defaults.PREF_VIBRATE_ON)
         assertEquals(true, Defaults.PREF_SOUND_ON)
