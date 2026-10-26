@@ -398,6 +398,9 @@ class DefaultColors (
     private val accentColorFilter = colorFilter(accent)
     /** iOS: the preview balloon has the key color, made opaque against the keyboard background */
     private val iosKeyPreviewFilter = colorFilter(ColorUtils.compositeColors(keyBackground, background))
+    /** iOS 27 key preview tile: a bit lighter than the keys in dark mode, white in light mode */
+    private val iosPreviewTileFilter = ColorUtils.compositeColors(keyBackground, background)
+        .let { colorFilter(if (isDarkColor(background)) brighten(it) else Color.WHITE) }
     /** iOS long-press panel: key colored, the cell under the finger slightly lighter / darker */
     private val iosPopupPanelStateList = ColorUtils.compositeColors(keyBackground, background)
         .let { pressedStateList(brightenOrDarken(it, true), it) }
@@ -460,6 +463,9 @@ class DefaultColors (
         if (hasKeyBorders) {
             backgroundStateList = pressedStateList(brightenOrDarken(background, true), background)
             keyStateList = if (themeStyle == STYLE_HOLO) pressedStateList(keyBackground, keyBackground)
+                // iOS dark: a pressed key lights up (same tone as the preview tile)
+                else if (themeStyle == STYLE_IOS && isDarkColor(background))
+                    pressedStateList(brighten(ColorUtils.compositeColors(keyBackground, background)), keyBackground)
                 else pressedStateList(brightenOrDarken(keyBackground, true), keyBackground)
             functionalKeyStateList = pressedStateList(brightenOrDarken(functionalKey, true), functionalKey)
             actionKeyStateList = if (themeStyle == STYLE_HOLO) functionalKeyStateList
@@ -542,7 +548,7 @@ class DefaultColors (
         if (view.background == null)
             view.setBackgroundColor(Color.WHITE) // set white to make the color filters work
         when (color) {
-            KEY_PREVIEW_BACKGROUND -> view.background.colorFilter = if (themeStyle == STYLE_IOS) iosKeyPreviewFilter else adjustedBackgroundFilter
+            KEY_PREVIEW_BACKGROUND -> view.background.colorFilter = if (themeStyle == STYLE_IOS) iosPreviewTileFilter else adjustedBackgroundFilter
             POPUP_KEYS_BACKGROUND -> view.background.colorFilter = if (themeStyle == STYLE_IOS) iosKeyPreviewFilter else adjustedBackgroundFilter
             FUNCTIONAL_KEY_BACKGROUND, KEY_BACKGROUND, MORE_SUGGESTIONS_WORD_BACKGROUND, SPACE_BAR_BACKGROUND, STRIP_BACKGROUND, CLIPBOARD_SUGGESTION_BACKGROUND -> setColor(view.background, color)
             ONE_HANDED_MODE_BUTTON -> setColor(view.background, if (keyboardBackground == null) MAIN_BACKGROUND else STRIP_BACKGROUND)

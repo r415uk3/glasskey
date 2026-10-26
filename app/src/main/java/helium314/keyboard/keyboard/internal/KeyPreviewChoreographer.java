@@ -90,11 +90,11 @@ public final class KeyPreviewChoreographer {
         mParams.setGeometry(keyPreviewView);
         int previewWidth = keyPreviewView.getMeasuredWidth();
         int previewHeight = keyPreviewView.getMeasuredHeight();
-        if (KeyboardTheme.STYLE_IOS.equals(Settings.getValues().mColors.getThemeStyle())) {
-            // iOS balloon: head 12dp wider than the key on each side, stem covers the pressed key
-            final float density = keyPreviewView.getResources().getDisplayMetrics().density;
-            previewWidth = key.getDrawWidth() + Math.round(24 * density);
-            previewHeight = Math.round(key.getHeight() * 2.1f);
+        final boolean isIos = KeyboardTheme.STYLE_IOS.equals(Settings.getValues().mColors.getThemeStyle());
+        if (isIos) {
+            // iOS 27: a separate tile, about 1.6x the key wide and 1.5x as tall, floating just above the key
+            previewWidth = Math.round(key.getDrawWidth() * 1.6f);
+            previewHeight = Math.round(key.getHeight() * 1.5f);
         }
         int keyDrawWidth = key.getDrawWidth();
         int originX = CoordinateUtils.x(originCoords);
@@ -119,8 +119,9 @@ public final class KeyPreviewChoreographer {
 
         // The key preview is placed vertically above the top edge of the parent key with an
         // arbitrary offset.
-        int previewY = key.getY() - previewHeight + key.getHeight() - mParams.mPreviewOffset
-                + CoordinateUtils.y(originCoords);
+        int previewY = isIos
+                ? key.getY() - previewHeight - Math.round(3 * keyPreviewView.getResources().getDisplayMetrics().density) + CoordinateUtils.y(originCoords)
+                : key.getY() - previewHeight + key.getHeight() - mParams.mPreviewOffset + CoordinateUtils.y(originCoords);
 
         ViewLayoutUtils.placeViewAt(keyPreviewView, previewX, previewY, previewWidth, previewHeight);
         keyPreviewView.setPivotX(previewWidth / 2.0f);
