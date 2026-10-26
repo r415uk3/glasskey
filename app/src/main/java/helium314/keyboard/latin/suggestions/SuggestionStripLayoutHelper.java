@@ -42,6 +42,7 @@ import helium314.keyboard.accessibility.AccessibilityUtils;
 import helium314.keyboard.keyboard.KeyboardTypeface;
 import helium314.keyboard.latin.PunctuationSuggestions;
 import helium314.keyboard.keyboard.KeyboardTheme;
+import helium314.keyboard.latin.ios.IosWordMorph;
 import helium314.keyboard.latin.R;
 import helium314.keyboard.latin.SuggestedWords;
 import helium314.keyboard.latin.SuggestedWords.SuggestedWordInfo;
@@ -502,8 +503,10 @@ final class SuggestionStripLayoutHelper {
             // {@link TextView#getTag()} is used to get the index in suggestedWords at
             // {@link SuggestionStripView#onClick(View)}.
             wordView.setTag(indexInSuggestedWords);
-            wordView.setText(getStyledSuggestedWord(suggestedWords, indexInSuggestedWords));
             wordView.setTextColor(getSuggestionTextColor(suggestedWords, indexInSuggestedWords));
+            final CharSequence styledWord = getStyledSuggestedWord(suggestedWords, indexInSuggestedWords);
+            if (mIsIos) IosWordMorph.animate(wordView, styledWord != null ? styledWord : "");
+            else wordView.setText(styledWord);
             if (mIsIos)
                 setIosPill(wordView, indexInSuggestedWords == SuggestedWords.INDEX_OF_AUTO_CORRECTION && suggestedWords.mWillAutoCorrect);
             KeyboardTypeface.applyToTextView(wordView);

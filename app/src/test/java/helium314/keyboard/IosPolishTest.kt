@@ -44,9 +44,10 @@ class IosPolishTest {
         return LanguageOnSpacebarUtils.getLanguageOnSpacebarFormatType(RichInputMethodSubtype.get(enabled.first()))
     }
 
-    @Test fun iosSpacebarShowsNoLanguage() {
+    @Test fun iosSpacebarShowsTheLanguageNameWhenSwitching() {
+        // shown briefly on a switch, then faded out to 0 by the iOS animator (badge in the corner stays)
         useStyle(KeyboardTheme.STYLE_IOS)
-        assertEquals(LanguageOnSpacebarUtils.FORMAT_TYPE_NONE, spacebarFormat())
+        assertEquals(LanguageOnSpacebarUtils.FORMAT_TYPE_LANGUAGE_ONLY, spacebarFormat())
     }
 
     @Test fun stockStylesStillShowLanguageOnSpacebar() {

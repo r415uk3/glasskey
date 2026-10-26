@@ -56,6 +56,7 @@ import helium314.keyboard.latin.settings.DebugSettings;
 import helium314.keyboard.latin.settings.Defaults;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.utils.KtxKt;
+import helium314.keyboard.latin.ios.IosLanguageBadge;
 import helium314.keyboard.latin.utils.LanguageOnSpacebarUtils;
 import helium314.keyboard.latin.utils.Log;
 import helium314.keyboard.latin.utils.TypefaceUtils;
@@ -174,7 +175,9 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
                 LANGUAGE_ON_SPACEBAR_TEXT_SHADOW_RADIUS_DISABLED);
         mLanguageOnSpacebarTextShadowColor = mainKeyboardViewAttr.getColor(
                 R.styleable.MainKeyboardView_languageOnSpacebarTextShadowColor, 0);
-        mLanguageOnSpacebarFinalAlpha = Color.alpha(mLanguageOnSpacebarTextColor);
+        // iOS: the name fades out completely, IosLanguageBadge takes over
+        mLanguageOnSpacebarFinalAlpha = KeyboardTheme.STYLE_IOS.equals(Settings.getValues().mColors.getThemeStyle())
+                ? 0 : Color.alpha(mLanguageOnSpacebarTextColor);
         final int languageOnSpacebarFadeoutAnimatorResId = mainKeyboardViewAttr.getResourceId(
                 R.styleable.MainKeyboardView_languageOnSpacebarFadeoutAnimator, 0);
         final int altCodeKeyWhileTypingFadeoutAnimatorResId = mainKeyboardViewAttr.getResourceId(
@@ -713,6 +716,8 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
             // If input language are explicitly selected.
             if (mLanguageOnSpacebarFormatType != LanguageOnSpacebarUtils.FORMAT_TYPE_NONE) {
                 drawLanguageOnSpacebar(key, canvas, paint);
+                if (KeyboardTheme.STYLE_IOS.equals(Settings.getValues().mColors.getThemeStyle()))
+                    drawIosLanguageBadge(key, canvas, paint);
             }
             // Whether space key needs to show the "..." popup hint for special purposes
             if (key.isLongPressEnabled() && mHasMultipleEnabledIMEsOrSubtypes && Settings.getValues().mSpaceForLangChange) {
@@ -801,6 +806,21 @@ public final class MainKeyboardView extends KeyboardView implements DrawingProxy
             newLocales.add(locale);
         }
         return newLocales;
+    }
+
+    // small language mark in the bottom right corner of the space bar, as on iOS
+    private void drawIosLanguageBadge(final Key key, final Canvas canvas, final Paint paint) {
+        final Keyboard keyboard = getKeyboard();
+        if (keyboard == null) return;
+        final String badge = IosLanguageBadge.forLocale(keyboard.mId.getSubtype().getLocale());
+        final float density = getResources().getDisplayMetrics().density;
+        paint.setTextAlign(Align.RIGHT);
+        paint.setTextSize(9 * density * Settings.getValues().mFontSizeMultiplier);
+        paint.setTypeface(KeyboardTypeface.resolve(badge, Typeface.DEFAULT));
+        paint.setColor(mLanguageOnSpacebarTextColor);
+        paint.setAlpha(IosLanguageBadge.badgeAlpha(mLanguageOnSpacebarAnimAlpha) * Color.alpha(mLanguageOnSpacebarTextColor) / 255);
+        canvas.drawText(badge, key.getWidth() - 7 * density, key.getHeight() - 6 * density, paint);
+        paint.setTextAlign(Align.CENTER);
     }
 
     private void drawLanguageOnSpacebar(final Key key, final Canvas canvas, final Paint paint) {

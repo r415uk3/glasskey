@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-only
+     iOS: the language name stays half a second after a switch, then fades out completely -->
+<objectAnimator
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:propertyName="languageOnSpacebarAnimAlpha"
+    android:valueType="intType"
+    android:startOffset="500"
+    android:duration="300"
+    android:valueFrom="255"
+    android:valueTo="0" />
