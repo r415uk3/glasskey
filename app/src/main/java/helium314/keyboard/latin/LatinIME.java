@@ -940,7 +940,7 @@ public class LatinIME extends InputMethodService implements
             setNavigationBarColor();
             workaroundForHuaweiStatusBarIssue();
             if (KeyboardTheme.STYLE_IOS.equals(mSettings.getCurrent().mColors.getThemeStyle()))
-                IosBlur.apply(getWindow().getWindow(), this);
+                applyIosPanelBlur();
         }
     }
 
@@ -982,6 +982,17 @@ public class LatinIME extends InputMethodService implements
 
     protected void deallocateMemory() {
         mKeyboardSwitcher.deallocateMemory();
+    }
+
+    // iOS glass: blur only behind the keyboard panel (best effort, see IosBlur)
+    private void applyIosPanelBlur() {
+        android.util.Log.i("GlasskeyBlur", "applyIosPanelBlur inputView=" + mInputView);
+        if (mInputView == null) return;
+        final View frame = mInputView.findViewById(R.id.main_keyboard_frame);
+        if (frame == null) return;
+        final android.graphics.drawable.Drawable blur = IosBlur.createPanelBlur(frame,
+                mSettings.getCurrent().mColors.get(ColorType.MAIN_BACKGROUND), 27 * getResources().getDisplayMetrics().density);
+        if (blur != null) frame.setBackground(blur);
     }
 
     // iOS: the action key stays grey while the field is empty
