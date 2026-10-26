@@ -12,3 +12,11 @@ On top of everything HeliBoard ships (see README.md and LICENSE):
 
 Fonts are static Regular instances subset to Latin + Cyrillic + punctuation + currency signs by `tools/fonts/make_fonts.py`
 (needs `fonttools`), which also checks that every Kazakh letter and ₸ is present.
+
+| Library | Source | License |
+|---|---|---|
+| `org.lsposed.hiddenapibypass:hiddenapibypass` | https://github.com/LSPosed/AndroidHiddenApiBypass | Apache-2.0 |
+
+HiddenApiBypass exempts exactly two platform classes (`ViewRootImpl`, `BackgroundBlurDrawable`) so the iOS style can blur
+only what is behind the keyboard panel (`latin/ios/IosBlur.kt`). Without it Android 16 blocks that API; the panel then
+stays opaque. This is fine for a GitHub release; Google Play discourages non-SDK interfaces.

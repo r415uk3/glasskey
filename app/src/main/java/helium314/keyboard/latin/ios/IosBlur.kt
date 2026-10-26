@@ -7,6 +7,7 @@ import android.os.Build
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import org.lsposed.hiddenapibypass.HiddenApiBypass
 
 /**
  * iOS glass: blur only what is behind the keyboard panel, using the platform's background blur drawable
@@ -25,6 +26,8 @@ object IosBlur {
     fun createPanelBlur(view: View, color: Int, topCornerRadius: Float): Drawable? {
         if (!isAvailable(view.context)) { Log.i(TAG, "cross-window blur not available (sdk ${Build.VERSION.SDK_INT})"); return null }
         return try {
+            // the blur drawable is not public API; exempt just these two classes from the hidden API policy
+            HiddenApiBypass.addHiddenApiExemptions("Landroid/view/ViewRootImpl;", "Lcom/android/internal/graphics/drawable/BackgroundBlurDrawable;")
             val viewRoot = view.rootView.parent ?: return null // ViewRootImpl
             val drawable = viewRoot.javaClass.getMethod("createBackgroundBlurDrawable").invoke(viewRoot) as Drawable
             val cls = drawable.javaClass

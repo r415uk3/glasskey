@@ -862,6 +862,8 @@ public class LatinIME extends InputMethodService implements
             // it can adjust its combiners if needed.
             mInputLogic.startInput(mRichImm.getCombiningRulesExtraValueOfCurrentSubtype(), currentSettingsValues);
             updateIosActionKey();
+            if (mInputView != null && KeyboardTheme.STYLE_IOS.equals(currentSettingsValues.mColors.getThemeStyle()))
+                mInputView.postDelayed(this::applyIosPanelBlur, 100); // after HeliBoard set the panel background
 
             resetDictionaryFacilitatorIfNecessary();
 
@@ -986,7 +988,6 @@ public class LatinIME extends InputMethodService implements
 
     // iOS glass: blur only behind the keyboard panel (best effort, see IosBlur)
     private void applyIosPanelBlur() {
-        android.util.Log.i("GlasskeyBlur", "applyIosPanelBlur inputView=" + mInputView);
         if (mInputView == null) return;
         final View frame = mInputView.findViewById(R.id.main_keyboard_frame);
         if (frame == null) return;
