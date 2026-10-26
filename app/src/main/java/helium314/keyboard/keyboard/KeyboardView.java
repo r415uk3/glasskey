@@ -36,6 +36,7 @@ import helium314.keyboard.latin.common.ColorType;
 import helium314.keyboard.latin.common.Colors;
 import helium314.keyboard.latin.common.Constants;
 import helium314.keyboard.latin.ios.IosActionKeyState;
+import helium314.keyboard.latin.ios.IosTrackpad;
 import helium314.keyboard.latin.common.StringUtilsKt;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.suggestions.MoreSuggestions;
@@ -344,7 +345,9 @@ public class KeyboardView extends View {
                     : key.selectBackgroundDrawable(mKeyBackground, mFunctionalKeyBackground, mSpacebarBackground, mActionKeyBackground);
             onDrawKeyBackground(key, canvas, background);
         }
-        onDrawKeyTopVisuals(key, canvas, paint, params);
+        // iOS trackpad: the keys stay, their labels and icons disappear
+        if (!(IosTrackpad.hidesKeyLabels() && this instanceof MainKeyboardView))
+            onDrawKeyTopVisuals(key, canvas, paint, params);
 
         canvas.translate(-keyDrawX, -keyDrawY);
     }

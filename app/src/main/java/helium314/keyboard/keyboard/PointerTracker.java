@@ -31,6 +31,7 @@ import helium314.keyboard.keyboard.internal.TypingTimeRecorder;
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
 import helium314.keyboard.latin.R;
 import helium314.keyboard.latin.common.Constants;
+import helium314.keyboard.latin.ios.IosTrackpad;
 import helium314.keyboard.latin.common.CoordinateUtils;
 import helium314.keyboard.latin.common.InputPointers;
 import helium314.keyboard.latin.define.DebugFlags;
@@ -953,6 +954,7 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
 
             // Touchpad mode
             mTouchpadHandler.enableTouchpadMove(x, y, sListener);
+            if (IosTrackpad.active) return; // the trackpad moves the cursor, not the space swipe
 
             // Vertical movement
             int stepsY = dY / sPointerStep;
@@ -1168,6 +1170,17 @@ public final class PointerTracker implements PointerTrackerQueue.Element,
             sListener.onPressKey(popupKeyCode, 0, 1, HapticEvent.NO_HAPTICS);
             sListener.onCodeInput(popupKeyCode, Constants.NOT_A_COORDINATE, Constants.NOT_A_COORDINATE, false);
             sListener.onReleaseKey(popupKeyCode, false);
+            return;
+        }
+        // iOS: long-press on space turns the keyboard into a cursor trackpad
+        if (IosTrackpad.shouldStartOnLongPress(KeyboardTheme.STYLE_IOS.equals(Settings.getValues().mColors.getThemeStyle()),
+                code, key.getPopupKeys() != null)) {
+            sTimerProxy.cancelKeyTimersOf(this);
+            mKeySwipeAllowed = true;
+            sInKeySwipe = true;
+            mInHorizontalSwipe = true; // releasing must not type a space
+            TouchpadHandler.setTouchpadModeActive(true);
+            mTouchpadHandler.enableTouchpadMove(mLastX, mLastY, sListener);
             return;
         }
         if (code == KeyCode.LANGUAGE_SWITCH

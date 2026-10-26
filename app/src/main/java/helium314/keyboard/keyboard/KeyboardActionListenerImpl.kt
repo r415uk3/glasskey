@@ -26,6 +26,7 @@ import helium314.keyboard.latin.common.WordBreakIterator
 import helium314.keyboard.latin.common.combiningRange
 import helium314.keyboard.latin.common.stepsToCharCount
 import helium314.keyboard.latin.inputlogic.InputLogic
+import helium314.keyboard.latin.ios.IosTrackpad
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.BackgroundGatheringCache
 import helium314.keyboard.latin.utils.GestureDataGatheringSettings
@@ -181,17 +182,26 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
     override fun onCustomRequest(request: KeyboardActionListener.CustomAction) = when (request) {
         KeyboardActionListener.CustomAction.SHOW_INPUT_METHOD_PICKER -> latinIME.showInputPickerDialog()
         KeyboardActionListener.CustomAction.TOUCHPAD_ON -> {
-            keyboardSwitcher.mainKeyboardView?.alpha = 0.5f
+            if (isIosStyle()) setIosTrackpad(true) // iOS: blank keys instead of a faded keyboard
+            else keyboardSwitcher.mainKeyboardView?.alpha = 0.5f
             true
         }
         KeyboardActionListener.CustomAction.TOUCHPAD_OFF -> {
-            keyboardSwitcher.mainKeyboardView?.alpha = 1f
+            if (isIosStyle()) setIosTrackpad(false)
+            else keyboardSwitcher.mainKeyboardView?.alpha = 1f
             true
         }
         KeyboardActionListener.CustomAction.PERFORM_HAPTIC -> {
             performHapticFeedback(HapticEvent.KEY_LONG_PRESS)
             true
         }
+    }
+
+    private fun isIosStyle() = Settings.getValues().mColors.themeStyle == KeyboardTheme.STYLE_IOS
+
+    private fun setIosTrackpad(active: Boolean) {
+        IosTrackpad.active = active
+        keyboardSwitcher.mainKeyboardView?.invalidateAllKeys()
     }
 
     override fun onHorizontalSpaceSwipe(steps: Int): Boolean = when (Settings.getValues().mSpaceSwipeHorizontal) {
