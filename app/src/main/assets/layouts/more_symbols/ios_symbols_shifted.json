@@ -1,0 +1,119 @@
+[
+  [
+    {
+      "label": "["
+    },
+    {
+      "label": "]"
+    },
+    {
+      "label": "{"
+    },
+    {
+      "label": "}"
+    },
+    {
+      "label": "#"
+    },
+    {
+      "label": "%"
+    },
+    {
+      "label": "^"
+    },
+    {
+      "label": "*"
+    },
+    {
+      "label": "+"
+    },
+    {
+      "label": "="
+    }
+  ],
+  [
+    {
+      "label": "_"
+    },
+    {
+      "label": "\\"
+    },
+    {
+      "label": "|"
+    },
+    {
+      "label": "~"
+    },
+    {
+      "label": "<"
+    },
+    {
+      "label": ">"
+    },
+    {
+      "label": "€"
+    },
+    {
+      "label": "$"
+    },
+    {
+      "label": "£"
+    },
+    {
+      "label": "•"
+    }
+  ],
+  [
+    {
+      "label": ".",
+      "popup": {
+        "relevant": [
+          {
+            "label": "…"
+          }
+        ]
+      },
+      "width": 0.142
+    },
+    {
+      "label": ",",
+      "width": 0.142
+    },
+    {
+      "label": "?",
+      "popup": {
+        "relevant": [
+          {
+            "label": "¿"
+          }
+        ]
+      },
+      "width": 0.142
+    },
+    {
+      "label": "!",
+      "popup": {
+        "relevant": [
+          {
+            "label": "¡"
+          }
+        ]
+      },
+      "width": 0.142
+    },
+    {
+      "label": "'",
+      "popup": {
+        "relevant": [
+          {
+            "label": "’"
+          },
+          {
+            "label": "‘"
+          }
+        ]
+      },
+      "width": 0.142
+    }
+  ]
+]

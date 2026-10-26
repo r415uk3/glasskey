@@ -91,6 +91,15 @@ class IosLayoutTest {
         assertEquals("ABC", rows.last().first().label)
     }
 
+    @Test fun symbolsThirdRowPunctuationFillsTheRow() {
+        for (element in listOf(KeyboardElement.SYMBOLS, KeyboardElement.SYMBOLS_SHIFTED)) {
+            val letterWidth = rows()[0].first().width
+            val punctuation = rows(element = element)[2].filter { it.label in listOf(".", ",", "?", "!", "'") }
+            assertEquals(5, punctuation.size, element.name)
+            assertTrue(punctuation.all { it.width > letterWidth * 13 / 10 }, "${element.name}: ${punctuation.map { it.width }} vs letter $letterWidth")
+        }
+    }
+
     @Test fun symbolsToggleLabels() {
         assertEquals("123", rows().last().first().label)
         assertEquals("#+=", rows(element = KeyboardElement.SYMBOLS)[2].first().label)
