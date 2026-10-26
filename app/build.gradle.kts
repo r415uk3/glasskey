@@ -135,6 +135,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     "debugNoMinifyImplementation"("androidx.compose.ui:ui-tooling")
     implementation("androidx.navigation:navigation-compose:2.9.8")
+    implementation("io.github.kyant0:backdrop:1.0.1") // Glasskey: Liquid Glass in settings; 1.0.2+ needs compose 1.10
     implementation("sh.calvin.reorderable:reorderable:3.1.0") // for easier re-ordering
     implementation("com.github.skydoves:colorpicker-compose:1.1.3") // for user-defined colors, newer requires minSdk 23
 
@@ -146,4 +147,7 @@ dependencies {
     testImplementation("org.robolectric:robolectric:4.16.1")
     testImplementation("androidx.test:runner:1.7.0")
     testImplementation("androidx.test:core:1.7.0")
+    testImplementation("androidx.compose.ui:ui-test-junit4")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
+    "debugNoMinifyImplementation"("androidx.compose.ui:ui-test-manifest")
 }
