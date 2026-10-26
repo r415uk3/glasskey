@@ -89,6 +89,11 @@ public final class ResourceUtils {
         return iosTopPaddingDp(stripHidden) + rows * 45f + (rows - 1) * 10f;
     }
 
+    /** iOS sizes are for a 402pt wide iPhone; narrower phones get proportionally smaller keys and gaps, as on iOS */
+    public static float iosWidthScale(final DisplayMetrics dm) {
+        return Math.min(1f, dm.widthPixels / dm.density / 402f);
+    }
+
     /** Figma: 8pt panel padding, plus 8pt above the key rows when no suggestion bar sits there */
     public static float iosTopPaddingDp(final boolean stripHidden) {
         return stripHidden ? 16f : 8f;
@@ -97,7 +102,7 @@ public final class ResourceUtils {
     public static int getDefaultKeyboardHeight(final Resources res, final boolean showsNumberRow, final boolean isIos, final boolean stripHidden) {
         final DisplayMetrics dm = res.getDisplayMetrics();
         final float keyboardHeight = isIos
-                ? iosDesignHeightDp(showsNumberRow, stripHidden) * dm.density
+                ? iosDesignHeightDp(showsNumberRow, stripHidden) * dm.density * iosWidthScale(dm)
                 : res.getDimension(R.dimen.config_default_keyboard_height) * (showsNumberRow ? 1.33f : 1f);
         final float maxKeyboardHeight = res.getFraction(
                 R.fraction.config_max_keyboard_height, dm.heightPixels, dm.heightPixels);

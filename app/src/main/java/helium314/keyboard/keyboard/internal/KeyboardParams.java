@@ -225,7 +225,7 @@ public class KeyboardParams {
         mBaseWidth = mOccupiedWidth - mLeftPadding - mRightPadding;
         mDefaultAbsoluteKeyWidth = (int) (mDefaultKeyWidth * mBaseWidth);
         mAbsolutePopupKeyWidth = (int) (mDefaultKeyWidth * mBaseWidth);
-        mHorizontalGap = Math.round(6.5f * density * sv.mKeyGapScale);
+        mHorizontalGap = Math.round(6.5f * density * ResourceUtils.iosWidthScale(context.getResources().getDisplayMetrics()) * sv.mKeyGapScale);
         mVerticalGap = Math.round(10 * density * scale * sv.mKeyGapScale);
         mRelativeHorizontalGap = (float) mHorizontalGap / width;
         mRelativeVerticalGap = (float) mVerticalGap / height;

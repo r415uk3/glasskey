@@ -30,6 +30,7 @@ import kotlinx.serialization.modules.polymorphic
 
 object LayoutParser {
     private const val TAG = "LayoutParser"
+    private val IOS_COMPACT_LAYOUTS = setOf("russian")
     private val layoutCache = hashMapOf<String, (KeyboardParams) -> MutableList<MutableList<KeyData>>>()
 
     fun clearCache() = layoutCache.clear()
@@ -39,6 +40,8 @@ object LayoutParser {
             return mutableListOf(mutableListOf()) // no functional keys
         val layoutName = if (layoutType == LayoutType.MAIN) params.mId.subtype.mainLayoutName
             else params.mId.subtype.layouts[layoutType] ?: Settings.readDefaultLayoutName(layoutType, context.prefs())
+        // iOS ru/kk: 11-key rows, so shift and delete become letter-sized keys in the grid
+            .let { if (it == "ios_functional" && params.mId.element.isAlphabet && params.mId.subtype.mainLayoutName in IOS_COMPACT_LAYOUTS) "ios_compact_functional" else it }
         return layoutCache.getOrPut(layoutType.name + layoutName) {
             createCacheLambda(layoutType, layoutName, context)
         }(params).apply {

@@ -23,7 +23,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
-@Config(shadows = [ShadowInputMethodManager2::class, ShadowProximityInfo::class], qualifiers = "w360dp-h800dp-xxhdpi")
+@Config(shadows = [ShadowInputMethodManager2::class, ShadowProximityInfo::class], qualifiers = "w402dp-h874dp-xxhdpi") // iPhone 17 Pro width: Figma sizes 1:1
 class IosGeometryTest {
     private val latinIME = Robolectric.setupService(LatinIME::class.java)
     private val density = latinIME.resources.displayMetrics.density

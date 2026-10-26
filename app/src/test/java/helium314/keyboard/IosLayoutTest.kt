@@ -65,6 +65,19 @@ class IosLayoutTest {
         assertEquals(emptyList(), popups("а"))
     }
 
+    @Test fun cyrillicThirdRowIsElevenEqualKeys() {
+        // iOS ru/kk: shift and delete are letter-sized and sit in the letter grid
+        val row = rows(locale = Locale.forLanguageTag("ru"), mainLayout = "russian")[2]
+        val shift = row.first(); val ya = row[1]; val ch = row[2]
+        assertTrue(kotlin.math.abs(shift.width - ya.width) <= 2, "shift ${shift.width} vs letter ${ya.width}")
+        assertTrue(kotlin.math.abs((ya.x - (shift.x + shift.width)) - (ch.x - (ya.x + ya.width))) <= 2, "gap after shift differs")
+    }
+
+    @Test fun latinThirdRowKeepsWideShift() {
+        val row = rows()[2]
+        assertTrue(row.first().width > row[1].width * 1.2, "shift ${row.first().width} vs z ${row[1].width}")
+    }
+
     @Test fun kkPopups() {
         val keys = rows(locale = Locale.forLanguageTag("kk"), mainLayout = "russian").flatten()
         fun popups(label: String) = keys.first { it.label == label }.popupKeys?.map { it.mLabel }.orEmpty()
