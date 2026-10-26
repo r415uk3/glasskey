@@ -51,6 +51,9 @@ import helium314.keyboard.latin.SingleDictionaryFacilitator;
 import helium314.keyboard.latin.common.ColorType;
 import helium314.keyboard.latin.common.Colors;
 import helium314.keyboard.latin.ios.IosEmojiBottomRow;
+import helium314.keyboard.latin.ios.IosEmojiLayout;
+import helium314.keyboard.latin.ios.IosEmojiSearchIndex;
+import androidx.annotation.Nullable;
 import helium314.keyboard.latin.dictionary.DictionaryInfoUtils;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.settings.SettingsValues;
@@ -205,6 +208,8 @@ public final class EmojiPalettesView extends LinearLayout
     // iOS: one horizontal list of sections instead of the pager, tab strip and bottom-row keyboard
     private IosEmojiPalette mIosPalette;
     private IosEmojiBottomRow mIosBottomRow;
+    private IosEmojiSearchIndex mIosSearchIndex;
+    private Map<String, Key> mIosKeysByEmoji;
 
     public EmojiPalettesView(final Context context, final AttributeSet attrs) {
         this(context, attrs, R.attr.emojiPalettesViewStyle);
@@ -293,7 +298,8 @@ public final class EmojiPalettesView extends LinearLayout
     /** iOS: no strip above the emoji screen, it takes the collapsed suggestion bar's place too */
     private int iosHeight() {
         return ResourceUtils.getSecondaryKeyboardHeight(getResources(), Settings.getValues())
-                + Math.round(8 * getResources().getDisplayMetrics().density);
+                + Math.round(8 * getResources().getDisplayMetrics().density)
+                + IosEmojiPalette.Companion.searchBlockHeight(getResources());
     }
 
     private void initializeIos() {
@@ -304,6 +310,7 @@ public final class EmojiPalettesView extends LinearLayout
         findViewById(R.id.bottom_row_keyboard).setVisibility(GONE);
         final int titleColor = (mColors.get(ColorType.KEY_TEXT) & 0x00FFFFFF) | 0x8C000000;
         mIosPalette = new IosEmojiPalette(this, mEmojiCategory, this, iosHeight(), titleColor,
+                mColors.get(ColorType.KEY_BACKGROUND),
                 index -> {
                     if (mIosBottomRow != null) mIosBottomRow.setCurrentSection(index);
                     return kotlin.Unit.INSTANCE;
@@ -312,9 +319,14 @@ public final class EmojiPalettesView extends LinearLayout
                     getRecentsKeyboard().flushPendingRecentKeys();
                     mIosPalette.notifySectionChanged(EmojiCategory.Category.RECENTS);
                     return kotlin.Unit.INSTANCE;
+                },
+                () -> {
+                    KeyboardSwitcher.getInstance().startIosEmojiSearch();
+                    return kotlin.Unit.INSTANCE;
                 });
         mEmojiCategory.initialize();
         addView(mIosPalette.getRecyclerView(), 0);
+        addView(mIosPalette.getSearchField(), 0);
         initialized = true;
     }
 
@@ -356,6 +368,47 @@ public final class EmojiPalettesView extends LinearLayout
         addView(mIosBottomRow, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, mIosPalette.getBottomRowHeight()));
     }
 
+    /** iOS emoji search bar for above the letters; picked emoji go through this view like the grid's */
+    public IosEmojiSearchBar createIosSearchBar(final Runnable onClose) {
+        initialize();
+        final int rowHeight = mIosPalette.getRowStep() + Math.round(8 * getResources().getDisplayMetrics().density);
+        return new IosEmojiSearchBar(getContext(), mColors.get(ColorType.KEY_TEXT), mColors.get(ColorType.KEY_BACKGROUND),
+                mColors.get(ColorType.ACTION_KEY_BACKGROUND), rowHeight, mIosPalette.getTextSize(), this,
+                () -> { onClose.run(); return kotlin.Unit.INSTANCE; });
+    }
+
+    /** search results as a one-row keyboard; frequently used for an empty query, null when nothing matches */
+    @Nullable
+    public Keyboard iosSearchResults(final String query, final int rowHeight) {
+        final java.util.List<Key> keys = new java.util.ArrayList<>();
+        if (query.trim().isEmpty()) {
+            keys.addAll(getRecentsKeyboard().getSortedKeys());
+        } else {
+            if (mIosSearchIndex == null) mIosSearchIndex = IosEmojiSearchIndex.Companion.load(getContext());
+            if (mIosKeysByEmoji == null) {
+                mIosKeysByEmoji = new HashMap<>();
+                for (final IosEmojiLayout.Section section : mEmojiCategory.getIosSections()) {
+                    if (section.getCategories().get(0) == EmojiCategory.Category.RECENTS) continue;
+                    for (final Key key : mEmojiCategory.getIosSectionKeyboard(section).getSortedKeys()) {
+                        if (key.getLabel() != null) mIosKeysByEmoji.put(iosEmojiKey(key.getLabel()), key);
+                    }
+                }
+            }
+            for (final String emoji : mIosSearchIndex.search(query)) {
+                final Key key = mIosKeysByEmoji.get(iosEmojiKey(emoji));
+                if (key != null) keys.add(key);
+            }
+            if (keys.isEmpty()) return null;
+        }
+        final DynamicGridKeyboard keyboard = mEmojiCategory.newIosKeyboard(mIosPalette.getColumnStep(), rowHeight, 1, 120);
+        for (final Key key : keys) keyboard.addKeyLast(key);
+        return keyboard;
+    }
+
+    private static String iosEmojiKey(final String emoji) {
+        return EmojiParserKt.getEmojiNeutralVersion(emoji).replace("\uFE0F", "");
+    }
+
     /**
      * Called from {@link EmojiPageKeyboardView} through {@link android.view.View.OnClickListener}
      * interface to handle non-canceled touch-up events from View-based elements such as the space
@@ -390,6 +443,16 @@ public final class EmojiPalettesView extends LinearLayout
      */
     @Override
     public void onReleaseKey(final Key key) {
+        // a pick from the iOS search results must reach the app, not the search query
+        KeyboardSwitcher.getInstance().pauseIosEmojiSearch(true);
+        try {
+            releaseKey(key);
+        } finally {
+            KeyboardSwitcher.getInstance().pauseIosEmojiSearch(false);
+        }
+    }
+
+    private void releaseKey(final Key key) {
         addRecentKey(key);
         final int code = key.getCode();
         if (code == KeyCode.MULTIPLE_CODE_POINTS) {

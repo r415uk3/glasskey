@@ -10,4 +10,6 @@
     <string name="ios_emoji_section_objects">Предметы</string>
     <string name="ios_emoji_section_symbols">Символы</string>
     <string name="ios_emoji_section_flags">Флаги</string>
+    <string name="ios_emoji_search_hint">Поиск эмодзи</string>
+    <string name="ios_emoji_search_none">Эмодзи не найдены</string>
 </resources>

@@ -1,11 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-only
 package helium314.keyboard.keyboard.emoji
 
+import android.graphics.PorterDuff
 import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import android.util.TypedValue
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,18 +28,49 @@ internal class IosEmojiPalette(
     private val callback: EmojiViewCallback,
     totalHeight: Int,
     private val titleColor: Int,
+    fieldColor: Int,
     private val onSectionChanged: (Int) -> Unit,
     private val onRecentsHidden: () -> Unit,
+    onSearch: () -> Unit,
 ) {
     private val res = host.resources
     private val dp = res.displayMetrics.density * ResourceUtils.iosWidthScale(res.displayMetrics)
     private val topPadding = (6 * dp).toInt()
     private val titleHeight = (20 * dp).toInt()
     val bottomRowHeight = (40 * dp).toInt()
-    private val rowStep = (totalHeight - topPadding - titleHeight - bottomRowHeight) / IosEmojiLayout.ROWS
-    private val columnStep = (47 * dp).toInt()
+    private val gridHeight = totalHeight - searchBlockHeight(res) - bottomRowHeight
+    val rowStep = (gridHeight - topPadding - titleHeight) / IosEmojiLayout.ROWS
+    val columnStep = (47 * dp).toInt()
     private val sectionGap = (14 * dp).toInt()
-    private val textSize = minOf(columnStep * 0.64f, rowStep * 0.85f)
+    val textSize = minOf(columnStep * 0.64f, rowStep * 0.85f)
+
+    /** the "Search Emoji" pill on top; tapping it opens the search above the letters */
+    val searchField: View = LinearLayout(host.context).apply {
+        orientation = LinearLayout.HORIZONTAL
+        gravity = Gravity.CENTER_VERTICAL
+        val fieldHeight = (36 * dp).toInt()
+        background = GradientDrawable().apply {
+            cornerRadius = fieldHeight / 2f
+            setColor(fieldColor)
+        }
+        setPadding((10 * dp).toInt(), 0, (10 * dp).toInt(), 0)
+        val hintColor = titleColor
+        addView(ImageView(host.context).apply {
+            setImageResource(R.drawable.ic_ios_search)
+            setColorFilter(hintColor, PorterDuff.Mode.SRC_IN)
+        }, LinearLayout.LayoutParams((18 * dp).toInt(), (18 * dp).toInt()).apply { marginEnd = (6 * dp).toInt() })
+        addView(TextView(host.context).apply {
+            setText(R.string.ios_emoji_search_hint)
+            setTextColor(hintColor)
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, 17 * dp)
+            isSingleLine = true
+        })
+        setOnClickListener { onSearch() }
+        layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, fieldHeight).apply {
+            val side = (8 * dp).toInt()
+            setMargins(side, (8 * dp).toInt(), side, 0)
+        }
+    }
 
     var sections: List<IosEmojiLayout.Section> = emptyList()
         private set
@@ -51,7 +86,7 @@ internal class IosEmojiPalette(
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) = updateTitlesAndSection()
         })
         addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> updateTitlesAndSection() }
-        layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, totalHeight - bottomRowHeight)
+        layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, gridHeight)
     }
 
     init {
@@ -103,6 +138,12 @@ internal class IosEmojiPalette(
         }
         val visible = IosEmojiLayout.currentSection(lefts, rights, recyclerView.paddingLeft + columnStep / 2)
         setCurrent(lm.getPosition(recyclerView.getChildAt(visible)))
+    }
+
+    companion object {
+        /** height of the search pill on top including its margin, added to the emoji screen */
+        fun searchBlockHeight(res: android.content.res.Resources) =
+            ((36 + 8) * res.displayMetrics.density * ResourceUtils.iosWidthScale(res.displayMetrics)).toInt()
     }
 
     private inner class SectionAdapter : RecyclerView.Adapter<SectionAdapter.Holder>() {

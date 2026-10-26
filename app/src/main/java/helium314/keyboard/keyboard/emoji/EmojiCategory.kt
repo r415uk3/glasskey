@@ -60,6 +60,11 @@ internal class EmojiCategory(private val context: Context, private val layoutSet
     var iosCell: Pair<Int, Int>? = null
     val iosSections by lazy { IosEmojiLayout.sections(canShowFlagEmoji()) }
 
+    /** iOS: an empty keyboard of [rows]-key columns, e.g. for search results */
+    fun newIosKeyboard(columnStep: Int, rowStep: Int, rows: Int, maxKeyCount: Int): DynamicGridKeyboard =
+        DynamicGridKeyboard.ofIosColumns(prefs, layoutSet.getKeyboard(KeyboardElement.EMOJI_RECENTS),
+            false, columnStep, rowStep, rows, maxKeyCount)
+
     /** iOS: one keyboard per section, keys of merged categories one after another */
     fun getIosSectionKeyboard(section: IosEmojiLayout.Section): DynamicGridKeyboard {
         val first = section.categories.first()

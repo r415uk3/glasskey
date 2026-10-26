@@ -10,4 +10,6 @@
     <string name="ios_emoji_section_objects">Objects</string>
     <string name="ios_emoji_section_symbols">Symbols</string>
     <string name="ios_emoji_section_flags">Flags</string>
+    <string name="ios_emoji_search_hint">Search Emoji</string>
+    <string name="ios_emoji_search_none">No Emoji Found</string>
 </resources>

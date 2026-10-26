@@ -35,6 +35,10 @@ import androidx.annotation.Nullable;
 import helium314.keyboard.event.Event;
 import helium314.keyboard.keyboard.clipboard.ClipboardHistoryView;
 import helium314.keyboard.keyboard.emoji.EmojiPalettesView;
+import helium314.keyboard.keyboard.emoji.IosEmojiSearchBar;
+import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
+import helium314.keyboard.latin.common.Constants;
+import helium314.keyboard.latin.ios.IosEmojiQuery;
 import helium314.keyboard.keyboard.internal.KeyboardState;
 import helium314.keyboard.keyboard.internal.LayoutDirective;
 import helium314.keyboard.keyboard.internal.ShiftMode;
@@ -73,6 +77,11 @@ public final class KeyboardSwitcher {
     private View mMainKeyboardFrame;
     private MainKeyboardView mKeyboardView;
     private EmojiPalettesView mEmojiPalettesView;
+    // iOS emoji search: while active, typing edits mIosEmojiQuery shown in the bar above the letters
+    private IosEmojiSearchBar mIosEmojiSearchBar;
+    private boolean mIosEmojiSearchActive;
+    private boolean mIosEmojiSearchPaused;
+    private String mIosEmojiQuery = "";
     private View mEmojiTabStripView;
     private LinearLayout mClipboardStripView;
     private HorizontalScrollView mClipboardStripScrollView;
@@ -255,6 +264,70 @@ public final class KeyboardSwitcher {
         reapplyIosStripHeight();
         mClipboardHistoryView.setVisibility(View.GONE);
         mClipboardHistoryView.stopClipboardHistory();
+        if (mIosEmojiSearchBar != null) {
+            mIosEmojiSearchBar.setVisibility(mIosEmojiSearchActive ? View.VISIBLE : View.GONE);
+            if (mIosEmojiSearchActive) mStripContainer.setVisibility(View.GONE);
+        }
+    }
+
+    public void startIosEmojiSearch() {
+        if (mIosEmojiSearchBar == null) {
+            mIosEmojiSearchBar = mEmojiPalettesView.createIosSearchBar(() -> stopIosEmojiSearch(true));
+            final ViewGroup frame = (ViewGroup) mStripContainer.getParent();
+            frame.addView(mIosEmojiSearchBar, frame.indexOfChild(mStripContainer) + 1,
+                    new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mIosEmojiSearchBar.getTotalHeight()));
+        }
+        mIosEmojiSearchActive = true;
+        mIosEmojiQuery = "";
+        showIosEmojiQuery();
+        mLatinIME.mKeyboardActionListener.onCodeInput(KeyCode.ALPHA, Constants.NOT_A_COORDINATE, Constants.NOT_A_COORDINATE, false);
+    }
+
+    /** ends the search; [backToEmoji] shows the emoji screen again (✕, Enter), otherwise the keyboard stays */
+    public void stopIosEmojiSearch(final boolean backToEmoji) {
+        if (!mIosEmojiSearchActive) return;
+        mIosEmojiSearchActive = false;
+        mIosEmojiQuery = "";
+        mIosEmojiSearchBar.setVisibility(View.GONE);
+        mStripContainer.setVisibility(mLatinIME.hasSuggestionStripView() ? View.VISIBLE : View.GONE);
+        reapplyIosStripHeight();
+        if (backToEmoji) setEmojiKeyboard();
+    }
+
+    public boolean isIosEmojiSearchActive() {
+        return mIosEmojiSearchActive;
+    }
+
+    /** while paused, input goes to the app as usual (an emoji picked from the results) */
+    public void pauseIosEmojiSearch(final boolean paused) {
+        mIosEmojiSearchPaused = paused;
+    }
+
+    /** @return true when the input was used by the emoji search and must not reach the app */
+    public boolean handleIosEmojiSearchInput(final int codePoint, final int keyCode, @Nullable final String text) {
+        if (!mIosEmojiSearchActive || mIosEmojiSearchPaused) return false;
+        final IosEmojiQuery.Result result = text != null
+                ? IosEmojiQuery.INSTANCE.onText(mIosEmojiQuery, text)
+                : IosEmojiQuery.INSTANCE.onCode(mIosEmojiQuery, codePoint, keyCode);
+        if (result instanceof IosEmojiQuery.Result.Edit edit) {
+            mIosEmojiQuery = edit.getQuery();
+            showIosEmojiQuery();
+            return true;
+        }
+        if (result == IosEmojiQuery.Result.Exit.INSTANCE) {
+            stopIosEmojiSearch(true);
+            return true;
+        }
+        if (result == IosEmojiQuery.Result.ExitAndPassThrough.INSTANCE) stopIosEmojiSearch(false);
+        return false;
+    }
+
+    private void showIosEmojiQuery() {
+        mIosEmojiSearchBar.show(mIosEmojiQuery, mEmojiPalettesView.iosSearchResults(mIosEmojiQuery, mIosEmojiSearchBar.getRowHeight()));
+    }
+
+    public int getIosEmojiSearchBarHeight() {
+        return mIosEmojiSearchBar != null && mIosEmojiSearchBar.getVisibility() == View.VISIBLE ? mIosEmojiSearchBar.getHeight() : 0;
     }
 
     public void toggleLayout(@NonNull LayoutDirective.Utility layout, int autoCapsFlags, @Nullable RecapitalizeMode recapitalizeMode) {

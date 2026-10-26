@@ -10,4 +10,6 @@
     <string name="ios_emoji_section_objects">Заттар</string>
     <string name="ios_emoji_section_symbols">Таңбалар</string>
     <string name="ios_emoji_section_flags">Жалаулар</string>
+    <string name="ios_emoji_search_hint">Эмодзи іздеу</string>
+    <string name="ios_emoji_search_none">Эмодзи табылмады</string>
 </resources>
