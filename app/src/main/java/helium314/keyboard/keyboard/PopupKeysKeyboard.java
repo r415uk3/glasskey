@@ -32,6 +32,14 @@ public final class PopupKeysKeyboard extends Keyboard {
     }
 
     static class PopupKeysKeyboardParams extends KeyboardParams {
+        /** iOS: no keys left of the pressed one unless there is no room on the right */
+        boolean mStartAtParentKey;
+
+        @Override
+        protected boolean isPopupKeysPanel() {
+            return true;
+        }
+
         public boolean mIsPopupKeysFixedOrder;
         /* package */int mTopRowAdjustment;
         public int mNumRows;
@@ -82,7 +90,8 @@ public final class PopupKeysKeyboard extends Keyboard {
             final int topKeys = numKeys % numColumns;
             mTopKeys = topKeys == 0 ? numColumns : topKeys;
 
-            final int numLeftKeys = (numColumns - 1) / 2;
+            // iOS: the letter itself sits above the finger and the variants follow to the right
+            final int numLeftKeys = mStartAtParentKey ? 0 : (numColumns - 1) / 2;
             final int numRightKeys = numColumns - numLeftKeys; // including default key.
             // Maximum number of keys we can layout both side of the parent key
             final int maxLeftKeys = coordXInParent / keyWidth;
@@ -283,10 +292,17 @@ public final class PopupKeysKeyboard extends Keyboard {
             readAttributes(keyboard.mPopupKeysTemplate);
             mIsIos = KeyboardTheme.STYLE_IOS.equals(Settings.getValues().mColors.getThemeStyle());
             mPopupKeys = mIsIos ? withBaseLetterFirst(key, key.getPopupKeys(), keyboard) : key.getPopupKeys();
+            mParams.mStartAtParentKey = mIsIos;
 
             // TODO: Popup keys keyboard's vertical gap is currently calculated heuristically.
             // Should revise the algorithm.
-            mParams.mVerticalGap = keyboard.mVerticalGap / 2;
+            mParams.mVerticalGap = mIsIos ? 0 : keyboard.mVerticalGap / 2; // iOS: spacing comes from the panel padding
+            if (mIsIos) {
+                // even spacing around the cells comes from the panel background padding alone
+                mParams.mRelativeVerticalGap = 0;
+                mParams.mTopPadding = 0;
+                mParams.mBottomPadding = 0;
+            }
             // This {@link PopupKeysKeyboard} is invoked from the <code>key</code>.
             mParentKey = key;
 
@@ -308,7 +324,7 @@ public final class PopupKeysKeyboard extends Keyboard {
                                 ? mParams.mAbsolutePopupKeyWidth * LABEL_PADDING_RATIO : 0.0f);
                 keyWidth = getMaxKeyWidth(key, mParams.mAbsolutePopupKeyWidth, padding, paintToMeasure);
                 // iOS: cells exactly as tall as the key
-                rowHeight = mIsIos ? key.getHeight() + mParams.mVerticalGap : keyboard.mMostCommonKeyHeight;
+                rowHeight = mIsIos ? key.getHeight() : keyboard.mMostCommonKeyHeight;
             }
             final int dividerWidth;
             if (key.needsDividersInPopupKeys()) {

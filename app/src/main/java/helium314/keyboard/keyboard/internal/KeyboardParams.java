@@ -207,6 +207,11 @@ public class KeyboardParams {
         }
     }
 
+    /** true for the long-press panel, which must not get the main keyboard's iOS paddings and gaps */
+    protected boolean isPopupKeysPanel() {
+        return false;
+    }
+
     // iOS style: fixed dp sizes from the Figma reference (45dp keys, 6.5dp / 10dp gaps), scaled uniformly when the
     // keyboard is shorter or taller than the design height (landscape, height scale setting)
     private void applyIosGeometry(final Context context, final SettingsValues sv, final int width, final int height) {
@@ -268,7 +273,9 @@ public class KeyboardParams {
             mHorizontalGap = (int) (mRelativeHorizontalGap * width);
             mVerticalGap = (int) (mRelativeVerticalGap * height);
 
-            if (KeyboardTheme.STYLE_IOS.equals(sv.mColors.getThemeStyle()) && mId.getElement().isAlphaOrSymbol())
+            // main keyboards only: the long-press panel lays out its own cells
+            if (KeyboardTheme.STYLE_IOS.equals(sv.mColors.getThemeStyle()) && mId.getElement().isAlphaOrSymbol()
+                    && !isPopupKeysPanel())
                 applyIosGeometry(context, sv, width, height);
 
             mBaseHeight = mOccupiedHeight - mTopPadding - mBottomPadding + mVerticalGap;

@@ -57,6 +57,14 @@ class IosLayoutTest {
         assertEquals(KeyCode.DELETE, row.last().code)
     }
 
+    @Test fun ruPopupsLikeIos() {
+        val keys = rows(locale = Locale.forLanguageTag("ru"), mainLayout = "russian").flatten()
+        fun popups(label: String) = keys.first { it.label == label }.popupKeys?.map { it.mLabel }.orEmpty()
+        assertEquals(listOf("ё"), popups("е"))
+        assertEquals(listOf("ъ"), popups("ь"))
+        assertEquals(emptyList(), popups("а"))
+    }
+
     @Test fun kkPopups() {
         val keys = rows(locale = Locale.forLanguageTag("kk"), mainLayout = "russian").flatten()
         fun popups(label: String) = keys.first { it.label == label }.popupKeys?.map { it.mLabel }.orEmpty()

@@ -38,6 +38,24 @@ class IosPopupTest {
         assertTrue("ё" in labels, labels.toString())
     }
 
+    @Test fun baseLetterSitsAboveTheFinger() {
+        // the popup is positioned so that its default key is above the pressed key; on iOS that is the letter itself
+        val (_, popup) = popupFor("е")
+        val base = popup.sortedKeys.first { it.label == "е" }
+        assertTrue(popup.defaultCoordX in base.x..(base.x + base.width), "default x ${popup.defaultCoordX}, base ${base.x}..${base.x + base.width}")
+    }
+
+    @Test fun cellsSitSymmetricallyInThePanel() {
+        val (_, popup) = popupFor("е")
+        val keys = popup.sortedKeys.sortedBy { it.x }
+        val left = keys.first().x
+        val right = popup.mOccupiedWidth - (keys.last().x + keys.last().width)
+        val top = keys.first().y
+        val bottom = popup.mOccupiedHeight - (keys.first().y + keys.first().height)
+        assertTrue(kotlin.math.abs(left - right) <= 1, "left $left right $right")
+        assertTrue(kotlin.math.abs(top - bottom) <= 1, "top $top bottom $bottom")
+    }
+
     @Test fun cellsAreKeySizedNotPreviewSized() {
         val (keyHeight, popup) = popupFor("е")
         assertTrue(popup.sortedKeys.all { it.height <= keyHeight }, "${popup.sortedKeys.map { it.height }} vs key $keyHeight")
