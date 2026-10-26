@@ -35,6 +35,8 @@
 - [ ] Device check: long-press space in a text with several lines, move in 2D, release → labels back.
 - [ ] Commit `feat: iOS space long-press trackpad`.
 
+**Dropped 2026-10-27 (user decision): Tasks 2 and 3 — the user does not use dictation; Google's recognition service is not exported on the phone.**
+
 ### Task 2: Dictation controller and permission
 
 **Files:** create `latin/ios/IosDictation.kt`, `latin/ios/IosPermissionActivity.kt` (+ manifest entry, `<queries>` for `android.speech.RecognitionService`, `RECORD_AUDIO` permission); test `IosDictationTest.kt` (pure state machine: idle → listening → (partial)* → final → idle; error → idle; stop).
