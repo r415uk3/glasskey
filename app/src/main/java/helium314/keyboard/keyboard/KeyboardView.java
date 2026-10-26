@@ -35,6 +35,7 @@ import helium314.keyboard.latin.R;
 import helium314.keyboard.latin.common.ColorType;
 import helium314.keyboard.latin.common.Colors;
 import helium314.keyboard.latin.common.Constants;
+import helium314.keyboard.latin.ios.IosActionKeyState;
 import helium314.keyboard.latin.common.StringUtilsKt;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.suggestions.MoreSuggestions;
@@ -339,8 +340,8 @@ public class KeyboardView extends View {
         params.mAnimAlpha = Constants.Color.ALPHA_OPAQUE;
 
         if (!key.isSpacer()) {
-            final Drawable background = key.selectBackgroundDrawable(
-                    mKeyBackground, mFunctionalKeyBackground, mSpacebarBackground, mActionKeyBackground);
+            final Drawable background = isIdleIosActionKey(key) ? mFunctionalKeyBackground
+                    : key.selectBackgroundDrawable(mKeyBackground, mFunctionalKeyBackground, mSpacebarBackground, mActionKeyBackground);
             onDrawKeyBackground(key, canvas, background);
         }
         onDrawKeyTopVisuals(key, canvas, paint, params);
@@ -631,11 +632,23 @@ public class KeyboardView extends View {
         freeOffscreenBuffer();
     }
 
+    /** iOS: go / search / send are grey with a dimmed icon until the field contains text */
+    private boolean isIdleIosActionKey(final Key key) {
+        return key.hasActionKeyBackground() && !(this instanceof PopupKeysKeyboardView)
+                && KeyboardTheme.STYLE_IOS.equals(mColors.getThemeStyle()) && IosActionKeyState.instance.getIdle();
+    }
+
     public void deallocateMemory() {
         freeOffscreenBuffer();
     }
 
     private void setKeyIconColor(Key key, Drawable icon, Keyboard keyboard) {
+        if (isIdleIosActionKey(key)) {
+            mColors.setColor(icon, ColorType.KEY_ICON);
+            icon.setAlpha(Constants.Color.ALPHA_OPAQUE / 2);
+            return;
+        }
+        icon.setAlpha(Constants.Color.ALPHA_OPAQUE);
         if (key.hasActionKeyBackground()) {
             mColors.setColor(icon, ColorType.ACTION_KEY_ICON);
         } else if (key.isShift() && keyboard != null) {

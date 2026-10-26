@@ -48,6 +48,8 @@ import helium314.keyboard.keyboard.KeyboardId;
 import helium314.keyboard.keyboard.KeyboardLayoutSet;
 import helium314.keyboard.keyboard.KeyboardSwitcher;
 import helium314.keyboard.keyboard.MainKeyboardView;
+import helium314.keyboard.keyboard.KeyboardTheme;
+import helium314.keyboard.latin.ios.IosActionKeyState;
 import helium314.keyboard.latin.SuggestedWords.SuggestedWordInfo;
 import helium314.keyboard.latin.common.ColorType;
 import helium314.keyboard.latin.common.Constants;
@@ -858,6 +860,7 @@ public class LatinIME extends InputMethodService implements
             // We also tell the input logic about the combining rules for the current subtype, so
             // it can adjust its combiners if needed.
             mInputLogic.startInput(mRichImm.getCombiningRulesExtraValueOfCurrentSubtype(), currentSettingsValues);
+            updateIosActionKey();
 
             resetDictionaryFacilitatorIfNecessary();
 
@@ -978,12 +981,31 @@ public class LatinIME extends InputMethodService implements
         mKeyboardSwitcher.deallocateMemory();
     }
 
+    // iOS: the action key stays grey while the field is empty
+    private void updateIosActionKey() {
+        updateIosActionKey(mInputLogic.mConnection.getTextBeforeCursor(1, 0));
+    }
+
+    // the connection's cached text can lag behind a selection update; the cursor position cannot
+    private void updateIosActionKey(final int selStart, final int selEnd) {
+        updateIosActionKey(selStart == 0 && selEnd == 0 ? "" : "x");
+    }
+
+    private void updateIosActionKey(final CharSequence textBeforeCursor) {
+        if (!KeyboardTheme.STYLE_IOS.equals(mSettings.getCurrent().mColors.getThemeStyle())) return;
+        if (IosActionKeyState.instance.update(textBeforeCursor, mInputLogic.mConnection.getTextAfterCursor(1, 0))) {
+            final MainKeyboardView view = mKeyboardSwitcher.getMainKeyboardView();
+            if (view != null) view.invalidateAllKeys();
+        }
+    }
+
     @Override
     public void onUpdateSelection(final int oldSelStart, final int oldSelEnd,
                                   final int newSelStart, final int newSelEnd,
                                   final int composingSpanStart, final int composingSpanEnd) {
         super.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd,
                 composingSpanStart, composingSpanEnd);
+        updateIosActionKey(newSelStart, newSelEnd);
         if (DebugFlags.DEBUG_ENABLED) {
             Log.i(TAG, "onUpdateSelection: oss=" + oldSelStart + ", ose=" + oldSelEnd
                     + ", nss=" + newSelStart + ", nse=" + newSelEnd
