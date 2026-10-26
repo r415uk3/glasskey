@@ -27,7 +27,7 @@ import kotlin.test.assertTrue
     ShadowInputMethodManager2::class
 ])
 class SubtypeTest {
-    private val latinIME = Robolectric.setupService(LatinIME::class.java)
+    private val latinIME = run { useStockSubtypeDefaults(); Robolectric.setupService(LatinIME::class.java) }
     private val params = KeyboardParams()
 
     init {

@@ -234,6 +234,7 @@ object SubtypeSettings {
     }
 
     private fun loadResourceSubtypes(resources: Resources) {
+        resourceSubtypesByLocale.clear() // init may run more than once
         getResourceSubtypes(resources).forEach {
             resourceSubtypesByLocale.getOrPut(it.locale()) { ArrayList(2) }.add(it)
         }
@@ -248,6 +249,7 @@ object SubtypeSettings {
 
     // requires loadResourceSubtypes to be called before
     private fun loadEnabledSubtypes(context: Context) {
+        enabledSubtypes.clear() // init may run more than once; non-empty defaults would be added again
         val prefs = context.prefs()
         val settingsSubtypes = createSettingsSubtypes(prefs.getString(Settings.PREF_ENABLED_SUBTYPES, Defaults.PREF_ENABLED_SUBTYPES)!!)
         for (settingsSubtype in settingsSubtypes) {

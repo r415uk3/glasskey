@@ -22,7 +22,7 @@ import kotlin.test.assertEquals
     ShadowLooper::class,
 ])
 class InputTest {
-    private val latinIME = Robolectric.setupService(LatinIME::class.java)
+    private val latinIME = run { useStockSubtypeDefaults(); Robolectric.setupService(LatinIME::class.java) }
     private val keyboardSwitcher = KeyboardSwitcher.getInstance()
     init {
         ShadowLog.setupLogging()

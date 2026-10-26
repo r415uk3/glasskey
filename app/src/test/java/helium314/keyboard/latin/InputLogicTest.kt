@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 package helium314.keyboard.latin
 
+import helium314.keyboard.useStockSubtypeDefaults
 import android.os.Handler
 import android.os.Message
 import android.text.InputType
@@ -55,7 +56,7 @@ import kotlin.test.assertEquals
     ShadowFacilitator2::class,
 ])
 class InputLogicTest {
-    private val latinIME = Robolectric.setupService(LatinIME::class.java)
+    private val latinIME = run { useStockSubtypeDefaults(); Robolectric.setupService(LatinIME::class.java) }
     private val settingsValues get() = Settings.getValues()
     private val inputLogic get() = latinIME.mInputLogic
     private val connection: RichInputConnection get() = inputLogic.mConnection
@@ -731,6 +732,7 @@ class InputLogicTest {
 
         // reset settings
         latinIME.prefs().edit { clear() }
+        useStockSubtypeDefaults()
 
         setText("") // (re)sets selection and composing word
     }

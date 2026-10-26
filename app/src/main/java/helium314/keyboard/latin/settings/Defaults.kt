@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
-import android.util.TypedValue
 import android.view.Gravity
 import helium314.keyboard.keyboard.KeyboardActionListener
 import helium314.keyboard.keyboard.KeyboardTheme
@@ -21,9 +20,7 @@ import helium314.keyboard.latin.utils.defaultToolbarPref
 object Defaults {
     fun initDynamicDefaults(context: Context) {
         PREF_GESTURE_DYNAMIC_PREVIEW_FOLLOW_SYSTEM = getTransitionAnimationScale(context) != 0.0f
-        val dm = context.resources.displayMetrics
-        val px600 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 600f, dm)
-        PREF_POPUP_ON = dm.widthPixels >= px600 || dm.heightPixels >= px600
+        PREF_POPUP_ON = true // Glasskey: iOS always shows the key preview
     }
 
     // must correspond to a file name
@@ -57,9 +54,9 @@ object Defaults {
     const val PREF_CUSTOM_ICON_NAMES = ""
     const val PREF_TOOLBAR_CUSTOM_KEY_CODES = ""
     const val PREF_AUTO_CAP = true
-    const val PREF_VIBRATE_ON = false
+    const val PREF_VIBRATE_ON = true
     const val PREF_VIBRATE_IN_DND_MODE = false
-    const val PREF_SOUND_ON = false
+    const val PREF_SOUND_ON = true
     const val PREF_SUGGEST_EMOJIS = true
     const val PREF_INLINE_EMOJI_SEARCH = true
     const val PREF_SHOW_EMOJI_DESCRIPTIONS = true
@@ -139,7 +136,7 @@ object Defaults {
     const val PREF_GESTURE_SPACE_AWARE = false
     const val PREF_GESTURE_FAST_TYPING_COOLDOWN = 500
     const val PREF_GESTURE_TRAIL_FADEOUT_DURATION = 800
-    const val PREF_SHOW_SETUP_WIZARD_ICON = true
+    const val PREF_SHOW_SETUP_WIZARD_ICON = false
     const val PREF_USE_CONTACTS = false
     const val PREF_USE_APPS = false
     const val PREFS_LONG_PRESS_SYMBOLS_FOR_NUMPAD = false
@@ -152,17 +149,17 @@ object Defaults {
     const val PREF_LOCALIZED_NUMBER_ROW = true
     const val PREF_SHOW_NUMBER_ROW_HINTS = false
     const val PREF_CUSTOM_CURRENCY_KEY = ""
-    const val PREF_SHOW_HINTS = true
+    const val PREF_SHOW_HINTS = false
     const val PREF_POPUP_KEYS_ORDER = POPUP_KEYS_ORDER_DEFAULT
     const val PREF_POPUP_KEYS_HINT_ORDER = POPUP_KEYS_LABEL_DEFAULT
     const val PREF_SHOW_POPUP_HINTS = false
     const val PREF_SHOW_TLD_POPUP_KEYS = true
     const val PREF_MORE_POPUP_KEYS = "main"
-    const val PREF_SPACE_TO_CHANGE_LANG = true
+    const val PREF_SPACE_TO_CHANGE_LANG = false
     const val PREF_LANGUAGE_SWIPE_DISTANCE = 5
     const val PREF_TOUCHPAD_SENSITIVITY = 50
     const val PREF_TOUCHPAD_EDGE_SCROLL = true
-    const val PREF_ENABLE_CLIPBOARD_HISTORY = true
+    const val PREF_ENABLE_CLIPBOARD_HISTORY = false
     const val PREF_CLIPBOARD_HISTORY_RETENTION_TIME = 10 // minutes
     const val PREF_CLIPBOARD_HISTORY_PINNED_FIRST = true
     const val PREF_CLIPBOARD_USE_FILES = true
@@ -170,11 +167,14 @@ object Defaults {
     const val PREF_ADD_TO_PERSONAL_DICTIONARY = false
     @JvmField
     val PREF_NAVBAR_COLOR = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-    const val PREF_ENABLED_SUBTYPES = ""
-    const val PREF_SELECTED_SUBTYPE = ""
+    // Glasskey: Russian, English, Kazakh out of the box (globe cycles in this order)
+    const val PREF_ENABLED_SUBTYPES = "ru${Separators.SET}${ExtraValue.KEYBOARD_LAYOUT_SET}=MAIN:russian${Separators.SETS}" +
+            "en-US${Separators.SET}${Separators.SETS}" +
+            "kk${Separators.SET}${ExtraValue.KEYBOARD_LAYOUT_SET}=MAIN:russian"
+    const val PREF_SELECTED_SUBTYPE = "ru${Separators.SET}${ExtraValue.KEYBOARD_LAYOUT_SET}=MAIN:russian"
     const val PREF_URL_DETECTION = false
     const val PREF_DONT_SHOW_MISSING_DICTIONARY_DIALOG = false
-    const val PREF_TOOLBAR_MODE = "EXPANDABLE"
+    const val PREF_TOOLBAR_MODE = "SUGGESTION_STRIP"
     const val PREF_TOOLBAR_HIDING_GLOBAL = true
     const val PREF_TOOLBAR_SWIPE_DOWN_TO_HIDE = false
     const val PREF_QUICK_PIN_TOOLBAR_KEYS = false

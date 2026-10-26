@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 package helium314.keyboard
 
+import android.content.Context
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodSubtype
 import helium314.keyboard.keyboard.Keyboard
@@ -13,7 +14,12 @@ import helium314.keyboard.keyboard.internal.KeyboardParams
 import helium314.keyboard.keyboard.internal.UniqueKeysCache
 import helium314.keyboard.keyboard.Key.KeyParams
 import helium314.keyboard.latin.LatinIME
+import androidx.core.content.edit
+import androidx.test.core.app.ApplicationProvider
 import helium314.keyboard.latin.RichInputMethodSubtype
+import helium314.keyboard.latin.settings.Settings
+import helium314.keyboard.latin.utils.SubtypeSettings
+import helium314.keyboard.latin.utils.prefs
 
 /** Builds a full keyboard like [KeyboardLayoutSet] does, returning it with the rows of key params (incl. spacers). */
 fun buildTestKeyboard(
@@ -40,4 +46,15 @@ fun buildTestKeyboard(
     builder.load(id)
     @Suppress("UNCHECKED_CAST")
     return builder.build() to keysInRowsField.get(builder) as ArrayList<ArrayList<KeyParams>>
+}
+
+/** Upstream HeliBoard tests assume the stock defaults (system locale = en-US, no preset languages).
+ *  Glasskey presets ru/en/kk, so those tests reset the language prefs before the service starts. */
+fun useStockSubtypeDefaults() {
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    context.prefs().edit {
+        putString(Settings.PREF_ENABLED_SUBTYPES, "")
+        putString(Settings.PREF_SELECTED_SUBTYPE, "")
+    }
+    SubtypeSettings.reloadEnabledSubtypes(context) // App.onCreate already loaded the Glasskey presets
 }
