@@ -33,6 +33,7 @@ import helium314.keyboard.keyboard.KeyboardActionListener;
 import helium314.keyboard.keyboard.KeyboardElement;
 import helium314.keyboard.keyboard.KeyboardLayoutSet;
 import helium314.keyboard.keyboard.KeyboardSwitcher;
+import helium314.keyboard.keyboard.KeyboardTheme;
 import helium314.keyboard.keyboard.KeyboardView;
 import helium314.keyboard.keyboard.MainKeyboardView;
 import helium314.keyboard.keyboard.PointerTracker;
@@ -49,6 +50,7 @@ import helium314.keyboard.latin.RichInputMethodSubtype;
 import helium314.keyboard.latin.SingleDictionaryFacilitator;
 import helium314.keyboard.latin.common.ColorType;
 import helium314.keyboard.latin.common.Colors;
+import helium314.keyboard.latin.ios.IosEmojiBottomRow;
 import helium314.keyboard.latin.dictionary.DictionaryInfoUtils;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.settings.SettingsValues;
@@ -200,6 +202,9 @@ public final class EmojiPalettesView extends LinearLayout
     private KeyboardActionListener mKeyboardActionListener = KeyboardActionListener.EMPTY_LISTENER;
     private final EmojiCategory mEmojiCategory;
     private ViewPager2 mPager;
+    // iOS: one horizontal list of sections instead of the pager, tab strip and bottom-row keyboard
+    private IosEmojiPalette mIosPalette;
+    private IosEmojiBottomRow mIosBottomRow;
 
     public EmojiPalettesView(final Context context, final AttributeSet attrs) {
         this(context, attrs, R.attr.emojiPalettesViewStyle);
@@ -229,7 +234,7 @@ public final class EmojiPalettesView extends LinearLayout
         // The main keyboard expands to the entire this {@link KeyboardView}.
         final int width = ResourceUtils.getKeyboardWidth(getContext(), Settings.getValues())
                 + getPaddingLeft() + getPaddingRight();
-        final int height = ResourceUtils.getSecondaryKeyboardHeight(res, Settings.getValues())
+        final int height = (isIos() ? iosHeight() : ResourceUtils.getSecondaryKeyboardHeight(res, Settings.getValues()))
                 + getPaddingTop() + getPaddingBottom();
         mEmojiCategoryPageIndicatorView.mWidth = width;
         setMeasuredDimension(width, height);
@@ -259,6 +264,10 @@ public final class EmojiPalettesView extends LinearLayout
     @SuppressLint("ClickableViewAccessibility")
     public void initialize() { // needs to be delayed for access to EmojiTabStrip, which is not a child of this view
         if (initialized) return;
+        if (isIos()) {
+            initializeIos();
+            return;
+        }
         mEmojiCategory.initialize();
         mTabStrip = (LinearLayout) KeyboardSwitcher.getInstance().getEmojiTabStrip();
         if (Settings.getValues().isSecondaryStripVisible()) {
@@ -275,6 +284,76 @@ public final class EmojiPalettesView extends LinearLayout
         setCurrentCategory(mEmojiCategory.getCurrentCategory(), true);
         mEmojiCategoryPageIndicatorView.setColors(mColors.get(ColorType.EMOJI_CATEGORY_SELECTED), mColors.get(ColorType.STRIP_BACKGROUND));
         initialized = true;
+    }
+
+    private boolean isIos() {
+        return KeyboardTheme.STYLE_IOS.equals(mColors.getThemeStyle());
+    }
+
+    /** iOS: no strip above the emoji screen, it takes the collapsed suggestion bar's place too */
+    private int iosHeight() {
+        return ResourceUtils.getSecondaryKeyboardHeight(getResources(), Settings.getValues())
+                + Math.round(8 * getResources().getDisplayMetrics().density);
+    }
+
+    private void initializeIos() {
+        mPager = findViewById(R.id.emoji_pager);
+        mEmojiCategoryPageIndicatorView = findViewById(R.id.emoji_category_page_id_view);
+        mPager.setVisibility(GONE);
+        mEmojiCategoryPageIndicatorView.setVisibility(GONE);
+        findViewById(R.id.bottom_row_keyboard).setVisibility(GONE);
+        final int titleColor = (mColors.get(ColorType.KEY_TEXT) & 0x00FFFFFF) | 0x8C000000;
+        mIosPalette = new IosEmojiPalette(this, mEmojiCategory, this, iosHeight(), titleColor,
+                index -> {
+                    if (mIosBottomRow != null) mIosBottomRow.setCurrentSection(index);
+                    return kotlin.Unit.INSTANCE;
+                },
+                () -> {
+                    getRecentsKeyboard().flushPendingRecentKeys();
+                    mIosPalette.notifySectionChanged(EmojiCategory.Category.RECENTS);
+                    return kotlin.Unit.INSTANCE;
+                });
+        mEmojiCategory.initialize();
+        addView(mIosPalette.getRecyclerView(), 0);
+        initialized = true;
+    }
+
+    private void startIos(final Keyboard bottomRow, final KeyboardActionListener listener) {
+        String alphabetLabel = "ABC";
+        for (final Key key : bottomRow.getSortedKeys()) {
+            if (key.getCode() == KeyCode.ALPHA && key.getLabel() != null) alphabetLabel = key.getLabel();
+        }
+        mIosPalette.start();
+        if (mIosBottomRow != null) removeView(mIosBottomRow);
+        mIosBottomRow = new IosEmojiBottomRow(getContext(), alphabetLabel, mIosPalette.getSections(),
+                mColors.get(ColorType.KEY_TEXT),
+                () -> {
+                    listener.onPressKey(KeyCode.ALPHA, 0, 1, HapticEvent.KEY_PRESS);
+                    listener.onCodeInput(KeyCode.ALPHA, NOT_A_COORDINATE, NOT_A_COORDINATE, false);
+                    listener.onReleaseKey(KeyCode.ALPHA, false);
+                    return kotlin.Unit.INSTANCE;
+                },
+                index -> {
+                    AudioAndHapticFeedbackManager.getInstance().performHapticAndAudioFeedback(KeyCode.NOT_SPECIFIED, this, HapticEvent.KEY_PRESS);
+                    mIosPalette.scrollToSection(index);
+                    return kotlin.Unit.INSTANCE;
+                },
+                () -> {
+                    listener.onPressKey(KeyCode.DELETE, 0, 1, HapticEvent.KEY_PRESS);
+                    listener.onCodeInput(KeyCode.DELETE, NOT_A_COORDINATE, NOT_A_COORDINATE, false);
+                    return kotlin.Unit.INSTANCE;
+                },
+                repeatCount -> {
+                    listener.onPressKey(KeyCode.DELETE, repeatCount, 1, HapticEvent.KEY_REPEAT);
+                    listener.onCodeInput(KeyCode.DELETE, NOT_A_COORDINATE, NOT_A_COORDINATE, true);
+                    return kotlin.Unit.INSTANCE;
+                },
+                () -> {
+                    listener.onReleaseKey(KeyCode.DELETE, false);
+                    return kotlin.Unit.INSTANCE;
+                });
+        mIosBottomRow.setCurrentSection(0);
+        addView(mIosBottomRow, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, mIosPalette.getBottomRowHeight()));
     }
 
     /**
@@ -363,7 +442,12 @@ public final class EmojiPalettesView extends LinearLayout
                final EditorInfo editorInfo, final KeyboardActionListener keyboardActionListener) {
         initialize();
 
-        setupBottomRowKeyboard(editorInfo, keyboardActionListener);
+        final Keyboard bottomRow = setupBottomRowKeyboard(editorInfo, keyboardActionListener);
+        if (isIos()) {
+            startIos(bottomRow, keyboardActionListener);
+            initDictionaryFacilitator();
+            return;
+        }
         final KeyDrawParams params = new KeyDrawParams();
         params.updateParams(mEmojiLayoutParams.getBottomRowKeyboardHeight(), keyVisualAttr);
         new EmojiLayoutParams(getResources()).setEmojiListProperties(mPager); // necessary when floating
@@ -382,16 +466,21 @@ public final class EmojiPalettesView extends LinearLayout
             return;
         }
         getRecentsKeyboard().addKeyFirst(key);
+        if (mIosPalette != null) {
+            mIosPalette.notifySectionChanged(EmojiCategory.Category.RECENTS);
+            return;
+        }
         mPager.getAdapter().notifyItemChanged(mEmojiCategory.getRecentTabId());
     }
 
-    private void setupBottomRowKeyboard(EditorInfo editorInfo, KeyboardActionListener keyboardActionListener) {
+    private Keyboard setupBottomRowKeyboard(EditorInfo editorInfo, KeyboardActionListener keyboardActionListener) {
         MainKeyboardView keyboardView = findViewById(R.id.bottom_row_keyboard);
         keyboardView.setKeyboardActionListener(keyboardActionListener);
         PointerTracker.switchTo(keyboardView);
         KeyboardLayoutSet kls = KeyboardLayoutSet.Builder.Companion.buildEmojiClipBottomRow(getContext(), editorInfo);
         Keyboard keyboard = kls.getKeyboard(KeyboardElement.EMOJI_BOTTOM_ROW);
         keyboardView.setKeyboard(keyboard);
+        return keyboard;
     }
 
     private void setupSidePadding() {
@@ -475,7 +564,8 @@ public final class EmojiPalettesView extends LinearLayout
         }
 
         mEmojiCategory.clearKeyboardCache();
-        mPager.getAdapter().notifyDataSetChanged();
+        if (mIosPalette != null) mIosPalette.getRecyclerView().getAdapter().notifyDataSetChanged();
+        else mPager.getAdapter().notifyDataSetChanged();
         closeDictionaryFacilitator();
     }
 

@@ -13,6 +13,7 @@ import helium314.keyboard.keyboard.Key
 import helium314.keyboard.keyboard.KeyboardElement
 import helium314.keyboard.keyboard.KeyboardLayoutSet
 import helium314.keyboard.latin.R
+import helium314.keyboard.latin.ios.IosEmojiLayout
 import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.Log
@@ -54,6 +55,30 @@ internal class EmojiCategory(private val context: Context, private val layoutSet
     )
 
     private val categoryKeyboardMap = ConcurrentHashMap<Long, DynamicGridKeyboard>()
+
+    /** iOS: column and row step of the section keyboards; null for HeliBoard's paged grid */
+    var iosCell: Pair<Int, Int>? = null
+    val iosSections by lazy { IosEmojiLayout.sections(canShowFlagEmoji()) }
+
+    /** iOS: one keyboard per section, keys of merged categories one after another */
+    fun getIosSectionKeyboard(section: IosEmojiLayout.Section): DynamicGridKeyboard {
+        val first = section.categories.first()
+        if (first == Category.RECENTS) return getKeyboard(Category.RECENTS, 0)
+        synchronized(categoryKeyboardMap) {
+            val mapKey = getCategoryKeyboardMapKey(first, 0)
+            categoryKeyboardMap[mapKey]?.let { return it }
+            val (columnStep, rowStep) = iosCell!!
+            val kbd = DynamicGridKeyboard.ofIosColumns(prefs, layoutSet.getKeyboard(KeyboardElement.EMOJI_RECENTS),
+                false, columnStep, rowStep, IosEmojiLayout.ROWS, Int.MAX_VALUE)
+            for (category in section.categories) {
+                layoutSet.getKeyboard(category.element).sortedKeys
+                    .sortedWith(compareBy({ it.hitBox.top }, { it.hitBox.left }, { it.code }))
+                    .forEach { kbd.addKeyLast(it) }
+            }
+            categoryKeyboardMap[mapKey] = kbd
+            return kbd
+        }
+    }
 
     var currentCategory: Category = defaultCategory
         set(value) {
@@ -133,11 +158,10 @@ internal class EmojiCategory(private val context: Context, private val layoutSet
 
             val currentWidth = ResourceUtils.getKeyboardWidth(context, Settings.getValues())
             if (category == Category.RECENTS) {
-                val kbd = DynamicGridKeyboard.ofKeyCount(
-                    prefs,
-                    layoutSet.getKeyboard(KeyboardElement.EMOJI_RECENTS),
-                    maxRecentsKeyCount, category == Category.RECENTS, currentWidth
-                )
+                val template = layoutSet.getKeyboard(KeyboardElement.EMOJI_RECENTS)
+                val kbd = iosCell?.let { (columnStep, rowStep) ->
+                    DynamicGridKeyboard.ofIosColumns(prefs, template, true, columnStep, rowStep, IosEmojiLayout.ROWS, IOS_RECENTS_KEY_COUNT)
+                } ?: DynamicGridKeyboard.ofKeyCount(prefs, template, maxRecentsKeyCount, true, currentWidth)
                 categoryKeyboardMap[categoryKeyboardMapKey] = kbd
                 kbd.loadRecentKeys(categoryKeyboardMap.values)
                 return kbd
@@ -189,6 +213,7 @@ internal class EmojiCategory(private val context: Context, private val layoutSet
         private val defaultCategory = Category.SMILEYS
 
         private const val MAX_LINE_COUNT_PER_PAGE = 3
+        private const val IOS_RECENTS_KEY_COUNT = 30
 
         private fun getCategoryKeyboardMapKey(category: Category, id: Int) =
             ((category.ordinal.toLong()) shl Integer.SIZE) or id.toLong()

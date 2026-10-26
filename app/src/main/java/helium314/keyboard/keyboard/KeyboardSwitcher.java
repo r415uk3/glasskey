@@ -692,10 +692,12 @@ public final class KeyboardSwitcher {
             // @see LatinIME#onComputeInset(android.inputmethodservice.InputMethodService.Insets)
             mKeyboardView.setVisibility(View.GONE);
             mSuggestionStripView.setVisibility(View.GONE);
-            mStripContainer.setVisibility(getSecondaryStripVisibility());
+            // iOS: the emoji screen has no strip above it, its own bottom row has the categories
+            final boolean ios = KeyboardTheme.STYLE_IOS.equals(Settings.getValues().mColors.getThemeStyle());
+            mStripContainer.setVisibility(ios ? View.GONE : getSecondaryStripVisibility());
             reapplyIosStripHeight();
             mClipboardStripScrollView.setVisibility(View.GONE);
-            mEmojiTabStripView.setVisibility(View.VISIBLE);
+            mEmojiTabStripView.setVisibility(ios ? View.GONE : View.VISIBLE);
             mClipboardHistoryView.setVisibility(View.GONE);
             mEmojiPalettesView.startEmojiPalettes(mKeyboardView.getKeyVisualAttribute(),
                 mLatinIME.getCurrentInputEditorInfo(), mLatinIME.mKeyboardActionListener);

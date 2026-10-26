@@ -24,6 +24,8 @@ import helium314.keyboard.keyboard.Keyboard;
 import helium314.keyboard.keyboard.internal.PopupKeySpec;
 import helium314.keyboard.latin.settings.Settings;
 
+import helium314.keyboard.latin.ios.IosEmojiLayout;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,6 +47,8 @@ final class DynamicGridKeyboard extends Keyboard {
     private final int mMaxKeyCount;
     private final boolean mFixedRowCount;
     private final boolean mIsRecents;
+    // iOS: keys fill columns of mIosRows keys top to bottom, the keyboard grows to the right
+    private final int mIosRows;
     private final ArrayDeque<GridKey> mGridKeys = new ArrayDeque<>();
     private final ArrayDeque<Key> mPendingKeys = new ArrayDeque<>();
 
@@ -54,6 +58,12 @@ final class DynamicGridKeyboard extends Keyboard {
     public static DynamicGridKeyboard ofKeyCount(SharedPreferences prefs, Keyboard templateKeyboard,
             int maxKeyCount, boolean isRecents, int width) {
         return new DynamicGridKeyboard(prefs, templateKeyboard, maxKeyCount, isRecents, width, false);
+    }
+
+    /** iOS section: [rows] keys per column, cells of [columnStep] x [rowStep], as wide as its columns */
+    public static DynamicGridKeyboard ofIosColumns(SharedPreferences prefs, Keyboard templateKeyboard,
+            boolean isRecents, int columnStep, int rowStep, int rows, int maxKeyCount) {
+        return new DynamicGridKeyboard(templateKeyboard, isRecents, columnStep, rowStep, rows, maxKeyCount);
     }
 
     public static DynamicGridKeyboard ofRowCount(SharedPreferences prefs, Keyboard templateKeyboard,
@@ -83,6 +93,26 @@ final class DynamicGridKeyboard extends Keyboard {
         mMaxKeyCount = fixedRowCount? maxCount * getOccupiedColumnCount() : maxCount;
         mFixedRowCount = fixedRowCount;
         mIsRecents = isRecents;
+        mIosRows = 0;
+    }
+
+    private DynamicGridKeyboard(Keyboard templateKeyboard, boolean isRecents, int columnStep, int rowStep,
+            int rows, int maxKeyCount) {
+        super(templateKeyboard);
+        mHorizontalGap = 0;
+        mHorizontalStep = columnStep;
+        mVerticalStep = rowStep;
+        mColumnsNum = 1;
+        mMaxKeyCount = maxKeyCount;
+        mFixedRowCount = true;
+        mIsRecents = isRecents;
+        mIosRows = rows;
+        mBaseWidth = 0;
+        mOccupiedWidth = 0;
+    }
+
+    boolean isIosColumns() {
+        return mIosRows > 0;
     }
 
     private void setSpacerColumns(final float spacerWidth) {
@@ -124,6 +154,7 @@ final class DynamicGridKeyboard extends Keyboard {
 
     // height is dynamic if we don't have a fixed row count
     int getOccupiedHeight() {
+        if (isIosColumns()) return mIosRows * mVerticalStep;
         final int count = mFixedRowCount ? mMaxKeyCount : mGridKeys.size();
         final int row = (count - 1) / getOccupiedColumnCount() + 1;
         return row * mVerticalStep;
@@ -216,6 +247,18 @@ final class DynamicGridKeyboard extends Keyboard {
     }
 
     private void updateCoordinates() {
+        if (isIosColumns()) {
+            int index = 0;
+            for (GridKey gridKey : mGridKeys) {
+                final IosEmojiLayout.Cell cell = IosEmojiLayout.INSTANCE.cell(index++, mIosRows);
+                final int x = cell.getColumn() * mHorizontalStep;
+                final int y = cell.getRow() * mVerticalStep;
+                gridKey.updateCoordinates(x, y, x + mHorizontalStep, y + mVerticalStep);
+                gridKey.setCellSize(mHorizontalStep, mVerticalStep);
+            }
+            mOccupiedWidth = mBaseWidth = IosEmojiLayout.INSTANCE.columnCount(mGridKeys.size(), mIosRows) * mHorizontalStep;
+            return;
+        }
         int index = 0;
         for (GridKey gridKey : mGridKeys) {
             while (mEmptyColumnIndices.contains(index % mColumnsNum)) {
@@ -328,6 +371,8 @@ final class DynamicGridKeyboard extends Keyboard {
     static final class GridKey extends Key {
         private int mCurrentX;
         private int mCurrentY;
+        private int mCellWidth;
+        private int mCellHeight;
 
         public GridKey(@NonNull final Key originalKey, @Nullable final PopupKeySpec[] popupKeys,
              @Nullable final String labelHint, final int backgroundType) {
@@ -338,6 +383,21 @@ final class DynamicGridKeyboard extends Keyboard {
             mCurrentX = x0;
             mCurrentY = y0;
             getHitBox().set(x0, y0, x1, y1);
+        }
+
+        void setCellSize(final int width, final int height) {
+            mCellWidth = width;
+            mCellHeight = height;
+        }
+
+        @Override
+        public int getWidth() {
+            return mCellWidth > 0 ? mCellWidth : super.getWidth();
+        }
+
+        @Override
+        public int getHeight() {
+            return mCellHeight > 0 ? mCellHeight : super.getHeight();
         }
 
         @Override

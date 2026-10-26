@@ -69,6 +69,8 @@ public class KeyboardView extends View {
     private final Colors mColors;
     private float mKeyScaleForText;
     protected float mFontSizeMultiplier;
+    // iOS emoji grid: one fixed glyph size for every cell
+    private float mLabelTextSizeOverride;
     protected float mHintFontSizeMultiplier;
 
     // The maximum key label width in the proportion to the key width.
@@ -395,7 +397,7 @@ public class KeyboardView extends View {
         final String label = key.getLabel();
         if (label != null) {
             paint.setTypeface(KeyboardTypeface.resolve(label, key.selectTypeface(params)));
-            paint.setTextSize(key.selectTextSize(params) * mFontSizeMultiplier);
+            paint.setTextSize(mLabelTextSizeOverride > 0 ? mLabelTextSizeOverride : key.selectTextSize(params) * mFontSizeMultiplier);
             final float labelCharHeight = TypefaceUtils.getReferenceCharHeight(paint);
             final float labelCharWidth = TypefaceUtils.getReferenceCharWidth(paint);
 
@@ -639,6 +641,11 @@ public class KeyboardView extends View {
     private boolean isIdleIosActionKey(final Key key) {
         return key.hasActionKeyBackground() && !(this instanceof PopupKeysKeyboardView)
                 && KeyboardTheme.STYLE_IOS.equals(mColors.getThemeStyle()) && IosActionKeyState.instance.getIdle();
+    }
+
+    public void setLabelTextSizeOverride(final float textSize) {
+        mLabelTextSizeOverride = textSize;
+        invalidateAllKeys();
     }
 
     public void deallocateMemory() {
