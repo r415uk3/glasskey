@@ -32,6 +32,7 @@ import androidx.core.view.isVisible
 import helium314.keyboard.event.HapticEvent
 import helium314.keyboard.keyboard.KeyboardSwitcher
 import helium314.keyboard.keyboard.KeyboardTheme
+import helium314.keyboard.latin.ios.IosStripHeight
 import helium314.keyboard.keyboard.internal.KeyboardIconsSet
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode
 import helium314.keyboard.latin.AudioAndHapticFeedbackManager
@@ -242,6 +243,9 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
         toolbarExpandKey.scaleX = (if (toolbarVisible) -1f else 1f) * direction
     }
 
+    /** iOS style: told whether there is something to show, so the bar can collapse or rise */
+    var iosContentListener: ((Boolean) -> Unit)? = null
+
     fun setSuggestions(suggestions: SuggestedWords, isRtlLanguage: Boolean) {
         clear()
         setRtl(isRtlLanguage)
@@ -251,11 +255,13 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
         )
         isExternalSuggestionVisible = false
         updateKeys()
+        iosContentListener?.invoke(IosStripHeight.hasContent(suggestions.isEmpty, suggestions.isPunctuationSuggestions))
     }
 
     fun setExternalSuggestionView(view: View?, addCloseButton: Boolean) {
         clear()
         isExternalSuggestionVisible = true
+        iosContentListener?.invoke(view != null)
 
         if (addCloseButton) {
             val wrapper = LinearLayout(context)

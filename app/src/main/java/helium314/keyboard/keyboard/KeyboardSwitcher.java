@@ -50,6 +50,7 @@ import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.settings.SettingsKt;
 import helium314.keyboard.latin.settings.SettingsValues;
 import helium314.keyboard.latin.ios.IosBottomBar;
+import helium314.keyboard.latin.ios.IosStripHeight;
 import helium314.keyboard.latin.suggestions.SuggestionStripView;
 import helium314.keyboard.latin.utils.CapsModeUtils;
 import helium314.keyboard.latin.utils.FloatingKeyboardUtils;
@@ -68,6 +69,7 @@ public final class KeyboardSwitcher {
     private InputView mCurrentInputView;
     private KeyboardWrapperView mKeyboardViewWrapper;
     private IosBottomBar mIosBottomBar;
+    private IosStripHeight mIosStripHeight;
     private View mMainKeyboardFrame;
     private MainKeyboardView mKeyboardView;
     private EmojiPalettesView mEmojiPalettesView;
@@ -250,6 +252,7 @@ public final class KeyboardSwitcher {
         mEmojiTabStripView.setVisibility(View.GONE);
         mClipboardStripScrollView.setVisibility(View.GONE);
         mSuggestionStripView.setVisibility(stripVisibility);
+        reapplyIosStripHeight();
         mClipboardHistoryView.setVisibility(View.GONE);
         mClipboardHistoryView.stopClipboardHistory();
     }
@@ -499,6 +502,33 @@ public final class KeyboardSwitcher {
         return mKeyboardViewWrapper;
     }
 
+    // iOS: the suggestion bar collapses when empty and springs up when suggestions appear
+    private void setupIosStripHeight() {
+        mIosStripHeight = null;
+        mSuggestionStripView.setIosContentListener(null);
+        final SettingsValues sv = Settings.getValues();
+        if (!KeyboardTheme.STYLE_IOS.equals(sv.mColors.getThemeStyle()) || sv.mIsFloatingKeyboard) return;
+        final int expanded = mThemeContext.getResources().getDimensionPixelSize(R.dimen.config_suggestions_strip_height);
+        final int collapsed = Math.round(8 * mThemeContext.getResources().getDisplayMetrics().density);
+        // the bar keeps its full height and sits at the bottom of the container, which clips it while collapsed
+        final FrameLayout.LayoutParams stripParams = (FrameLayout.LayoutParams) mSuggestionStripView.getLayoutParams();
+        stripParams.height = expanded;
+        stripParams.gravity = android.view.Gravity.BOTTOM;
+        mSuggestionStripView.setLayoutParams(stripParams);
+        mIosStripHeight = new IosStripHeight(collapsed, expanded, height -> {
+            final ViewGroup.LayoutParams params = mStripContainer.getLayoutParams();
+            // emoji tabs and clipboard strip share the container and always need the full height
+            params.height = mSuggestionStripView.getVisibility() == View.VISIBLE ? height : expanded;
+            mStripContainer.setLayoutParams(params);
+            return kotlin.Unit.INSTANCE;
+        });
+        mSuggestionStripView.setIosContentListener(hasContent -> { mIosStripHeight.update(hasContent); return kotlin.Unit.INSTANCE; });
+    }
+
+    private void reapplyIosStripHeight() {
+        if (mIosStripHeight != null) mIosStripHeight.reapply();
+    }
+
     /** height of the iOS strip under the keys, 0 when it is not shown */
     public int getIosBottomBarHeight() {
         return mIosBottomBar != null && mIosBottomBar.getVisibility() == View.VISIBLE ? mIosBottomBar.getHeight() : 0;
@@ -582,6 +612,7 @@ public final class KeyboardSwitcher {
         mClipboardStripScrollView = mCurrentInputView.findViewById(R.id.clipboard_strip_scroll_view);
         mSuggestionStripView = mCurrentInputView.findViewById(R.id.suggestion_strip_view);
         mStripContainer = mCurrentInputView.findViewById(R.id.strip_container);
+        setupIosStripHeight();
         mBackgroundGatheringIndicator = mCurrentInputView.findViewById(R.id.backgroundGatheringIndicator);
 
         prefs.registerOnSharedPreferenceChangeListener(mSuggestionStripView);
@@ -662,6 +693,7 @@ public final class KeyboardSwitcher {
             mKeyboardView.setVisibility(View.GONE);
             mSuggestionStripView.setVisibility(View.GONE);
             mStripContainer.setVisibility(getSecondaryStripVisibility());
+            reapplyIosStripHeight();
             mClipboardStripScrollView.setVisibility(View.GONE);
             mEmojiTabStripView.setVisibility(View.VISIBLE);
             mClipboardHistoryView.setVisibility(View.GONE);
@@ -683,6 +715,7 @@ public final class KeyboardSwitcher {
             mEmojiTabStripView.setVisibility(View.GONE);
             mSuggestionStripView.setVisibility(View.GONE);
             mStripContainer.setVisibility(getSecondaryStripVisibility());
+            reapplyIosStripHeight();
             mClipboardStripScrollView.post(() -> mClipboardStripScrollView.fullScroll(HorizontalScrollView.FOCUS_RIGHT));
             mClipboardStripScrollView.setVisibility(View.VISIBLE);
             mEmojiPalettesView.setVisibility(View.GONE);
