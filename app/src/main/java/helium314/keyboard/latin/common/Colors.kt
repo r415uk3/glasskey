@@ -24,6 +24,7 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.graphics.drawable.toBitmap
 import helium314.keyboard.keyboard.KeyboardTheme.Companion.STYLE_HOLO
 import helium314.keyboard.keyboard.KeyboardTheme.Companion.STYLE_MATERIAL
+import helium314.keyboard.keyboard.KeyboardTheme.Companion.STYLE_IOS
 import helium314.keyboard.latin.common.ColorType.*
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.utils.adjustLuminosityAndKeepAlpha
@@ -543,11 +544,24 @@ class DefaultColors (
                         backgroundSetupDone = true
                     }
                     view.background = keyboardBackground
+                } else if (themeStyle == STYLE_IOS) {
+                    view.background = iosPanel(view.context)
                 } else {
                     view.background.colorFilter = backgroundFilter
                 }
             }
             else -> view.background.colorFilter = backgroundFilter
+        }
+    }
+
+    /** iOS: keyboard panel with rounded top corners and a hairline edge, as in the Figma reference */
+    private fun iosPanel(context: Context): GradientDrawable {
+        val density = context.resources.displayMetrics.density
+        val radius = 27 * density
+        return GradientDrawable().apply {
+            setColor(background)
+            cornerRadii = floatArrayOf(radius, radius, radius, radius, 0f, 0f, 0f, 0f)
+            setStroke(density.toInt().coerceAtLeast(1), if (isDarkColor(background)) 0x1AFFFFFF else 0x80FFFFFF.toInt())
         }
     }
 

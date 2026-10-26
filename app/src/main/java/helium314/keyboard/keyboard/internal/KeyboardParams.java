@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 
 import helium314.keyboard.keyboard.Key;
 import helium314.keyboard.keyboard.KeyboardId;
+import helium314.keyboard.keyboard.KeyboardTheme;
 import helium314.keyboard.keyboard.internal.keyboard_parser.LocaleKeyboardInfos;
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode;
 import helium314.keyboard.latin.R;
@@ -205,6 +206,24 @@ public class KeyboardParams {
         }
     }
 
+    // iOS style: fixed dp sizes from the Figma reference (45dp keys, 6.5dp / 10dp gaps), scaled uniformly when the
+    // keyboard is shorter or taller than the design height (landscape, height scale setting)
+    private void applyIosGeometry(final Context context, final SettingsValues sv, final int width, final int height) {
+        final float density = context.getResources().getDisplayMetrics().density;
+        final float scale = height / (ResourceUtils.iosDesignHeightDp(sv.mShowsNumberRow) * density);
+        mTopPadding = (int) (8 * density * scale);
+        mBottomPadding = 0;
+        mLeftPadding += (int) (4 * density);
+        mRightPadding += (int) (4 * density);
+        mBaseWidth = mOccupiedWidth - mLeftPadding - mRightPadding;
+        mDefaultAbsoluteKeyWidth = (int) (mDefaultKeyWidth * mBaseWidth);
+        mAbsolutePopupKeyWidth = (int) (mDefaultKeyWidth * mBaseWidth);
+        mHorizontalGap = Math.round(6.5f * density * sv.mKeyGapScale);
+        mVerticalGap = Math.round(10 * density * scale * sv.mKeyGapScale);
+        mRelativeHorizontalGap = (float) mHorizontalGap / width;
+        mRelativeVerticalGap = (float) mVerticalGap / height;
+    }
+
     // when attr is null, default attributes will be loaded
     //  these are good for basic keyboards already, but have wrong/unsuitable sizes e.g. for emojis,
     //  popupKeys and moreSuggestions
@@ -246,6 +265,9 @@ public class KeyboardParams {
                     R.styleable.Keyboard_verticalGap, 1, 1, 0) * sv.mKeyGapScale;
             mHorizontalGap = (int) (mRelativeHorizontalGap * width);
             mVerticalGap = (int) (mRelativeVerticalGap * height);
+
+            if (KeyboardTheme.STYLE_IOS.equals(sv.mColors.getThemeStyle()) && mId.getElement().isAlphaOrSymbol())
+                applyIosGeometry(context, sv, width, height);
 
             mBaseHeight = mOccupiedHeight - mTopPadding - mBottomPadding + mVerticalGap;
             mDefaultRowHeight = ResourceUtils.getDimensionOrFraction(keyboardAttr,

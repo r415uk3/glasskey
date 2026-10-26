@@ -6,6 +6,8 @@
 
 package helium314.keyboard.latin.utils;
 
+import helium314.keyboard.keyboard.KeyboardTheme;
+
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -72,13 +74,26 @@ public final class ResourceUtils {
         if (settingsValues.mIsFloatingKeyboard) {
             return settingsValues.mFloatingHeight;
         }
-        int defaultKeyboardHeight = getDefaultKeyboardHeight(res, settingsValues.mShowsNumberRow);
+        int defaultKeyboardHeight = getDefaultKeyboardHeight(res, settingsValues.mShowsNumberRow,
+                KeyboardTheme.STYLE_IOS.equals(settingsValues.mColors.getThemeStyle()));
         return (int)(defaultKeyboardHeight * settingsValues.mKeyboardHeightScale);
     }
 
     public static int getDefaultKeyboardHeight(final Resources res, final boolean showsNumberRow) {
+        return getDefaultKeyboardHeight(res, showsNumberRow, false);
+    }
+
+    /** iOS style: top padding + rows of 45dp keys with 10dp gaps, see [KeyboardParams.readAttributes] */
+    public static float iosDesignHeightDp(final boolean showsNumberRow) {
+        final int rows = showsNumberRow ? 5 : 4;
+        return 8f + rows * 45f + (rows - 1) * 10f;
+    }
+
+    public static int getDefaultKeyboardHeight(final Resources res, final boolean showsNumberRow, final boolean isIos) {
         final DisplayMetrics dm = res.getDisplayMetrics();
-        final float keyboardHeight = res.getDimension(R.dimen.config_default_keyboard_height) * (showsNumberRow ? 1.33f : 1f);
+        final float keyboardHeight = isIos
+                ? iosDesignHeightDp(showsNumberRow) * dm.density
+                : res.getDimension(R.dimen.config_default_keyboard_height) * (showsNumberRow ? 1.33f : 1f);
         final float maxKeyboardHeight = res.getFraction(
                 R.fraction.config_max_keyboard_height, dm.heightPixels, dm.heightPixels);
         float minKeyboardHeight = res.getFraction(
@@ -89,6 +104,8 @@ public final class ResourceUtils {
             minKeyboardHeight = -res.getFraction(
                     R.fraction.config_min_keyboard_height, dm.widthPixels, dm.widthPixels);
         }
+        // iOS: the design height is already finger-sized, only cap it (landscape)
+        if (isIos) return (int) Math.min(keyboardHeight, maxKeyboardHeight);
         // Keyboard height will not exceed maxKeyboardHeight and will not be less than
         // minKeyboardHeight.
         return (int)Math.max(Math.min(keyboardHeight, maxKeyboardHeight), minKeyboardHeight);
