@@ -8,6 +8,8 @@ import helium314.keyboard.keyboard.KeyboardElement
 import helium314.keyboard.latin.LatinIME
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.ResourceUtils
+import helium314.keyboard.latin.utils.prefs
+import androidx.core.content.edit
 import helium314.keyboard.latin.utils.SubtypeUtilsAdditional
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
@@ -36,6 +38,27 @@ class IosGeometryTest {
 
     private fun assertAbout(expected: Int, actual: Int) =
         assertTrue(abs(expected - actual) <= 1, "expected $expected ±1, got $actual")
+
+    private fun withToolbarMode(mode: String, block: () -> Unit) {
+        latinIME.prefs().edit { putString(Settings.PREF_TOOLBAR_MODE, mode) }
+        Settings.getInstance().loadSettings(latinIME)
+        try { block() } finally {
+            latinIME.prefs().edit { remove(Settings.PREF_TOOLBAR_MODE) }
+            Settings.getInstance().loadSettings(latinIME)
+        }
+    }
+
+    @Test fun firstRowSits8dpBelowTheSuggestionStrip() {
+        assertAbout(dp(8f), keyboard().key("q").y)
+    }
+
+    @Test fun withoutTheStripFirstRowSits16dpBelowThePanelTop() {
+        // Figma: 8pt panel padding + 8pt above the key rows when no suggestion bar is shown
+        withToolbarMode("HIDDEN") {
+            assertAbout(dp(16f), keyboard().key("q").y)
+            assertAbout(dp(45f), keyboard().key("q").height)
+        }
+    }
 
     @Test fun defaultHeightFitsFourRowsOf45dp() {
         // 8 top padding + 4 rows of 45 + 3 gaps of 10

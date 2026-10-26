@@ -23,6 +23,7 @@ import helium314.keyboard.latin.R;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.settings.SettingsValues;
 import helium314.keyboard.latin.utils.ResourceUtils;
+import helium314.keyboard.latin.utils.ToolbarMode;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -210,8 +211,9 @@ public class KeyboardParams {
     // keyboard is shorter or taller than the design height (landscape, height scale setting)
     private void applyIosGeometry(final Context context, final SettingsValues sv, final int width, final int height) {
         final float density = context.getResources().getDisplayMetrics().density;
-        final float scale = height / (ResourceUtils.iosDesignHeightDp(sv.mShowsNumberRow) * density);
-        mTopPadding = (int) (8 * density * scale);
+        final boolean stripHidden = sv.mToolbarMode == ToolbarMode.HIDDEN;
+        final float scale = height / (ResourceUtils.iosDesignHeightDp(sv.mShowsNumberRow, stripHidden) * density);
+        mTopPadding = (int) (ResourceUtils.iosTopPaddingDp(stripHidden) * density * scale);
         mBottomPadding = 0;
         mLeftPadding += (int) (4 * density);
         mRightPadding += (int) (4 * density);
