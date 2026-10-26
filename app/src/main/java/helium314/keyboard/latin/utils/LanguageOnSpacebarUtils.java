@@ -11,6 +11,7 @@ import android.view.inputmethod.InputMethodSubtype;
 import androidx.annotation.NonNull;
 
 import helium314.keyboard.latin.RichInputMethodSubtype;
+import helium314.keyboard.keyboard.KeyboardTheme;
 import helium314.keyboard.latin.settings.Settings;
 
 import java.util.Collections;
@@ -35,6 +36,9 @@ public final class LanguageOnSpacebarUtils {
     public static int getLanguageOnSpacebarFormatType(@NonNull final RichInputMethodSubtype subtype) {
         if (!Settings.getValues().mSpaceBarText.isEmpty())
             return FORMAT_TYPE_FULL_LOCALE;
+        // iOS: the space bar stays blank, the globe under the keys shows that languages can be switched
+        if (KeyboardTheme.STYLE_IOS.equals(Settings.getValues().mColors.getThemeStyle()))
+            return FORMAT_TYPE_NONE;
         if (subtype.isNoLanguage()) {
             return FORMAT_TYPE_FULL_LOCALE;
         }

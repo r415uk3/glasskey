@@ -339,6 +339,8 @@ final class SuggestionStripLayoutHelper {
             return layoutPunctuationsAndReturnStartIndexOfMoreSuggestions(
                     (PunctuationSuggestions)suggestedWords, stripView);
         }
+        // iOS: nothing typed yet -> an empty bar, without the dividers of three empty slots
+        if (mIsIos && suggestedWords.isEmpty()) return 0;
 
         final int wordCountToShow = suggestedWords.getWordCountToShow();
         final int startIndexOfMoreSuggestions = setupWordViewsAndReturnStartIndexOfMoreSuggestions(

@@ -176,7 +176,7 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
                     themeStyle,
                     hasBorders,
                     0xFF0088FF.toInt(),
-                    0xFF1C1C1C.toInt(), // Figma: #1C1C1C at 86%, opaque for the same reason
+                    0xFF232323.toInt(), // Figma: #1C1C1C at 86% over a dark wallpaper reads as #232323; opaque for the same reason
                     0x45FFFFFF,
                     0x45FFFFFF,
                     0x45FFFFFF,
