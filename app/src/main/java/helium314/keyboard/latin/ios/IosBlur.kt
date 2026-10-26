@@ -7,6 +7,9 @@ import android.os.Build
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import helium314.keyboard.latin.settings.Defaults
+import helium314.keyboard.latin.settings.Settings
+import helium314.keyboard.latin.utils.prefs
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 
 /**
@@ -18,7 +21,8 @@ object IosBlur {
 
     @JvmStatic
     fun isAvailable(context: Context): Boolean =
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+        context.prefs().getBoolean(Settings.PREF_IOS_BLUR, Defaults.PREF_IOS_BLUR)
+            && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
             && context.getSystemService(WindowManager::class.java)?.isCrossWindowBlurEnabled == true
 
     /** a drawable that blurs behind [view]'s bounds, or null if the platform refuses */

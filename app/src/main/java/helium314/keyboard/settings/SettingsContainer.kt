@@ -42,6 +42,9 @@ class SettingsContainer(context: Context) {
         }
         return results.toList()
     }
+
+    fun filter(searchTerm: String, allowedKeys: Set<String>): List<Setting> =
+        filter(searchTerm).filter { it.key in allowedKeys }
 }
 
 @Immutable

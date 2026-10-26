@@ -61,10 +61,20 @@ object SubtypeSettings {
         prefs.edit { putString(Settings.PREF_ENABLED_SUBTYPES, newString) }
 
         if (newSubtype !in enabledSubtypes) {
-            enabledSubtypes.add(newSubtype)
-            enabledSubtypes.sortBy { it.locale().toLanguageTag() } // for consistent order
+            enabledSubtypes.add(newSubtype) // appended: the user's order is the globe key's order
             RichInputMethodManager.getInstance().refreshSubtypeCaches()
         }
+    }
+
+    /** moves the enabled subtype at [from] to [to] (indices into [getEnabledSubtypes]) */
+    fun moveEnabledSubtype(context: Context, from: Int, to: Int) {
+        if (from == to || from !in enabledSubtypes.indices || to !in enabledSubtypes.indices) return
+        enabledSubtypes.add(to, enabledSubtypes.removeAt(from))
+        context.prefs().edit {
+            putString(Settings.PREF_ENABLED_SUBTYPES, createPrefSubtypes(enabledSubtypes.map { it.toSettingsSubtype() }))
+        }
+        if (RichInputMethodManager.isInitialized())
+            RichInputMethodManager.getInstance().refreshSubtypeCaches()
     }
 
     /** @return whether subtype was actually removed */
@@ -201,7 +211,7 @@ object SubtypeSettings {
         }
 
     fun createPrefSubtypes(subtypes: Collection<SettingsSubtype>): String =
-        subtypes.map { it.toPref() }.toSortedSet().joinToString(Separators.SETS)
+        subtypes.map { it.toPref() }.distinct().joinToString(Separators.SETS) // keeps order
 
     fun init(context: Context) {
         SubtypeLocaleUtils.init(context) // necessary to get the correct getKeyboardLayoutSetName

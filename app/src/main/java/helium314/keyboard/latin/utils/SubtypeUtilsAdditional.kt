@@ -100,8 +100,8 @@ object SubtypeUtilsAdditional {
         if (isEnabled) {
             val enabled = SubtypeSettings.createSettingsSubtypes(prefs.getString(Settings.PREF_ENABLED_SUBTYPES, Defaults.PREF_ENABLED_SUBTYPES)!!)
                 .toMutableList()
-            enabled.remove(from)
-            enabled.add(to)
+            val index = enabled.indexOf(from) // keep its place in the user's order
+            if (index >= 0) enabled[index] = to else enabled.add(to)
             editor.putString(Settings.PREF_ENABLED_SUBTYPES, SubtypeSettings.createPrefSubtypes(enabled))
         }
         prefs.all.filterKeys { it.startsWith(Settings.PREF_SAVED_APP_SUBTYPE_PREFIX) }

@@ -174,11 +174,13 @@ object Defaults {
     const val PREF_ADD_TO_PERSONAL_DICTIONARY = false
     @JvmField
     val PREF_NAVBAR_COLOR = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+    const val PREF_IOS_BLUR = true
     // Glasskey: Russian, English, Kazakh out of the box (globe cycles in this order)
     const val PREF_ENABLED_SUBTYPES = "ru${Separators.SET}${ExtraValue.KEYBOARD_LAYOUT_SET}=MAIN:russian${Separators.SETS}" +
             "en-US${Separators.SET}${Separators.SETS}" +
             "kk${Separators.SET}${ExtraValue.KEYBOARD_LAYOUT_SET}=MAIN:russian"
-    const val PREF_SELECTED_SUBTYPE = "ru${Separators.SET}${ExtraValue.KEYBOARD_LAYOUT_SET}=MAIN:russian"
+    // must equal the resource subtype's extra values, else the first enabled language is taken instead
+    const val PREF_SELECTED_SUBTYPE = "ru${Separators.SET}${ExtraValue.KEYBOARD_LAYOUT_SET}=MAIN:russian,SupportTouchPositionCorrection"
     const val PREF_URL_DETECTION = false
     const val PREF_DONT_SHOW_MISSING_DICTIONARY_DIALOG = false
     const val PREF_TOOLBAR_MODE = "SUGGESTION_STRIP"

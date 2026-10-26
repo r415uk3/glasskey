@@ -12,7 +12,9 @@ import helium314.keyboard.latin.LatinIME
 import helium314.keyboard.latin.RichInputMethodManager
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.SubtypeSettings
+import helium314.keyboard.latin.utils.locale
 import helium314.keyboard.latin.utils.prefs
+import org.junit.After
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
@@ -67,5 +69,23 @@ class IosGlobeSwitchTest {
         press(KeyCode.LANGUAGE_SWITCH)
         assertEquals("en-US", currentLanguage())
         assertEquals(KeyboardElement.ALPHABET, keyboardSwitcher.keyboard?.mId?.element)
+    }
+
+    // kk -> ru (the brief's example) holds for the default and the alphabetical order too, so use en-US, ru, kk
+    @Test fun globeFollowsUserOrder() {
+        SubtypeSettings.moveEnabledSubtype(latinIME, 1, 0) // en-US, ru, kk
+        assertEquals("ru", currentLanguage())
+        assertEquals("kk", RichInputMethodManager.getInstance().getNextSubtypeInThisIme(true)?.locale()?.toLanguageTag())
+        latinIME.switchToNextSubtypeInOrder()
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks()
+        assertEquals("kk", currentLanguage())
+        latinIME.switchToNextSubtypeInOrder()
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks()
+        assertEquals("en-US", currentLanguage())
+    }
+
+    @After fun restoreDefaults() {
+        latinIME.prefs().edit { remove(Settings.PREF_ENABLED_SUBTYPES); remove(Settings.PREF_SELECTED_SUBTYPE) }
+        SubtypeSettings.reloadEnabledSubtypes(latinIME)
     }
 }
