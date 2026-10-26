@@ -16,6 +16,7 @@ import helium314.keyboard.keyboard.internal.KeyboardParams;
 import helium314.keyboard.keyboard.internal.PopupKeySpec;
 import helium314.keyboard.latin.R;
 import helium314.keyboard.latin.common.StringUtils;
+import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.utils.TypefaceUtils;
 
 public final class PopupKeysKeyboard extends Keyboard {
@@ -244,6 +245,21 @@ public final class PopupKeysKeyboard extends Keyboard {
 
     public static class Builder extends KeyboardBuilder<PopupKeysKeyboardParams> {
         private final Key mParentKey;
+        private final boolean mIsIos;
+        private final PopupKeySpec[] mPopupKeys;
+
+        // iOS lists the letter itself first; lifting the finger without moving types it
+        private static PopupKeySpec[] withBaseLetterFirst(final Key key, final PopupKeySpec[] popupKeys, final Keyboard keyboard) {
+            final String label = key.getLabel();
+            if (label == null || StringUtils.codePointCount(label) != 1 || !Character.isLetter(label.codePointAt(0)))
+                return popupKeys;
+            for (final PopupKeySpec spec : popupKeys)
+                if (label.equals(spec.mLabel)) return popupKeys;
+            final PopupKeySpec[] result = new PopupKeySpec[popupKeys.length + 1];
+            result[0] = new PopupKeySpec(label, false, keyboard.mId.getLocale());
+            System.arraycopy(popupKeys, 0, result, 1, popupKeys.length);
+            return result;
+        }
 
         private static final float LABEL_PADDING_RATIO = 0.2f;
         private static final float DIVIDER_RATIO = 0.2f;
@@ -265,6 +281,8 @@ public final class PopupKeysKeyboard extends Keyboard {
             super(context, new PopupKeysKeyboardParams());
             mParams.mId = keyboard.mId;
             readAttributes(keyboard.mPopupKeysTemplate);
+            mIsIos = KeyboardTheme.STYLE_IOS.equals(Settings.getValues().mColors.getThemeStyle());
+            mPopupKeys = mIsIos ? withBaseLetterFirst(key, key.getPopupKeys(), keyboard) : key.getPopupKeys();
 
             // TODO: Popup keys keyboard's vertical gap is currently calculated heuristically.
             // Should revise the algorithm.
@@ -273,7 +291,7 @@ public final class PopupKeysKeyboard extends Keyboard {
             mParentKey = key;
 
             final int keyWidth, rowHeight;
-            if (isSinglePopupKeyWithPreview) {
+            if (isSinglePopupKeyWithPreview && !mIsIos) { // iOS: the preview balloon is much taller than a key
                 // Use pre-computed width and height if this popup keys keyboard has only one key to
                 // mitigate visual flicker between key preview and popup keys keyboard.
                 // Caveats for the visual assets: To achieve this effect, both the key preview
@@ -289,7 +307,8 @@ public final class PopupKeysKeyboard extends Keyboard {
                         + (key.hasLabelsInPopupKeys()
                                 ? mParams.mAbsolutePopupKeyWidth * LABEL_PADDING_RATIO : 0.0f);
                 keyWidth = getMaxKeyWidth(key, mParams.mAbsolutePopupKeyWidth, padding, paintToMeasure);
-                rowHeight = keyboard.mMostCommonKeyHeight;
+                // iOS: cells exactly as tall as the key
+                rowHeight = mIsIos ? key.getHeight() + mParams.mVerticalGap : keyboard.mMostCommonKeyHeight;
             }
             final int dividerWidth;
             if (key.needsDividersInPopupKeys()) {
@@ -297,7 +316,7 @@ public final class PopupKeysKeyboard extends Keyboard {
             } else {
                 dividerWidth = 0;
             }
-            final PopupKeySpec[] popupKeys = key.getPopupKeys();
+            final PopupKeySpec[] popupKeys = mPopupKeys;
             final int defaultColumns = key.getPopupKeysColumnNumber();
             final int spaceForKeys = keyboard.mId.getWidth() / keyWidth;
             int finalNumColumns = spaceForKeys >= Math.min(popupKeys.length, defaultColumns)
@@ -306,7 +325,7 @@ public final class PopupKeysKeyboard extends Keyboard {
             if (finalNumColumns < 1) finalNumColumns = 1; // avoid exception in setParameters
             mParams.setParameters(popupKeys.length, finalNumColumns, keyWidth,
                     rowHeight, key.getX() + key.getWidth() / 2, keyboard.mId.getWidth(),
-                    key.isPopupKeysFixedColumn(), key.isPopupKeysFixedOrder(), dividerWidth);
+                    key.isPopupKeysFixedColumn(), mIsIos || key.isPopupKeysFixedOrder(), dividerWidth); // iOS: left to right
         }
 
         private static int getMaxKeyWidth(final Key parentKey, final int minKeyWidth,
@@ -328,7 +347,7 @@ public final class PopupKeysKeyboard extends Keyboard {
         public PopupKeysKeyboard build() {
             final PopupKeysKeyboardParams params = mParams;
             final int popupKeyFlags = mParentKey.getPopupKeyLabelFlags();
-            final PopupKeySpec[] popupKeys = mParentKey.getPopupKeys();
+            final PopupKeySpec[] popupKeys = mPopupKeys;
             final int background = mParentKey.hasActionKeyPopups() ? Key.BACKGROUND_TYPE_ACTION : Key.BACKGROUND_TYPE_NORMAL;
             for (int n = 0; n < popupKeys.length; n++) {
                 final PopupKeySpec popupKeySpec = popupKeys[n];

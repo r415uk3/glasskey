@@ -398,6 +398,9 @@ class DefaultColors (
     private val accentColorFilter = colorFilter(accent)
     /** iOS: the preview balloon has the key color, made opaque against the keyboard background */
     private val iosKeyPreviewFilter = colorFilter(ColorUtils.compositeColors(keyBackground, background))
+    /** iOS long-press panel: key colored, the cell under the finger slightly lighter / darker */
+    private val iosPopupPanelStateList = ColorUtils.compositeColors(keyBackground, background)
+        .let { pressedStateList(brightenOrDarken(it, true), it) }
 
     /** color filter for the white action key icons in material theme, switches to gray if necessary for contrast */
     private val actionKeyIconColorFilter: ColorFilter?
@@ -512,7 +515,7 @@ class DefaultColors (
             FUNCTIONAL_KEY_BACKGROUND -> functionalKeyStateList
             ACTION_KEY_BACKGROUND -> actionKeyStateList
             SPACE_BAR_BACKGROUND -> spaceBarStateList
-            POPUP_KEYS_BACKGROUND -> adjustedBackgroundStateList
+            POPUP_KEYS_BACKGROUND -> if (themeStyle == STYLE_IOS) iosPopupPanelStateList else adjustedBackgroundStateList
             STRIP_BACKGROUND -> stripBackgroundList
             ACTION_KEY_POPUP_KEYS_BACKGROUND -> if (themeStyle == STYLE_HOLO) adjustedBackgroundStateList
                 else actionKeyStateList
@@ -540,7 +543,7 @@ class DefaultColors (
             view.setBackgroundColor(Color.WHITE) // set white to make the color filters work
         when (color) {
             KEY_PREVIEW_BACKGROUND -> view.background.colorFilter = if (themeStyle == STYLE_IOS) iosKeyPreviewFilter else adjustedBackgroundFilter
-            POPUP_KEYS_BACKGROUND -> view.background.colorFilter = adjustedBackgroundFilter
+            POPUP_KEYS_BACKGROUND -> view.background.colorFilter = if (themeStyle == STYLE_IOS) iosKeyPreviewFilter else adjustedBackgroundFilter
             FUNCTIONAL_KEY_BACKGROUND, KEY_BACKGROUND, MORE_SUGGESTIONS_WORD_BACKGROUND, SPACE_BAR_BACKGROUND, STRIP_BACKGROUND, CLIPBOARD_SUGGESTION_BACKGROUND -> setColor(view.background, color)
             ONE_HANDED_MODE_BUTTON -> setColor(view.background, if (keyboardBackground == null) MAIN_BACKGROUND else STRIP_BACKGROUND)
             MORE_SUGGESTIONS_BACKGROUND -> view.background.colorFilter = backgroundFilter
