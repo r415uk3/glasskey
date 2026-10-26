@@ -85,10 +85,18 @@ class IosLayoutTest {
         assertTrue(row.first { it.code == '.'.code }.popupKeys.orEmpty().any { it.mLabel == ".com" })
     }
 
-    @Test fun searchRow() {
+    @Test fun searchRowIsTheDefaultRow() {
+        // real iOS 27 (Spotlight, Files): no period key in search fields, unlike the Figma frame
         val editorInfo = EditorInfo().apply { imeOptions = EditorInfo.IME_ACTION_SEARCH }
         val row = rows(editorInfo = editorInfo).last()
-        assertEquals(listOf(KeyCode.SYMBOL_ALPHA, KeyCode.EMOJI, ' '.code, '.'.code, enter), row.codes())
+        assertEquals(listOf(KeyCode.SYMBOL_ALPHA, KeyCode.EMOJI, ' '.code, enter), row.codes())
+    }
+
+    @Test fun symbolAndEmojiKeysAreEqualAndNarrow() {
+        val row = rows().last()
+        val letter = rows()[0].first().width
+        assertEquals(row[0].width, row[1].width)
+        assertTrue(row[0].width < letter * 2, "123 is ${row[0].width}, letter $letter")
     }
 
     @Test fun symbolsPage() {
