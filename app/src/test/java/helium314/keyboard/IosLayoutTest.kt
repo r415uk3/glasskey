@@ -97,13 +97,36 @@ class IosLayoutTest {
         assertEquals("123", rows(element = KeyboardElement.SYMBOLS_SHIFTED)[2].first().label)
     }
 
-    @Test fun phoneField() {
+    private fun numberRows(inputType: Int, imeOptions: Int = 0) = rows(element = KeyboardElement.NUMBER, mode = KeyboardMode.NUMBER,
+        editorInfo = EditorInfo().apply { this.inputType = inputType; this.imeOptions = imeOptions })
+
+    @Test fun decimalNumberFieldHasPeriodAndMinus() {
+        val codes = numberRows(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL or InputType.TYPE_NUMBER_FLAG_SIGNED).flatten().codes()
+        assertTrue('.'.code in codes, codes.toString())
+        assertTrue('-'.code in codes, codes.toString())
+    }
+
+    @Test fun dateAndTimeFieldsHaveSeparators() {
+        val date = rows(element = KeyboardElement.NUMBER, mode = KeyboardMode.DATE).flatten().codes()
+        assertTrue('/'.code in date, date.toString())
+        val time = rows(element = KeyboardElement.NUMBER, mode = KeyboardMode.TIME).flatten().codes()
+        assertTrue(':'.code in time, time.toString())
+    }
+
+    @Test fun numberAndPhoneFieldsCanSubmit() {
+        val number = numberRows(InputType.TYPE_CLASS_NUMBER, EditorInfo.IME_ACTION_NEXT).flatten()
+        assertTrue(number.any { it.hasActionKeyBackground() || it.code == Constants.CODE_ENTER }, number.map { it.code }.toString())
+        val phone = rows(element = KeyboardElement.PHONE, mode = KeyboardMode.PHONE,
+            editorInfo = EditorInfo().apply { inputType = InputType.TYPE_CLASS_PHONE; imeOptions = EditorInfo.IME_ACTION_DONE }).flatten()
+        assertTrue(phone.any { it.hasActionKeyBackground() || it.code == Constants.CODE_ENTER }, phone.map { it.code }.toString())
+    }
+
+    @Test fun phoneFieldHasDigitsAndDelete() {
         val rows = rows(element = KeyboardElement.PHONE, mode = KeyboardMode.PHONE,
             editorInfo = EditorInfo().apply { inputType = InputType.TYPE_CLASS_PHONE })
         assertEquals(4, rows.size)
-        assertTrue(rows.all { it.size == 3 }, rows.map { r -> r.map { it.label } }.toString())
-        assertEquals(listOf("1", "2", "3"), rows[0].map { it.label })
-        assertEquals(KeyCode.DELETE, rows[3].last().code)
+        assertEquals(listOf("1", "2", "3"), rows[0].take(3).map { it.label })
+        assertTrue(rows.flatten().any { it.code == KeyCode.DELETE })
     }
 
     @Test fun noShiftOrLanguageKeyOnNumpad() {
