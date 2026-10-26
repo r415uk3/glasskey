@@ -163,7 +163,7 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
                     themeStyle,
                     hasBorders,
                     0xFF0088FF.toInt(), // accent: active action key
-                    0xBFDADADA.toInt(),
+                    0xFFDADADA.toInt(), // Figma: #DADADA at 75%; opaque because Android cannot blur what is behind the keyboard
                     0xE3FFFFFF.toInt(),
                     0xE3FFFFFF.toInt(),
                     0xE3FFFFFF.toInt(),
@@ -176,7 +176,7 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
                     themeStyle,
                     hasBorders,
                     0xFF0088FF.toInt(),
-                    0xDB1C1C1C.toInt(),
+                    0xFF1C1C1C.toInt(), // Figma: #1C1C1C at 86%, opaque for the same reason
                     0x45FFFFFF,
                     0x45FFFFFF,
                     0x45FFFFFF,

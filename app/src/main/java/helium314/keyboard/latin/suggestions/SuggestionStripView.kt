@@ -31,6 +31,7 @@ import androidx.core.view.doOnNextLayout
 import androidx.core.view.isVisible
 import helium314.keyboard.event.HapticEvent
 import helium314.keyboard.keyboard.KeyboardSwitcher
+import helium314.keyboard.keyboard.KeyboardTheme
 import helium314.keyboard.keyboard.internal.KeyboardIconsSet
 import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode
 import helium314.keyboard.latin.AudioAndHapticFeedbackManager
@@ -514,17 +515,13 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
         updateVoiceKey()
         val settingsValues = Settings.getValues()
 
-        val toolbarIsExpandable = settingsValues.mToolbarMode == ToolbarMode.EXPANDABLE
-        if (settingsValues.mIncognitoModeEnabled) {
-            toolbarExpandKey.setImageDrawable(incognitoIcon)
-            toolbarExpandKey.isVisible = true
-        } else {
-            toolbarExpandKey.setImageDrawable(toolbarArrowIcon)
-            toolbarExpandKey.isVisible = toolbarIsExpandable
-        }
+        val isIos = settingsValues.mColors.themeStyle == KeyboardTheme.STYLE_IOS
+        val toolbarIsExpandable = !isIos && settingsValues.mToolbarMode == ToolbarMode.EXPANDABLE
+        toolbarExpandKey.setImageDrawable(if (settingsValues.mIncognitoModeEnabled) incognitoIcon else toolbarArrowIcon)
+        toolbarExpandKey.isVisible = shouldShowStripExtras(isIos, settingsValues.mToolbarMode, settingsValues.mIncognitoModeEnabled)
 
         toolbarExpandKey.setOnClickListener(if (!toolbarIsExpandable) null else this)
-        pinnedKeys.visibility = suggestionsStrip.visibility
+        pinnedKeys.visibility = if (isIos) GONE else suggestionsStrip.visibility
         isExternalSuggestionVisible = false
     }
 
@@ -553,6 +550,10 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
     }
 
     companion object {
+        /** expand key / incognito indicator in the strip; iOS style shows suggestions only */
+        fun shouldShowStripExtras(isIos: Boolean, mode: ToolbarMode, incognito: Boolean): Boolean =
+            !isIos && (incognito || mode == ToolbarMode.EXPANDABLE)
+
         @JvmField
         var DEBUG_SUGGESTIONS = false
         private const val DEBUG_INFO_TEXT_SIZE_IN_DIP = 6.5f

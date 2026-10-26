@@ -39,7 +39,7 @@ class IosThemeTest {
         assertEquals(0x45FFFFFF, colors.get(ColorType.FUNCTIONAL_KEY_BACKGROUND))
         assertEquals(0x45FFFFFF, colors.get(ColorType.SPACE_BAR_BACKGROUND))
         assertEquals(0xFFFFFFFF.toInt(), colors.get(ColorType.KEY_TEXT))
-        assertEquals(0xDB1C1C1C.toInt(), colors.get(ColorType.MAIN_BACKGROUND))
+        assertEquals(0xFF1C1C1C.toInt(), colors.get(ColorType.MAIN_BACKGROUND)) // opaque: app text showed through the translucent Figma value
         assertEquals(0xFF0088FF.toInt(), colors.get(ColorType.ACTION_KEY_BACKGROUND))
     }
 
@@ -49,7 +49,7 @@ class IosThemeTest {
         assertEquals(0xE3FFFFFF.toInt(), colors.get(ColorType.KEY_BACKGROUND))
         assertEquals(0xE3FFFFFF.toInt(), colors.get(ColorType.FUNCTIONAL_KEY_BACKGROUND))
         assertEquals(0xA6000000.toInt(), colors.get(ColorType.KEY_TEXT))
-        assertEquals(0xBFDADADA.toInt(), colors.get(ColorType.MAIN_BACKGROUND))
+        assertEquals(0xFFDADADA.toInt(), colors.get(ColorType.MAIN_BACKGROUND))
         assertEquals(0xFF0088FF.toInt(), colors.get(ColorType.ACTION_KEY_BACKGROUND))
     }
 

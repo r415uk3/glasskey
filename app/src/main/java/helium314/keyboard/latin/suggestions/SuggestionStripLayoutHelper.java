@@ -18,6 +18,8 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.InsetDrawable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -39,6 +41,7 @@ import androidx.annotation.Nullable;
 import helium314.keyboard.accessibility.AccessibilityUtils;
 import helium314.keyboard.keyboard.KeyboardTypeface;
 import helium314.keyboard.latin.PunctuationSuggestions;
+import helium314.keyboard.keyboard.KeyboardTheme;
 import helium314.keyboard.latin.R;
 import helium314.keyboard.latin.SuggestedWords;
 import helium314.keyboard.latin.SuggestedWords.SuggestedWordInfo;
@@ -93,6 +96,8 @@ final class SuggestionStripLayoutHelper {
     // These constants are the flag values of
     // {@link R.styleable#SuggestionStripView_suggestionStripOptions} attribute.
     private static final int AUTO_CORRECT_BOLD = 0x01;
+    private boolean mIsIos;
+    private int mIosPillColor;
     private static final int AUTO_CORRECT_UNDERLINE = 0x02;
     private static final int VALID_TYPED_WORD_BOLD = 0x04;
 
@@ -119,6 +124,8 @@ final class SuggestionStripLayoutHelper {
         mAlphaObsoleted = ResourceUtils.getFraction(a, R.styleable.SuggestionStripView_alphaObsoleted, 1.0f);
 
         final Colors colors = Settings.getValues().mColors;
+        mIsIos = KeyboardTheme.STYLE_IOS.equals(colors.getThemeStyle());
+        mIosPillColor = colors.get(ColorType.KEY_BACKGROUND);
         mColorValidTypedWord = colors.get(ColorType.SUGGESTION_VALID_WORD);
         mColorTypedWord = colors.get(ColorType.SUGGESTION_TYPED_WORD);
         mColorAutoCorrect = colors.get(ColorType.SUGGESTION_AUTO_CORRECT);
@@ -396,6 +403,19 @@ final class SuggestionStripLayoutHelper {
      * @param width the maximum width for layout in pixels.
      * @return the {@link TextView} containing the suggested word appropriately formatted.
      */
+    // iOS marks the word that space will commit with a key-colored rounded background
+    private void setIosPill(final TextView wordView, final boolean show) {
+        if (!show) {
+            wordView.setBackgroundResource(R.drawable.btn_suggestion_ios_base);
+            return;
+        }
+        final float density = wordView.getResources().getDisplayMetrics().density;
+        final GradientDrawable pill = new GradientDrawable();
+        pill.setColor(mIosPillColor);
+        pill.setCornerRadius(8.5f * density);
+        wordView.setBackground(new InsetDrawable(pill, (int) (4 * density), (int) (5 * density), (int) (4 * density), (int) (5 * density)));
+    }
+
     private TextView layoutWord(final Context context, final int positionInStrip, final int width) {
         final TextView wordView = mWordViews.get(positionInStrip);
         final CharSequence word = wordView.getText();
@@ -460,6 +480,7 @@ final class SuggestionStripLayoutHelper {
             final TextView wordView = mWordViews.get(positionInStrip);
             wordView.setText(null);
             wordView.setTag(null);
+            if (mIsIos) setIosPill(wordView, false);
             // Make this inactive for touches in {@link #layoutWord(int,int)}.
             if (SuggestionStripView.DEBUG_SUGGESTIONS) {
                 mDebugInfoViews.get(positionInStrip).setText(null);
@@ -480,6 +501,8 @@ final class SuggestionStripLayoutHelper {
             wordView.setTag(indexInSuggestedWords);
             wordView.setText(getStyledSuggestedWord(suggestedWords, indexInSuggestedWords));
             wordView.setTextColor(getSuggestionTextColor(suggestedWords, indexInSuggestedWords));
+            if (mIsIos)
+                setIosPill(wordView, indexInSuggestedWords == SuggestedWords.INDEX_OF_AUTO_CORRECTION && suggestedWords.mWillAutoCorrect);
             KeyboardTypeface.applyToTextView(wordView);
             if (SuggestionStripView.DEBUG_SUGGESTIONS) {
                 mDebugInfoViews.get(positionInStrip).setText(suggestedWords.getDebugString(indexInSuggestedWords));
