@@ -60,4 +60,9 @@ class IosEmojiLayoutTest {
         assertEquals(50L, IosEmojiLayout.deleteRepeatDelay(repeatsSoFar = 1))
         assertEquals(50L, IosEmojiLayout.deleteRepeatDelay(repeatsSoFar = 30))
     }
+
+    @Test fun landscapeHasFewerRows() {
+        assertEquals(5, IosEmojiLayout.rows(landscape = false))
+        assertEquals(3, IosEmojiLayout.rows(landscape = true))
+    }
 }

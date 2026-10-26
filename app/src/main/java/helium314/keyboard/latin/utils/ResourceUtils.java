@@ -84,9 +84,18 @@ public final class ResourceUtils {
     }
 
     /** iOS style: top padding + rows of 45dp keys with 10dp gaps, see [KeyboardParams.readAttributes] */
-    public static float iosDesignHeightDp(final boolean showsNumberRow, final boolean stripHidden) {
+    public static float iosDesignHeightDp(final boolean showsNumberRow, final boolean stripHidden, final boolean landscape) {
         final int rows = showsNumberRow ? 5 : 4;
-        return iosTopPaddingDp(stripHidden) + rows * 45f + (rows - 1) * 10f;
+        return iosTopPaddingDp(stripHidden, landscape) + rows * (landscape ? 30f : 45f) + (rows - 1) * iosVerticalGapDp(landscape);
+    }
+
+    /** iOS keys are much lower in landscape */
+    public static boolean isLandscape(final DisplayMetrics dm) {
+        return dm.widthPixels > dm.heightPixels;
+    }
+
+    public static float iosVerticalGapDp(final boolean landscape) {
+        return landscape ? 5f : 10f;
     }
 
     /** iOS sizes are for a 402pt wide iPhone; narrower phones get proportionally smaller keys and gaps, as on iOS */
@@ -95,14 +104,15 @@ public final class ResourceUtils {
     }
 
     /** Figma: 8pt panel padding, plus 8pt above the key rows when no suggestion bar sits there */
-    public static float iosTopPaddingDp(final boolean stripHidden) {
+    public static float iosTopPaddingDp(final boolean stripHidden, final boolean landscape) {
+        if (landscape) return stripHidden ? 10f : 6f;
         return stripHidden ? 16f : 8f;
     }
 
     public static int getDefaultKeyboardHeight(final Resources res, final boolean showsNumberRow, final boolean isIos, final boolean stripHidden) {
         final DisplayMetrics dm = res.getDisplayMetrics();
         final float keyboardHeight = isIos
-                ? iosDesignHeightDp(showsNumberRow, stripHidden) * dm.density * iosWidthScale(dm)
+                ? iosDesignHeightDp(showsNumberRow, stripHidden, isLandscape(dm)) * dm.density * iosWidthScale(dm)
                 : res.getDimension(R.dimen.config_default_keyboard_height) * (showsNumberRow ? 1.33f : 1f);
         final float maxKeyboardHeight = res.getFraction(
                 R.fraction.config_max_keyboard_height, dm.heightPixels, dm.heightPixels);

@@ -39,7 +39,8 @@ internal class IosEmojiPalette(
     private val titleHeight = (20 * dp).toInt()
     val bottomRowHeight = (40 * dp).toInt()
     private val gridHeight = totalHeight - searchBlockHeight(res) - bottomRowHeight
-    val rowStep = (gridHeight - topPadding - titleHeight) / IosEmojiLayout.ROWS
+    private val rows = IosEmojiLayout.rows(ResourceUtils.isLandscape(res.displayMetrics))
+    val rowStep = (gridHeight - topPadding - titleHeight) / rows
     val columnStep = (47 * dp).toInt()
     private val sectionGap = (14 * dp).toInt()
     val textSize = minOf(columnStep * 0.64f, rowStep * 0.85f)
@@ -91,6 +92,7 @@ internal class IosEmojiPalette(
 
     init {
         emojiCategory.iosCell = columnStep to rowStep
+        emojiCategory.iosRows = rows
     }
 
     /** rebuilds the list (recents may have become non-empty) and goes back to the first section */

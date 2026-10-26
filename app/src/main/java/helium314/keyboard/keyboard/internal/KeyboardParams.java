@@ -217,8 +217,9 @@ public class KeyboardParams {
     private void applyIosGeometry(final Context context, final SettingsValues sv, final int width, final int height) {
         final float density = context.getResources().getDisplayMetrics().density;
         final boolean stripHidden = sv.mToolbarMode == ToolbarMode.HIDDEN;
-        final float scale = height / (ResourceUtils.iosDesignHeightDp(sv.mShowsNumberRow, stripHidden) * density);
-        mTopPadding = (int) (ResourceUtils.iosTopPaddingDp(stripHidden) * density * scale);
+        final boolean landscape = ResourceUtils.isLandscape(context.getResources().getDisplayMetrics());
+        final float scale = height / (ResourceUtils.iosDesignHeightDp(sv.mShowsNumberRow, stripHidden, landscape) * density);
+        mTopPadding = (int) (ResourceUtils.iosTopPaddingDp(stripHidden, landscape) * density * scale);
         mBottomPadding = 0;
         mLeftPadding += (int) (4 * density);
         mRightPadding += (int) (4 * density);
@@ -226,7 +227,7 @@ public class KeyboardParams {
         mDefaultAbsoluteKeyWidth = (int) (mDefaultKeyWidth * mBaseWidth);
         mAbsolutePopupKeyWidth = (int) (mDefaultKeyWidth * mBaseWidth);
         mHorizontalGap = Math.round(6.5f * density * ResourceUtils.iosWidthScale(context.getResources().getDisplayMetrics()) * sv.mKeyGapScale);
-        mVerticalGap = Math.round(10 * density * scale * sv.mKeyGapScale);
+        mVerticalGap = Math.round(ResourceUtils.iosVerticalGapDp(landscape) * density * scale * sv.mKeyGapScale);
         mRelativeHorizontalGap = (float) mHorizontalGap / width;
         mRelativeVerticalGap = (float) mVerticalGap / height;
     }

@@ -58,6 +58,7 @@ internal class EmojiCategory(private val context: Context, private val layoutSet
 
     /** iOS: column and row step of the section keyboards; null for HeliBoard's paged grid */
     var iosCell: Pair<Int, Int>? = null
+    var iosRows = IosEmojiLayout.rows(false)
     val iosSections by lazy { IosEmojiLayout.sections(canShowFlagEmoji()) }
 
     /** iOS: an empty keyboard of [rows]-key columns, e.g. for search results */
@@ -74,7 +75,7 @@ internal class EmojiCategory(private val context: Context, private val layoutSet
             categoryKeyboardMap[mapKey]?.let { return it }
             val (columnStep, rowStep) = iosCell!!
             val kbd = DynamicGridKeyboard.ofIosColumns(prefs, layoutSet.getKeyboard(KeyboardElement.EMOJI_RECENTS),
-                false, columnStep, rowStep, IosEmojiLayout.ROWS, Int.MAX_VALUE)
+                false, columnStep, rowStep, iosRows, Int.MAX_VALUE)
             for (category in section.categories) {
                 layoutSet.getKeyboard(category.element).sortedKeys
                     .sortedWith(compareBy({ it.hitBox.top }, { it.hitBox.left }, { it.code }))
@@ -165,7 +166,7 @@ internal class EmojiCategory(private val context: Context, private val layoutSet
             if (category == Category.RECENTS) {
                 val template = layoutSet.getKeyboard(KeyboardElement.EMOJI_RECENTS)
                 val kbd = iosCell?.let { (columnStep, rowStep) ->
-                    DynamicGridKeyboard.ofIosColumns(prefs, template, true, columnStep, rowStep, IosEmojiLayout.ROWS, IOS_RECENTS_KEY_COUNT)
+                    DynamicGridKeyboard.ofIosColumns(prefs, template, true, columnStep, rowStep, iosRows, IOS_RECENTS_KEY_COUNT)
                 } ?: DynamicGridKeyboard.ofKeyCount(prefs, template, maxRecentsKeyCount, true, currentWidth)
                 categoryKeyboardMap[categoryKeyboardMapKey] = kbd
                 kbd.loadRecentKeys(categoryKeyboardMap.values)

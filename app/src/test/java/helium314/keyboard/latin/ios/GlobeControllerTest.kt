@@ -20,4 +20,11 @@ class GlobeControllerTest {
         assertEquals(1, pickerShown)
         assertEquals(0, nextCalls)
     }
+
+    @Test fun tapGivesKeyFeedbackLikeAKey() {
+        val calls = mutableListOf<String>()
+        val c = GlobeController(switchToNext = { calls += "next" }, showPicker = { calls += "picker" }, keyFeedback = { calls += "feedback" })
+        c.onTap()
+        assertEquals(listOf("feedback", "next"), calls)
+    }
 }

@@ -8,7 +8,7 @@ import helium314.keyboard.latin.R
 
 /** Geometry and order of the iOS emoji screen: one horizontal strip of sections, keys fill columns top to bottom. */
 internal object IosEmojiLayout {
-    const val ROWS = 5
+    fun rows(landscape: Boolean) = if (landscape) 3 else 5
 
     data class Cell(val column: Int, val row: Int)
 
