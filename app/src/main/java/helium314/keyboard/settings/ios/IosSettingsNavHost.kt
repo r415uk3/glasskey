@@ -8,18 +8,20 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import helium314.keyboard.latin.R
 import helium314.keyboard.latin.settings.getTransitionAnimationScale
+import helium314.keyboard.settings.ios.screens.IosAboutScreen
 import helium314.keyboard.settings.ios.screens.IosAddKeyboardScreen
+import helium314.keyboard.settings.ios.screens.IosAppearanceScreen
 import helium314.keyboard.settings.ios.screens.IosKeyboardsScreen
 import helium314.keyboard.settings.ios.screens.IosLayoutScreen
+import helium314.keyboard.settings.ios.screens.IosLicensesScreen
 import helium314.keyboard.settings.ios.screens.IosMainScreen
+import helium314.keyboard.settings.ios.screens.IosTextReplacementScreen
 import helium314.keyboard.settings.screens.DictionaryScreen
 
 object IosRoute {
@@ -31,6 +33,7 @@ object IosRoute {
     const val TextReplacement = "ios_text_replacement"
     const val Appearance = "ios_appearance"
     const val About = "ios_about"
+    const val Licenses = "ios_licenses"
 }
 
 @Composable
@@ -54,7 +57,6 @@ fun IosSettingsNavHost(onClickBack: () -> Unit, needsEnabling: Boolean, onEnable
         popExitTransition = { slideOutHorizontally(targetOffsetX = { +it * dir }, animationSpec = animation) },
     ) {
         composable(IosRoute.Main) { IosMainScreen(needsEnabling, onEnable, navigate) }
-        // placeholders, filled in by the following screens
         composable(IosRoute.Keyboards) { IosKeyboardsScreen(::goBack, navigate) }
         composable(IosRoute.AddKeyboard) { IosAddKeyboardScreen(::goBack, navigate) }
         composable(IosRoute.Layout + "{subtype}") {
@@ -64,9 +66,10 @@ fun IosSettingsNavHost(onClickBack: () -> Unit, needsEnabling: Boolean, onEnable
                 onAdded = { navController.popBackStack(IosRoute.Keyboards, inclusive = false) },
             )
         }
-        composable(IosRoute.TextReplacement) { IosScreen(stringResource(R.string.ios_text_replacement), ::goBack) {} }
-        composable(IosRoute.Appearance) { IosScreen(stringResource(R.string.ios_appearance), ::goBack) {} }
-        composable(IosRoute.About) { IosScreen(stringResource(R.string.ios_about), ::goBack) {} }
+        composable(IosRoute.TextReplacement) { IosTextReplacementScreen(::goBack) }
+        composable(IosRoute.Appearance) { IosAppearanceScreen(::goBack) }
+        composable(IosRoute.About) { IosAboutScreen(::goBack, navigate) }
+        composable(IosRoute.Licenses) { IosLicensesScreen(::goBack) }
         composable(IosRoute.Dictionaries) { DictionaryScreen(onClickBack = ::goBack) }
     }
 }

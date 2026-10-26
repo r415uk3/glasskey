@@ -5,15 +5,9 @@ import android.net.Uri
 import android.view.inputmethod.InputMethodSubtype
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -21,21 +15,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.settings.SettingsSubtype.Companion.toSettingsSubtype
 import helium314.keyboard.latin.utils.SubtypeLocaleUtils
@@ -52,10 +40,7 @@ import helium314.keyboard.settings.ios.LocalIosColors
 import helium314.keyboard.settings.ios.iosGroup
 import sh.calvin.reorderable.ReorderableColumn
 
-const val IosDeleteTag = "ios_delete"
 const val IosDragHandleTag = "ios_drag_handle"
-
-private val iosRed = Color(0xFFFF3B30)
 
 /** The user's keyboards in globe order; «Изменить» shows delete controls and drag handles. */
 @Composable
@@ -140,36 +125,15 @@ private fun KeyboardRow(
     val locale = subtype.locale()
     val name = remember(subtype) { SubtypeLocaleUtils.getSubtypeLocaleDisplayName(locale) }
     val layout = remember(subtype) { iosLayoutLabel(ctx, subtype.mainLayoutNameOrQwerty(), locale) }
-    val deleteText = stringResource(R.string.ios_delete)
     val reorderText = stringResource(R.string.ios_reorder)
     IosRow(
         name,
         value = if (confirmingDelete) null else layout,
         chevron = !editing,
         onClick = if (editing) null else onClick,
-        leading = if (editing && deletable) { ->
-            Box(
-                Modifier
-                    .testTag(IosDeleteTag)
-                    .size(22.dp)
-                    .background(iosRed, CircleShape)
-                    .clickable(remember { MutableInteractionSource() }, indication = null, role = Role.Button, onClick = onToggleDelete)
-                    .semantics { contentDescription = "$deleteText $name" },
-                contentAlignment = Alignment.Center,
-            ) {
-                Box(Modifier.size(width = 10.dp, height = 2.dp).background(Color.White, RoundedCornerShape(1.dp)))
-            }
-        } else null,
+        leading = if (editing && deletable) { -> IosDeleteToggle(name, onToggleDelete) } else null,
         trailing = if (!editing) null else { ->
-            if (confirmingDelete)
-                Box(
-                    Modifier
-                        .background(iosRed, RoundedCornerShape(percent = 50))
-                        .clickable(remember { MutableInteractionSource() }, indication = null, role = Role.Button, onClick = onDelete)
-                        .padding(horizontal = 14.dp, vertical = 6.dp)
-                ) {
-                    BasicText(deleteText, style = TextStyle(color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.SemiBold))
-                }
+            if (confirmingDelete) IosConfirmDeleteButton(onDelete)
             Canvas(
                 handle
                     .testTag(IosDragHandleTag)

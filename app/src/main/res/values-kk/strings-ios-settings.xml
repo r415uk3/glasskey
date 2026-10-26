@@ -33,4 +33,22 @@
     <string name="ios_layout">ОРНАЛАСУ</string>
     <string name="ios_choose_layout">Пернетақтаны қосу үшін орналасуды таңдаңыз.</string>
     <string name="ios_suggested_languages">ҰСЫНЫЛАТЫН</string>
+    <string name="ios_theme_system">Жүйедегідей</string>
+    <string name="ios_theme_light">Ашық</string>
+    <string name="ios_theme_dark">Қараңғы</string>
+    <string name="ios_blur">Фонды бұлыңғырлау</string>
+    <string name="ios_blur_footer">Пернетақта фоны шыны сияқты мөлдір көрінеді.</string>
+    <string name="ios_add">Қосу</string>
+    <string name="ios_cancel">Болдырмау</string>
+    <string name="ios_phrase">Фраза</string>
+    <string name="ios_shortcut">Қысқарту</string>
+    <string name="ios_text_replacement_footer">Қысқартуды терсеңіз, ол фразамен ауыстырылады.</string>
+    <string name="ios_version">Нұсқа</string>
+    <string name="ios_source_code">Бастапқы код</string>
+    <string name="ios_licenses">Лицензиялар</string>
+    <string name="ios_licenses_footer">Glasskey HeliBoard негізінде жасалған.</string>
+    <string name="ios_third_party">ҮШІНШІ ТАРАП КОМПОНЕНТТЕРІ</string>
+    <string name="ios_kazakh_dictionary">Қазақ сөздігі (aosp-dictionaries)</string>
+    <string name="ios_license_as_in_repo">Оның репозиторийінде көрсетілгендей</string>
+    <string name="ios_emoji_names">Эмодзи атаулары (Unicode CLDR)</string>
 </resources>

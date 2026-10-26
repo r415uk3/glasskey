@@ -33,7 +33,7 @@ class IosMainScreenTest {
     private val context: Context get() = ApplicationProvider.getApplicationContext()
 
     @Before @After fun reset() {
-        context.prefs().edit().remove(Settings.PREF_SOUND_ON).commit()
+        context.prefs().edit().remove(Settings.PREF_SOUND_ON).remove(Settings.PREF_IOS_BLUR).remove(Settings.PREF_KEYBOARD_FONT).commit()
         SettingsActivity.settingsContainer = SettingsContainer(context)
     }
 
@@ -98,5 +98,22 @@ class IosMainScreenTest {
         compose.onNode(hasSetTextAction()).performTextInput("шрифт")
         compose.onNodeWithText("Шрифт").performClick()
         assertEquals(listOf(IosRoute.Appearance), routes)
+    }
+
+    @Test fun searchFindsBlurSwitch() {
+        show()
+        compose.onNode(hasSetTextAction()).performTextInput("размыт")
+        compose.onNodeWithText("Размытие фона").performClick()
+        compose.waitForIdle()
+        assertFalse(context.prefs().getBoolean(Settings.PREF_IOS_BLUR, true))
+    }
+
+    @Test fun appearanceValueFollowsFontPref() {
+        show()
+        compose.onNodeWithText("Inter").assertExists()
+        context.prefs().edit().putString(Settings.PREF_KEYBOARD_FONT, "onest").commit()
+        compose.waitForIdle()
+        compose.onNodeWithText("Onest").assertExists()
+        compose.onNodeWithText("Inter").assertDoesNotExist()
     }
 }

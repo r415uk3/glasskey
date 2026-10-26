@@ -33,4 +33,22 @@
     <string name="ios_layout">РАСКЛАДКА</string>
     <string name="ios_choose_layout">Выберите раскладку, чтобы добавить клавиатуру.</string>
     <string name="ios_suggested_languages">ПРЕДЛАГАЕМЫЕ</string>
+    <string name="ios_theme_system">Как в системе</string>
+    <string name="ios_theme_light">Светлая</string>
+    <string name="ios_theme_dark">Тёмная</string>
+    <string name="ios_blur">Размытие фона</string>
+    <string name="ios_blur_footer">Фон клавиатуры просвечивает, как стекло.</string>
+    <string name="ios_add">Добавить</string>
+    <string name="ios_cancel">Отменить</string>
+    <string name="ios_phrase">Фраза</string>
+    <string name="ios_shortcut">Сокращение</string>
+    <string name="ios_text_replacement_footer">Наберите сокращение, и оно заменится фразой.</string>
+    <string name="ios_version">Версия</string>
+    <string name="ios_source_code">Исходный код</string>
+    <string name="ios_licenses">Лицензии</string>
+    <string name="ios_licenses_footer">Glasskey основан на HeliBoard.</string>
+    <string name="ios_third_party">СТОРОННИЕ КОМПОНЕНТЫ</string>
+    <string name="ios_kazakh_dictionary">Казахский словарь (aosp-dictionaries)</string>
+    <string name="ios_license_as_in_repo">Как указано в его репозитории</string>
+    <string name="ios_emoji_names">Названия эмодзи (Unicode CLDR)</string>
 </resources>

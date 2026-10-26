@@ -16,9 +16,17 @@ data class TextReplacement(
     internal val storedLocale: String? = locale?.toString(),
 )
 
+/** Where [helium314.keyboard.settings.ios.screens.IosTextReplacementScreen] reads and writes its entries. */
+interface TextReplacementStore {
+    fun all(context: Context): List<TextReplacement>
+    /** [locale] null means all languages. */
+    fun add(context: Context, word: String, shortcut: String, locale: Locale?)
+    fun delete(context: Context, r: TextReplacement)
+}
+
 /** iOS "Замена текста": the shortcut entries of the personal dictionary, of every locale. */
-object IosTextReplacements {
-    fun all(context: Context): List<TextReplacement> {
+object IosTextReplacements : TextReplacementStore {
+    override fun all(context: Context): List<TextReplacement> {
         val cursor = context.contentResolver.query(Words.CONTENT_URI, arrayOf(Words.WORD, Words.SHORTCUT, Words.LOCALE),
             "${Words.SHORTCUT} IS NOT NULL AND ${Words.SHORTCUT} != ''", null, "UPPER(${Words.SHORTCUT})") ?: return emptyList()
         return cursor.use {
@@ -31,10 +39,10 @@ object IosTextReplacements {
         }
     }
 
-    fun add(context: Context, word: String, shortcut: String) =
-        Words.addWord(context, word, WEIGHT_FOR_USER_DICTIONARY_ADDS, shortcut, null)
+    override fun add(context: Context, word: String, shortcut: String, locale: Locale?) =
+        Words.addWord(context, word, WEIGHT_FOR_USER_DICTIONARY_ADDS, shortcut, locale)
 
-    fun delete(context: Context, r: TextReplacement) {
+    override fun delete(context: Context, r: TextReplacement) {
         val shortcut = r.shortcut ?: return
         if (r.storedLocale == null)
             context.contentResolver.delete(Words.CONTENT_URI,

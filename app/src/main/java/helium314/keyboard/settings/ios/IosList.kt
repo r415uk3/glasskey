@@ -26,6 +26,7 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -120,7 +121,8 @@ fun IosRow(
     trailing: (@Composable () -> Unit)? = null,
     modifier: Modifier = Modifier,
     leading: (@Composable () -> Unit)? = null,
-) = IosRowImpl(title, value, icon, chevron ?: (onClick != null), titleColor, onClick, trailing, modifier, leading)
+    subtitle: String? = null,
+) = IosRowImpl(title, value, icon, chevron ?: (onClick != null), titleColor, onClick, trailing, modifier, leading, subtitle)
 
 @Composable
 private fun IosRowImpl(
@@ -133,6 +135,7 @@ private fun IosRowImpl(
     trailing: (@Composable () -> Unit)?,
     modifier: Modifier,
     leading: (@Composable () -> Unit)?,
+    subtitle: String?,
 ) {
     val colors = LocalIosColors.current
     val interaction = remember { MutableInteractionSource() }
@@ -155,11 +158,11 @@ private fun IosRowImpl(
             RowIcon(icon)
             Spacer(Modifier.width(6.dp)) // 12dp to the title together with the arrangement spacing
         }
-        BasicText(
-            title,
-            Modifier.weight(1f).padding(vertical = 11.dp),
-            style = TextStyle(color = titleColor ?: colors.text, fontSize = 16.sp),
-        )
+        Column(Modifier.weight(1f).padding(vertical = if (subtitle == null) 11.dp else 7.dp)) {
+            BasicText(title, style = TextStyle(color = titleColor ?: colors.text, fontSize = 16.sp))
+            if (subtitle != null)
+                BasicText(subtitle, style = TextStyle(color = colors.secondaryText, fontSize = 13.sp))
+        }
         if (value != null)
             BasicText(
                 value,
@@ -197,9 +200,22 @@ private fun Chevron(color: Color) {
     }
 }
 
+/** Increases whenever any pref changes, so values derived from prefs can be re-read with `remember(version)`. */
+@Composable
+fun rememberPrefsVersion(): Int {
+    val prefs = LocalContext.current.prefs()
+    var version by remember { mutableIntStateOf(0) }
+    DisposableEffect(prefs) {
+        val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ -> version++ }
+        prefs.registerOnSharedPreferenceChangeListener(listener)
+        onDispose { prefs.unregisterOnSharedPreferenceChangeListener(listener) }
+    }
+    return version
+}
+
 /** Row with a switch bound to a boolean pref; tapping anywhere on the row toggles it. */
 @Composable
-fun IosSwitchRow(title: String, prefKey: String, default: Boolean) {
+fun IosSwitchRow(title: String, prefKey: String, default: Boolean, onChange: ((Boolean) -> Unit)? = null) {
     val prefs = LocalContext.current.prefs()
     var checked by remember(prefKey) { mutableStateOf(prefs.getBoolean(prefKey, default)) }
     DisposableEffect(prefs, prefKey) {
@@ -209,9 +225,10 @@ fun IosSwitchRow(title: String, prefKey: String, default: Boolean) {
         prefs.registerOnSharedPreferenceChangeListener(listener)
         onDispose { prefs.unregisterOnSharedPreferenceChangeListener(listener) }
     }
-    val set = { value: Boolean ->
+    val set: (Boolean) -> Unit = { value ->
         checked = value
         prefs.edit().putBoolean(prefKey, value).apply()
+        onChange?.invoke(value)
     }
     IosRow(
         title,

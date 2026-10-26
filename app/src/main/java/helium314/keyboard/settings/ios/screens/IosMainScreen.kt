@@ -28,8 +28,9 @@ import helium314.keyboard.settings.ios.IosSearchField
 import helium314.keyboard.settings.ios.IosSwitchRow
 import helium314.keyboard.settings.ios.LocalIosColors
 import helium314.keyboard.settings.ios.iosGroup
+import helium314.keyboard.settings.ios.rememberPrefsVersion
 
-private class IosSwitchItem(val key: String, val title: Int, val default: Boolean)
+private class IosSwitchItem(val key: String, val title: Int, val default: Boolean, val reloadsKeyboard: Boolean = false)
 
 private val allKeyboardsSwitches = listOf(
     IosSwitchItem(Settings.PREF_AUTO_CAP, R.string.ios_auto_cap, Defaults.PREF_AUTO_CAP),
@@ -42,7 +43,10 @@ private val feedbackSwitches = listOf(
     IosSwitchItem(Settings.PREF_SOUND_ON, R.string.ios_sound, Defaults.PREF_SOUND_ON),
     IosSwitchItem(Settings.PREF_VIBRATE_ON, R.string.ios_vibration, Defaults.PREF_VIBRATE_ON),
 )
-private val numberRowSwitch = IosSwitchItem(Settings.PREF_SHOW_NUMBER_ROW, R.string.ios_number_row, Defaults.PREF_SHOW_NUMBER_ROW)
+private val appearanceSwitches = listOf(
+    IosSwitchItem(Settings.PREF_SHOW_NUMBER_ROW, R.string.ios_number_row, Defaults.PREF_SHOW_NUMBER_ROW, reloadsKeyboard = true),
+    IosSwitchItem(Settings.PREF_IOS_BLUR, R.string.ios_blur, Defaults.PREF_IOS_BLUR, reloadsKeyboard = true),
+)
 
 /** A search hit: a switch, or a row leading to the screen that owns a non-boolean setting. */
 private sealed interface IosSearchHit {
@@ -51,7 +55,7 @@ private sealed interface IosSearchHit {
 }
 
 private val searchHits: List<Pair<Set<String>, IosSearchHit>> =
-    (allKeyboardsSwitches + feedbackSwitches + numberRowSwitch).map { setOf(it.key) to IosSearchHit.Switch(it) } + listOf(
+    (allKeyboardsSwitches + feedbackSwitches + appearanceSwitches).map { setOf(it.key) to IosSearchHit.Switch(it) } + listOf(
         setOf(Settings.PREF_KEYBOARD_FONT) to IosSearchHit.Link(R.string.ios_font, IosRoute.Appearance),
         setOf(Settings.PREF_THEME_DAY_NIGHT, Settings.PREF_THEME_COLORS) to IosSearchHit.Link(R.string.ios_theme, IosRoute.Appearance),
     )
@@ -77,10 +81,10 @@ fun IosMainScreen(needsEnabling: Boolean, onEnable: () -> Unit, navigate: (Strin
     val ctx = LocalContext.current
     val colors = LocalIosColors.current
     var query by rememberSaveable { mutableStateOf("") }
-    val languageCount = remember { SubtypeSettings.getEnabledSubtypes(true).map { it.locale() }.distinct().size }
-    val fontName = stringResource(
-        KeyboardFont.fromPref(ctx.prefs().getString(Settings.PREF_KEYBOARD_FONT, Defaults.PREF_KEYBOARD_FONT)).title
-    )
+    val prefsVersion = rememberPrefsVersion()
+    val languageCount = remember(prefsVersion) { SubtypeSettings.getEnabledSubtypes(true).map { it.locale() }.distinct().size }
+    val font = remember(prefsVersion) { KeyboardFont.fromPref(ctx.prefs().getString(Settings.PREF_KEYBOARD_FONT, Defaults.PREF_KEYBOARD_FONT)) }
+    val fontName = stringResource(font.title)
     val hits = remember(query) { if (query.isBlank()) emptyList() else search(ctx, query) }
     val noResults = stringResource(R.string.ios_no_results)
     val enableTitle = stringResource(R.string.ios_enable)
@@ -104,7 +108,7 @@ fun IosMainScreen(needsEnabling: Boolean, onEnable: () -> Unit, navigate: (Strin
             else
                 iosGroup(rows = hits.map { hit ->
                     when (hit) {
-                        is IosSearchHit.Switch -> { -> IosSwitchRow(stringResource(hit.item.title), hit.item.key, hit.item.default) }
+                        is IosSearchHit.Switch -> switchRow(hit.item)
                         is IosSearchHit.Link -> { -> IosRow(stringResource(hit.title), onClick = { navigate(hit.route) }) }
                     }
                 })
@@ -128,5 +132,5 @@ fun IosMainScreen(needsEnabling: Boolean, onEnable: () -> Unit, navigate: (Strin
 }
 
 private fun switchRow(item: IosSwitchItem): @Composable () -> Unit = {
-    IosSwitchRow(stringResource(item.title), item.key, item.default)
+    IosSwitchRow(stringResource(item.title), item.key, item.default, if (item.reloadsKeyboard) { _ -> iosReloadKeyboard() } else null)
 }

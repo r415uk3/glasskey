@@ -34,4 +34,22 @@
     <string name="ios_layout">LAYOUT</string>
     <string name="ios_choose_layout">Choose a layout to add this keyboard.</string>
     <string name="ios_suggested_languages">SUGGESTED</string>
+    <string name="ios_theme_system">Automatic</string>
+    <string name="ios_theme_light">Light</string>
+    <string name="ios_theme_dark">Dark</string>
+    <string name="ios_blur">Background Blur</string>
+    <string name="ios_blur_footer">The keyboard background shows through like glass.</string>
+    <string name="ios_add">Add</string>
+    <string name="ios_cancel">Cancel</string>
+    <string name="ios_phrase">Phrase</string>
+    <string name="ios_shortcut">Shortcut</string>
+    <string name="ios_text_replacement_footer">Type a shortcut and it is replaced with its phrase.</string>
+    <string name="ios_version">Version</string>
+    <string name="ios_source_code">Source Code</string>
+    <string name="ios_licenses">Licenses</string>
+    <string name="ios_licenses_footer">Glasskey is based on HeliBoard.</string>
+    <string name="ios_third_party">THIRD-PARTY COMPONENTS</string>
+    <string name="ios_kazakh_dictionary">Kazakh dictionary (aosp-dictionaries)</string>
+    <string name="ios_license_as_in_repo">As stated in its repository</string>
+    <string name="ios_emoji_names">Emoji names (Unicode CLDR)</string>
 </resources>
