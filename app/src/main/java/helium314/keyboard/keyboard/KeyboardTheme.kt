@@ -18,6 +18,7 @@ import helium314.keyboard.latin.R
 import helium314.keyboard.latin.common.AllColors
 import helium314.keyboard.latin.common.ColorType
 import helium314.keyboard.latin.common.Colors
+import helium314.keyboard.latin.ios.IosBlur
 import helium314.keyboard.latin.common.DefaultColors
 import helium314.keyboard.latin.common.DynamicColors
 import helium314.keyboard.latin.settings.Defaults
@@ -163,7 +164,7 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
                     themeStyle,
                     hasBorders,
                     0xFF0088FF.toInt(), // accent: active action key
-                    0xFFDADADA.toInt(), // Figma: #DADADA at 75%; opaque because Android cannot blur what is behind the keyboard
+                    if (IosBlur.isAvailable(context)) 0xBFDADADA.toInt() else 0xFFDADADA.toInt(), // Figma #DADADA at 75% over system blur, else opaque
                     0xE3FFFFFF.toInt(),
                     0xE3FFFFFF.toInt(),
                     0xE3FFFFFF.toInt(),
@@ -176,7 +177,7 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
                     themeStyle,
                     hasBorders,
                     0xFF0088FF.toInt(),
-                    0xFF232323.toInt(), // Figma: #1C1C1C at 86% over a dark wallpaper reads as #232323; opaque for the same reason
+                    if (IosBlur.isAvailable(context)) 0xDB1C1C1C.toInt() else 0xFF232323.toInt(), // Figma #1C1C1C at 86% over system blur, else opaque
                     0x45FFFFFF,
                     0x45FFFFFF,
                     0x45FFFFFF,

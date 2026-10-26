@@ -50,6 +50,7 @@ import helium314.keyboard.keyboard.KeyboardSwitcher;
 import helium314.keyboard.keyboard.MainKeyboardView;
 import helium314.keyboard.keyboard.KeyboardTheme;
 import helium314.keyboard.latin.ios.IosActionKeyState;
+import helium314.keyboard.latin.ios.IosBlur;
 import helium314.keyboard.latin.SuggestedWords.SuggestedWordInfo;
 import helium314.keyboard.latin.common.ColorType;
 import helium314.keyboard.latin.common.Constants;
@@ -938,6 +939,8 @@ public class LatinIME extends InputMethodService implements
                 FloatingKeyboardUtils.setFloating(mInputView);
             setNavigationBarColor();
             workaroundForHuaweiStatusBarIssue();
+            if (KeyboardTheme.STYLE_IOS.equals(mSettings.getCurrent().mColors.getThemeStyle()))
+                IosBlur.apply(getWindow().getWindow(), this);
         }
     }
 
