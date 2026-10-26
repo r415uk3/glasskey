@@ -479,9 +479,12 @@ final class SuggestionStripLayoutHelper {
 
     private int setupWordViewsAndReturnStartIndexOfMoreSuggestions(
             final SuggestedWords suggestedWords, final int maxSuggestionInStrip) {
+        // iOS animates from the previous words, so remember them before clearing
+        final String[] previousWords = new String[maxSuggestionInStrip];
         // Clear all suggestions first
         for (int positionInStrip = 0; positionInStrip < maxSuggestionInStrip; ++positionInStrip) {
             final TextView wordView = mWordViews.get(positionInStrip);
+            previousWords[positionInStrip] = wordView.getText() == null ? "" : wordView.getText().toString();
             wordView.setText(null);
             wordView.setTag(null);
             if (mIsIos) setIosPill(wordView, false);
@@ -505,7 +508,7 @@ final class SuggestionStripLayoutHelper {
             wordView.setTag(indexInSuggestedWords);
             wordView.setTextColor(getSuggestionTextColor(suggestedWords, indexInSuggestedWords));
             final CharSequence styledWord = getStyledSuggestedWord(suggestedWords, indexInSuggestedWords);
-            if (mIsIos) IosWordMorph.animate(wordView, styledWord != null ? styledWord : "");
+            if (mIsIos) IosWordMorph.animate(wordView, previousWords[positionInStrip], styledWord != null ? styledWord : "");
             else wordView.setText(styledWord);
             if (mIsIos)
                 setIosPill(wordView, indexInSuggestedWords == SuggestedWords.INDEX_OF_AUTO_CORRECTION && suggestedWords.mWillAutoCorrect);
