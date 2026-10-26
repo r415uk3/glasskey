@@ -47,4 +47,18 @@ class IosEmojiSearchIndexTest {
     @Test fun blankQueryFindsNothing() {
         assertEquals(emptyList(), index.search("  "))
     }
+
+    @Test fun keyboardLanguagesMapToCldrFiles() {
+        val available = setOf("en", "pt", "sr", "sr-Latn", "id", "he", "fil", "no", "de")
+        assertEquals(listOf("en"), IosEmojiSearchIndex.filesFor("en-US", available))
+        assertEquals(listOf("pt"), IosEmojiSearchIndex.filesFor("pt-BR", available))
+        assertEquals(listOf("de"), IosEmojiSearchIndex.filesFor("de-CH", available))
+        assertEquals(listOf("sr-Latn", "sr"), IosEmojiSearchIndex.filesFor("sr-Latn", available))
+        // old Android codes and Norwegian Bokmål
+        assertEquals(listOf("id"), IosEmojiSearchIndex.filesFor("in", available))
+        assertEquals(listOf("he"), IosEmojiSearchIndex.filesFor("iw", available))
+        assertEquals(listOf("fil"), IosEmojiSearchIndex.filesFor("tl", available))
+        assertEquals(listOf("no"), IosEmojiSearchIndex.filesFor("nb", available))
+        assertEquals(emptyList(), IosEmojiSearchIndex.filesFor("tok", available))
+    }
 }

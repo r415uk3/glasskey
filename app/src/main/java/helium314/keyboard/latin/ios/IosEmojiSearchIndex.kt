@@ -25,7 +25,14 @@ class IosEmojiSearchIndex private constructor(private val entries: List<Entry>) 
     }
 
     companion object {
-        val LANGUAGES = listOf("en", "ru", "kk")
+        /** old Android language codes and Norwegian Bokmål -> CLDR; keep in sync with tools/emoji/make_emoji_search.py */
+        private val ALIASES = mapOf("in" to "id", "iw" to "he", "tl" to "fil", "nb" to "no")
+
+        /** CLDR files for a keyboard language: its own script variant if there is one, then the language */
+        fun filesFor(localeTag: String, available: Set<String>): List<String> {
+            val base = localeTag.substringBefore('-').let { ALIASES[it] ?: it }
+            return listOf(localeTag, base).distinct().filter { it in available }
+        }
 
         /** each list holds the lines of one language file: emoji TAB name TAB keyword|keyword... */
         fun of(vararg languages: List<String>): IosEmojiSearchIndex {
@@ -42,9 +49,14 @@ class IosEmojiSearchIndex private constructor(private val entries: List<Entry>) 
             return IosEmojiSearchIndex(entries.values.toList())
         }
 
-        fun load(context: Context) = of(*LANGUAGES.map { lang ->
-            context.assets.open("emoji_search/$lang.txt").bufferedReader().use { it.readLines() }
-        }.toTypedArray())
+        /** English and the languages of the given keyboards */
+        fun load(context: Context, localeTags: Collection<String>): IosEmojiSearchIndex {
+            val available = context.assets.list("emoji_search").orEmpty().map { it.removeSuffix(".txt") }.toSet()
+            val files = (listOf("en") + localeTags.flatMap { filesFor(it, available) }).distinct()
+            return of(*files.map { lang ->
+                context.assets.open("emoji_search/$lang.txt").bufferedReader().use { it.readLines() }
+            }.toTypedArray())
+        }
 
         private fun words(text: String) = text.lowercase(Locale.ROOT).replace('ё', 'е')
             .split(Regex("[^\\p{L}\\p{N}]+")).filter { it.isNotEmpty() }

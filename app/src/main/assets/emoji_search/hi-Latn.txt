@@ -1,0 +1,614 @@
+😀		cheerful|grin|grinning|happy|happy face|laugh|laughing|nice
+😃	badi aankhon wala grinning face	badi aankhon wala grinning face|face|mouth|open|smile
+😄	smile karti aankhon wala grinning face	eye|face|mouth|open|smile|smile karti aankhon wala grinning face
+😁	smile karti aankhon wala beaming face	eye|face|grin|smile|smile karti aankhon wala beaming face
+😆		eyes|grinning|grinning face|haha|hahaha|happy|happy face|laugh|lol|rofl
+😅	sweating wala grinning face	cold|face|open|smile|sweat|sweating wala grinning face
+🤣		funny|haha|happy|hehe|hilarious|joy|laugh|lol|rofl|rolling
+😂	face	face|joy|khushi ke aansoo wala face|laugh|tear
+🫠		embarrassed|haha|heat|hot|liquid|lol|melting|sarcasm|sarcastic
+😊	smiling eyes wala smiling face	blush|eye|face|smile|smiling eyes wala smiling face
+😇		angel|blessed|fairy|fairytale|fantasy|halo|happy|innocent|peaceful
+🥰	hearts wala smiling face	adore|crush|hearts|hearts wala smiling face|in love|smiling face with hearts
+😍	heart-eyes wala smiling face	eye|face|heart-eyes wala smiling face|love|smile
+😘	kiss deta face	face|face blowing a kiss|kiss|kiss deta face
+😗		143|date|dating|face|flirt|ily|kiss|love|smooch|you
+😚	closed eyes wala kissing face	closed|closed eyes wala kissing face|eye|face|kiss
+😙	smiling eyes wala kissing face	eye|face|kiss|smile|smiling eyes wala kissing face
+🥲	aansoo wala smiling face	aansoo wala smiling face|grateful|proud|relieved|smiling|tear|touched
+😋	food enjoy karta face	delicious|face|food enjoy karta face|savouring|smile|yum
+😛	tongue dikhaata face	face|tongue|tongue dikhaata face
+😜	tongue dikhaata winking face	eye|face|joke|tongue|tongue dikhaata winking face|wink
+😝	tongue nikaalta squinting face	eye|face|horrible|taste|tongue|tongue nikaalta squinting face
+🤗	hug karta smiling face	face|hug|hug karta smiling face|hugging|open hands|smiling face
+🤭	mouth par haath wala face	mouth par haath wala face|whoops
+🫢	khuli aankhein aur munh par haath	amazement|awe|disbelief|embarrass|khuli aankhein aur munh par haath|scared|surprise
+🫣	fingers ke beech se jhaankta face	captivated|fingers ke beech se jhaankta face|jhaankna|stare
+🫡		good|luck|ma’am|OK|respect|salute|saluting|sir|troops|yes
+🤨	raised eyebrow wala face	distrust|raised eyebrow wala face|skeptic
+😐		awkward|blank|expressionless|fine|jealous|neutral|straight|unhappy|unimpressed|whatever
+😑		awkward|blank|expressionless|fine|jealous|neutral|straight|unhappy|unimpressed|whatever
+😶	bina mouth wala face	bina mouth wala face|face|mouth|quiet|silent
+🫥		depressed|disappear|dotted|face|hidden|hide|introvert|invisible|whatever|wtv
+😶‍🌫️	baadlon mein face	absentminded|baadlon mein face|baadlon mein head|fog mein face
+😏		boss|face|flirt|kidding|shade|slick|snicker suspicious|swag
+😒		bored|jealous|pissed|ugh|uhh|unhappy|weird|whatever
+🙄	rolling eyes wala face	eyeroll|eyes|face|rolling|rolling eyes wala face
+😮‍💨	exhale karta face	breathe out fast|exhale karta face|groan|relief|whisper|whistle
+🫨		crazy|earthquake|face|omg|panic|shaking|shock|surprise|vibrate|wow
+🙂‍↔️	left right head shaking	left right head shaking|left-right sir hilaana|nahi|no|shake
+🙂‍↕️	oopar-neeche sir hilaana	haan|nod|oopar-neeche sir hilaana|yes
+😔		bored|died|disappointed|face|losing|lost|pensive|sad|sucks
+😴		bedtime|goodnight|nap|night|sleep|sleeping|tired|whatever|yawn|zzz
+🫩	baggy under eyes wala face	
+😷	medical mask wala face	cold|doctor|face|mask|medical mask wala face|sick
+🤒	thermometer wala face	face|ill|sick|thermometer|thermometer wala face
+🤕	head-bandage wala face	bandage|face|head-bandage wala face|hurt|injury
+🤢		face|nauseated face|vomit
+🤮		barf|ew|face|gross|puke|sick|spew|vomit|vomiting
+😵	crossed-out eyes wala face	crossed-out eyes|crossed-out eyes wala face|dead|face|knocked out
+😵‍💫	spiral eyes wala face	dizzy|hypnotized|spiral|spiral eyes wala face|trouble|whoa
+🥳		bday|birthday|celebrate|celebration|excited|happy|hat|hooray|party
+🥸		disguise|eyebrow|glasses|glasses on eyes|incognito|moustache|naak|nose|spy
+😎	sunglasses wala face	bright|cool|face|sun|sunglasses|sunglasses wala face
+🧐		face|face with monocle|monocle|monocle pahne face|stuffy
+😕		boring|confused|dunno|face|frown|hm|sad|sorry
+🫤	diagonal mouth wala face	diagonal mouth wala face|disappointed|meh|skeptical|unsure
+😟		anxious|butterflies|face|nervous|sad|stressed|surprised|worried
+😮	open mouth wala face	face|mouth|open|open mouth wala face|sympathy
+😳		amazed|awkward|crazy|disbelief|embarrassed|flushed|heat|hot|impressed|wow
+🥺		begging|big|eyes|face|mercy|please|pretty|puppy|sad|why
+🥹	Aansoo rokta face	Aansoo rokta face|angry|cry|proud|resist|sad
+😦	open mouth wala frowning face	face|frown|mouth|open|open mouth wala frowning face
+😧	dukhi face	dukhi|face
+😰	sweating wala anxious face	blue|cold|face|rushed|sweat|sweating wala anxious face
+😥	sad lekin relieved face	disappointed|face|relieved|sad lekin relieved face|whew
+😭	loudly rone wala face	cry|face|loudly rone wala face|sad|sob|tear
+😱	dar se scream karta face	dar se scream karta face|face|fear|munch|scared|scream
+😖	Hairaan face	confounded|face|Hairaan face
+😓	sweating wala udaas face	cold|face|sweat|sweating wala udaas face
+😩		crying|fail|feels|hungry|mad|nooo|sad|sleepy|tired|unhappy
+🥱		bedtime|bored|goodnight|nap|sleepy|tired|whatever|yawn|zzz
+😤	nose se steam nikalti dikhaane wala face	face|nose se steam nikalti dikhaane wala face|triumph|won
+😡		angry|gussa|gusse mein laal|mad|maddening|rage|unhappy|upset
+😠		angry|blame|face|frustrated|gussa|mad|rage|unhappy|upset
+🤬	mouth par symbols wala face	mouth par symbols wala face|shapath
+😈	horns wala smiling face	face|fairy tale|fantasy|horns|horns wala smiling face|smile
+👿	horns wala angry face	demon|devil|face|fantasy|horns wala angry face|imp
+💀		body|dead|death|monster|skeleton face|skull|yolo
+☠️	skull aur crossbones	crossbones|death|face|monster|skull|skull aur crossbones
+💩		comic|dung|monster|pile|poo|poop|smelly|smh|stinky|turd
+👹		creature|devil|fairy|fairytale|fantasy|mask|monster|scary
+👺		angry|creature|face|fairy|fairytale|fantasy|mask|mean|monster
+👻		boo|creature|excited|fairy|fairytale|fantasy|ghost|halloween|silly
+👽		alien|creature|extraterrestrial|face|fantasy|monster|space|ufo
+👾		alien|creature|extraterrestrial|fantasy|game|monster|pixelated|space|ufo
+😸	smiling eyes wali grinning cat	cat|eye|face|grin|smile|smiling eyes wali grinning cat
+😹	khushi ke aansoo bahaati cat kaa face	cat|face|joy|khushi ke aansoo bahaati cat kaa face|tear
+😻	heart-eyes wali smiling cat	cat|eye|face|heart|heart-eyes wali smiling cat|love|smile
+😼	Dissapointment ke saath smile karti cat	ajeeb smile karti billi|cat|cat-face|Dissapointment ke saath smile karti cat|ironic|ironic smile wali cat
+🙈	Bura na dekhne wala monkey	Bura na dekhne wala monkey|evil|face|forbidden|monkey|see
+🙉	bura na sunne wala monkey	bura na sunne wala monkey|evil|face|forbidden|monkey
+🙊	bura na bolne wala monkey	bura na bolne wala monkey|evil|face|forbidden|monkey|speak
+💘	arrow wala heart	arrow|arrow wala heart|cupid
+💝	ribbon wala heart	ribbon|ribbon wala heart|valentine
+💖		143|emotion|excited|good|heart|ily|kisses|morning|night|sparkle
+💗	grow karta hua heart	excited|grow karta hua heart|growing|nervous|pulse
+💕	do hearts	do hearts|love
+💟	heart ki decoration	heart|heart ki decoration
+❣️	exclamation sign wala heart	exclamation|exclamation sign wala heart|mark|punctuation
+❤️‍🔥	burning heart	burn|burning heart|heart|love|lust|sacred heart
+❤️‍🩹	recovering heart	healthier|improving|improving heart|mending|recovering|recovering heart|well
+🩷		143|adorable|cute|emotion|heart|ily|like|love|pink heart|special
+🩵		143|blue|blue sky|cyan|emotion|heart|ily|love|teal
+💯		100|100%|Absolute|agree|full marks|hundred|point|score|TRUE
+💦	sweating ke droplets	comic|splashing|sweat|sweating ke droplets
+💨		cloud|comic|dashing|door|fart|fast|go|gone|running|smoke
+👁️‍🗨️	speech bubble mein eye	balloon|bubble|eye|speech|speech bubble mein eye|witness
+💭		balloon|bubble|cloud|comic|dream|idea|invention|thoughts|wonder
+👋	wave karta haath	hand|wave|wave karta haath|waving
+🤚	uthe huye haath ki back side	backhand|raised|uthe huye haath ki back side
+🖐️	faili fingers wala haath	faili fingers wala haath|finger|hand|splayed
+✋	utha hua haath	haath|high 5|high five|utha hua haath
+🫴		beckon|catch|come|hold|know|lift|offer|palm|tell
+🫷		block|halt|high|hold|no|pause|push|refuse|stop|wait
+🫸		block|halt|high|hold|pause|push|refuse|stop|wait
+👌	OK kaa symbol	haath|OK|OK kaa symbol
+🤌		fingers|haath kaa gesture|pinched|pooch-taachh|sarcastic
+🤏	pinch dikhaata haath	pinch dikhaata haath|thoda amount
+✌️	victory dikhaata haath	haath|jeet|victory|victory dikhaata haath
+🫰		<3|crossed|expensive|how much|index|money|price|pricey|snap
+🤘	horns kaa sign	finger|hand|horns|horns kaa sign|rock-on
+🤙	call me kaa ishaara karne wala haath	call|call me kaa ishaara karne wala haath|hand|hang loose|Shaka
+👈	left mein point karti index finger	backhand|finger|hand|index|left mein point karti index finger|point
+👉	right mein point karti index finger	backhand|finger|hand|index|point|right mein point karti index finger|right mein point karti index finger dikhaate haath ki back side
+👆	oopar ishaara karti index finger	backhand|finger|hand|oopar ishaara karti index finger|oopar point karti index finger dikhaate haath ki back side|point|up
+👇	neeche ishaara karti index finger	backhand|down|finger|hand|neeche ishaara karti index finger|neeche point karti index finger dikhaate haath ki back side|point
+☝️	oopar point karti index finger	finger|hand|index|oopar point karti index finger|point|up
+🫵	viewer ki taraf pont karti index finger	aap|viewer ki taraf pont karti index finger
+👊		absolutely|agree|boom|bro|correct|fist|oncoming|punch|rock
+👏		applause|approval|awesome|clap|congrats|congratulations|excited|good job|great|welldone
+🙌	khush hokar dono haath uthaana	celebration|gesture|hand|hooray|khush hokar dono haath uthaana|raised
+🫶	haathon se bana heart	haathon se bana heart|heart hands|love
+🤲	palms ko eksaath oopar karna	palms ko eksaath oopar karna|prayer
+🙏	namaste karna	ask|high 5|high five|namaste karna|please|pray|thanks
+✍️	likhta hua haath	haath|likhna|likhta hua haath
+💪		arm|biceps|bodybuilder|bro|gains|gym|muscle|ripped|strong|weightlift
+🦻	hearing aid laga kaan	accessibility|hearing aid laga kaan|sunne mein problem
+🫀		anatomical|cardiology|heart|organ|pulse
+👀		eyes|googly eyes|googly look|looking|omg|peep|see|seeing
+🫦		anxious|biting|fear|flirt|flirting|lips|lipstick|nervous|uncomfortable|worried
+👱		blond|blond-hair wala vyakti|hair|person: blond hair
+🧔‍♂️	male: beard	aadmi|daadhi|male: beard
+🧔‍♀️	female: beard	aurat|daadhi|female: beard
+👱‍♀️	female: blond hair	blond-hair wali mahila|blonde|female: blond hair|hair|woman
+👱‍♂️	male: blond hair	blond|blond-hair wala aadmi|hair|male: blond hair|man
+🙍	frown karta person	frown|frown karta person|gesture
+🙍‍♂️	frown karta aadmi	frown karta aadmi|frowning|gesture|man
+🙍‍♀️	frown karti mahila	frown karti mahila|frowning|gesture|woman
+🙎	pout banaata vyakti	gesture|pout banaata vyakti|pouting
+🙎‍♂️	pout banaata aadmi	gesture|man|pout banaata aadmi|pouting
+🙎‍♀️	pout banaati mahila	gesture|pout banaati mahila|pouting|woman
+🙅	NO kaa gesture deta vyakti	forbidden|gesture|hand|NO kaa gesture deta vyakti|prohibited
+🙅‍♂️	NO kaa gesture deta aadmi	forbidden|gesture|hand|man|NO kaa gesture deta aadmi|prohibited
+🙅‍♀️	NO kaa gesture deti mahila	forbidden|gesture|hand|NO kaa gesture deti mahila|prohibited|woman
+🙆	OK kaa gesture deta vyakti	gesture|hand|OK|OK kaa gesture deta vyakti
+🙆‍♂️	OK kaa gesture deta aadmi	gesture|hand|man|OK|OK kaa gesture deta aadmi
+🙆‍♀️	OK kaa gesture deti mahila	gesture|hand|OK|OK kaa gesture deti mahila|woman
+💁	information desk kaa vyakti	hand|help|information|information desk kaa vyakti|sassy|tipping
+💁‍♂️	information desk kaa aadmi	information desk kaa aadmi|man|sassy|tipping hand
+💁‍♀️	information desk ki mahila	information desk ki mahila|sassy|tipping hand|woman
+🙋	haath uthaata vyakti	gesture|haath uthaata vyakti|hand|happy|raised
+🙋‍♂️	haath uthaata aadmi	gesture|haath uthaata aadmi|man|raising hand
+🙋‍♀️	haath uthaati mahila	gesture|haath uthaati mahila|raising hand|woman
+🧏‍♂️	sun na paane wala aadmi	deaf|hearing-impaired|man|sun na paane wala|sun na paane wala aadmi
+🧏‍♀️	sun na paane wali mahila	deaf|hearing-impaired|sun na paane wali mahila|woman
+🙇	bow karta vyakti	apology|bow|bow karta vyakti|gesture|sorry
+🙇‍♂️	bow karta aadmi	apology|bow karta aadmi|bowing|favor|gesture|man|sorry
+🙇‍♀️	bow karti mahila	apology|bow karti mahila|bowing|favor|gesture|sorry|woman
+🤦	face par palm rakhe hua vyakti	disbelief|exasperation|face|face par palm rakhe hua vyakti|palm
+🤦‍♂️	face par palm rakhe hua aadmi	disbelief|exasperation|face par palm rakhe hua aadmi|facepalm|man
+🤦‍♀️	face par palm rakhe huye mahila	disbelief|exasperation|face par palm rakhe huye mahila|facepalm|woman
+🤷	shrug karta vyakti	doubt|ignorance|indifference|shrug|shrug karta vyakti
+🤷‍♂️	shrug karta aadmi	doubt|ignorance|indifference|man|shrug|shrug karta aadmi
+🤷‍♀️	shrug karti mahila	doubt|ignorance|indifference|shrug|shrug karti mahila|woman
+🧑‍🏫		instructor|professor|teacher
+🧑‍⚖️		judge|justice|scales
+👨‍🏭	male factory worker	assembly|factory|industry worker|male|man|worker
+👩‍🏭	female factory worker	assembly|factory|female|industry worker|woman|worker
+👨‍🔬	male scientist	biologist|chemist|engineer|male scientist|man|physicist|scientist
+👨‍💻	male technologist	coder|developer|inventor|male technologist|man|software|technologist
+👩‍💻	female technologist	coder|developer|female technologist|inventor|software|technologist|woman
+👨‍🎤	male singer	actor|entertainer|male singer|man|rock|singer|star
+👩‍🎤	female singer	actor|entertainer|female singer|rock|singer|star|woman
+👨‍🎨	male artist	artist|male artist|man|palette
+👩‍🎨	female artist	artist|female artist|palette|woman
+👨‍✈️	male pilot	male pilot|man|pilot|plane
+👩‍✈️	female pilot	female pilot|pilot|plane|woman
+👨‍🚀	male astronaut	astronaut|male astronaut|man|rocket
+👩‍🚀	female astronaut	astronaut|female astronaut|rocket|woman
+🧑‍🚒		firefighter|firetruck
+👨‍🚒	male firefighter	firefighter|firetruck|male firefighter|man
+👩‍🚒	female firefighter	female firefighter|firefighter|firetruck|woman
+👮‍♂️	male police officer	cop|male police officer|man|officer|police
+👮‍♀️	female police officer	cop|female police officer|officer|police|woman
+🕵️‍♂️	male detective	detective|male detective|man|spy
+🕵️‍♀️	female detective	detective|female detective|mahila jaasoos|spy|woman
+💂‍♂️	male guard	guard|male guard|man
+💂‍♀️	female guard	female guard|guard|woman
+🥷		fighter|hidden|ninja|secret|skills|soldier|thief|war
+👷		build|construction|fix|hat|rebuild|repair|worker
+👷‍♂️	male construction worker	construction|male construction worker|man|worker
+👷‍♀️	female construction worker	construction|female construction worker|woman|worker
+🫅	crown wala vyakti	crown wala vyakti|monarch|noble|person with crown|regal|royalty
+👳	turban wala vyakti	turban|turban wala vyakti
+👳‍♂️	turban wala aadmi	man|turban|turban wala aadmi
+👳‍♀️	turban wali mahila	turban|turban wali mahila|woman
+👲	skullcap wala aadmi	cap|gua pi mao|hat|person|skullcap|skullcap wala aadmi|skullcap wala vyakti
+🧕	headscarf pahne mahila	headscarf|headscarf pahne mahila|hijab|mantilla|tichel
+🤵	suit boot mein vyakti	groom|person|suit boot mein vyakti|tuxedo
+🤵‍♂️	suit boot mein aadmi	man|suit boot mein aadmi|tuxedo
+🤵‍♀️	suit boot mein mahila	suit boot mein mahila|tuxedo|woman
+👰	Ghoonghat mein bride	bride|Ghoonghat mein bride|person|person with veil|veil|wedding
+👰‍♂️	Ghoonghat mein aadmi	aadmi|ghoonghat|Ghoonghat mein aadmi|parde mein aadmi
+👰‍♀️	parde mein dulhan	parde mein dulhan|veil|woman
+👩‍🍼	baby ko feed karti mahila	baby|baby ko feed karti mahila|feeding|nursing|woman
+👨‍🍼	baby ko feed karta aadmi	baby|baby ko feed karta aadmi|feeding|man|nursing
+🧑‍🍼	baby ko feed karta vyakti	baby|baby ko feed karta vyakti|feeding|nursing|person
+🎅		Christmas|fairy|father|holiday|merry|santa|santa claus|xmas|Xmas celebration
+🤶		Christmas|claus|fairy|holiday|lady santa|merry xmas|mother santa|xmas|xmas celebration
+🧑‍🎄		celebration|Christmas|fairy|holiday|merry xmas|Mx|santa|santa claus|xmas
+🧙		fantasy|magic|play|sorcerer|summon|witch|wizard
+🧙‍♀️		fantasy|magic|play|sorcerer|summon|witch|wizard|woman
+🧚‍♂️		fairy|fairytale|fantasy|flying man|myth|tale|wings
+🧜‍♂️		creature|folklore|merman|Neptune|ocean|sea|siren|trident
+💆	massage karwaata vyakti	face|massage|massage karwaata vyakti|salon
+💆‍♂️	massage karwaata aadmi	face|man|massage|massage karwaata aadmi
+💆‍♀️	massage karwaati mahila	face|massage|massage karwaati mahila|woman
+💇	haircut leta vyakti	barber|beauty|haircut|haircut leta vyakti|parlor
+💇‍♂️	haircut leta aadmi	haircut|haircut leta aadmi|man
+💇‍♀️	haircut leti mahila	haircut|haircut leti mahila|woman
+🚶	walk karta vyakti	hike|walk|walk karta vyakti|walking
+🚶‍♂️	walk karta aadmi	hike|man|walk|walk karta aadmi
+🚶‍♀️	walk karti mahila	hike|walk|walk karti mahila|woman
+🚶‍➡️	walk karta vyakti: facing right	facing|hike|right|walk|walk karta vyakti|walking
+🚶‍♀️‍➡️	walk karti mahila: facing right	facing|hike|right|walk|walk karti mahila|woman
+🚶‍♂️‍➡️	walk karta aadmi: facing right	facing|hike|man|right|walk|walk karta aadmi
+🧍	khada hua vyakti	khada hua vyakti|stand|standing
+🧍‍♂️	khada aadmi	khada aadmi|man
+🧍‍♀️	khadi aurat	khadi aurat|standing
+🧎	knees par baitha vyakti	kneel|kneeling|knees par baitha vyakti
+🧎‍♂️	knees par baitha aadmi	aadmi|knees par baitha aadmi|knees par baithna
+🧎‍♀️	knees par baithi mahila	knees par baithi mahila|knees par baithna|mahila
+🧎‍➡️	knees par baitha vyakti: facing right	facing|kneel|kneeling|knees par baitha vyakti|right
+🧎‍♀️‍➡️	knees par baithi mahila: facing right	facing|knees par baithi mahila|knees par baithna|mahila|right
+🧎‍♂️‍➡️	knees par baitha aadmi: facing right	aadmi|facing|knees par baitha aadmi|knees par baithna|right
+🧑‍🦯	white cane pakda hua vyakti	accessibility|blind|white cane pakda hua vyakti
+🧑‍🦯‍➡️	white cane pakda hua vyakti: facing right	accessibility|blind|facing|right|white cane pakda hua vyakti
+👨‍🦯	white cane pakda hua aadmi	accessibility|blind|man|white cane pakda hua aadmi
+👨‍🦯‍➡️	white cane pakda hua aadmi: facing right	accessibility|blind|facing|man|right|white cane pakda hua aadmi
+👩‍🦯	white cane pakde hui mahila	accessibility|blind|white cane pakde hui mahila|woman
+👩‍🦯‍➡️	white cane pakde hui mahila: facing right	accessibility|blind|facing|right|white cane pakde hui mahila|woman
+🧑‍🦼	motor wheelchair par baitha vyakti	accessibility|motor wheelchair par baitha vyakti|wheelchair
+🧑‍🦼‍➡️	motor wheelchair par baitha vyakti: facing right	accessibility|facing|motor wheelchair par baitha vyakti|right|wheelchair
+👨‍🦼	motor wheelchair par baitha aadmi	accessibility|man|motor wheelchair par baitha aadmi|wheelchair
+👨‍🦼‍➡️	motor wheelchair par baitha aadmi: facing right	accessibility|facing|man|motor wheelchair par baitha aadmi|right|wheelchair
+👩‍🦼	motor wheelchair par baithi aurat	accessibility|motor wheelchair par baithi aurat|wheelchair|woman
+👩‍🦼‍➡️	motor wheelchair par baithi aurat: facing right	accessibility|facing|motor wheelchair par baithi aurat|right|wheelchair|woman
+🧑‍🦽	manual wheelchair par baitha vyakti	accessibility|manual wheelchair par baitha vyakti|wheelchair
+🧑‍🦽‍➡️	manual wheelchair par baitha vyakti: facing right	accessibility|facing|manual wheelchair par baitha vyakti|right|wheelchair
+👨‍🦽	manual wheelchair par baitha aadmi	accessibility|man|manual wheelchair par baitha aadmi|wheelchair
+👨‍🦽‍➡️	manual wheelchair par baitha aadmi: facing right	accessibility|facing|man|manual wheelchair par baitha aadmi|right|wheelchair
+👩‍🦽	manual wheelchair par baithi mahila	accessibility|manual wheelchair par baithi mahila|wheelchair
+👩‍🦽‍➡️	manual wheelchair par baithi mahila: facing right	accessibility|facing|manual wheelchair par baithi mahila|right|wheelchair
+🏃	run karta vyakti	marathon|run karta vyakti|running
+🏃‍♂️	run karta aadmi	man|marathon|racing|run karta aadmi|running
+🏃‍♀️	run karti mahila	marathon|racing|run karti mahila|running|woman
+🏃‍➡️	run karta vyakti: facing right	facing|marathon|right|run karta vyakti|running
+🏃‍♀️‍➡️	run karti mahila: facing right	facing|marathon|racing|right|run karti mahila|running|woman
+🏃‍♂️‍➡️	run karta aadmi: facing right	facing|man|marathon|racing|right|run karta aadmi|running
+💃	dance karti mahila	dance|dance karti mahila|dancing|woman
+🕺	dance karta aadmi	dance|dance karta aadmi|dancing|man
+🕴️	hawa mein udta suit wala vyakti	business|hawa mein udta suit wala vyakti|person|person in suit levitating|suit
+👯	khargosh ke kaan wale log	dancer|khargosh ke kaan|khargosh ke kaan wale log|party karna
+👯‍♂️	khargosh ke kaan wale aadmi	bunny ear|dancer|khargosh ke kaan wale aadmi|men|partying
+👯‍♀️	khargosh ke kaan wali mahilaayein	bunny ear|dancer|khargosh ke kaan wali mahilaayein|partying|women
+🧖	steamy room mein vyakti	sauna|steam room|steamy room mein vyakti
+🧖‍♂️	steamy room mein aadmi	sauna|steam room|steamy room mein aadmi
+🧖‍♀️	steamy room mein mahila	sauna|steam room|steamy room mein mahila
+🧗	climb karta vyakti	climb karta vyakti|climber
+🧗‍♂️	climb karta aadmi	climb karta aadmi|climber
+🧗‍♀️	climb karti mahila	climb karti mahila|climber
+🤺	fencing karta vyakti	fencer|fencing|fencing karta vyakti|sword
+🏌️	golf khelta vyakti	ball|golf|golf khelta vyakti
+🏌️‍♂️	golf khelta aadmi	golf|golf khelta aadmi|man
+🏌️‍♀️	golf khelti mahila	golf|golf khelti mahila|woman
+🏄	surfing karta vyakti	surfing|surfing karta vyakti
+🏄‍♂️	surfing karta aadmi	man|surfing|surfing karta aadmi
+🏄‍♀️	surfing karti mahila	surfing|surfing karti mahila|woman
+🚣	boat rowing karta vyakti	boat|boat rowing karta vyakti|rowboat
+🚣‍♂️	boat rowing karta aadmi	boat|boat rowing karta aadmi|man|rowboat
+🚣‍♀️	boat rowing karti karti mahila	boat|boat rowing karti karti mahila|boat rowing karti mahila|rowboat|woman
+🏊	swimming karta vyakti	swim|swimming karta vyakti
+🏊‍♂️	swimming karta aadmi	man|swim|swimming karta aadmi
+🏊‍♀️	swimming karti mahila	swim|swimming karti mahila|woman
+⛹️	ball se khelta vyakti	ball|ball se khelta vyakti
+⛹️‍♂️	ball se khelta aadmi	ball|ball se khelta aadmi|man
+⛹️‍♀️	ball se khelti mahila	ball|ball se khelti mahila|woman
+🏋️	weightlifting karta vyakti	lifter|weight|weightlifting karta vyakti
+🏋️‍♂️	weightlifting karta aadmi	man|weight lifter|weightlifting karta aadmi
+🏋️‍♀️	weightlifting karti mahila	weight lifter|weightlifting karti mahila|woman
+🚴	cycle chalaata vyakti	bicycle|biking|cycle chalaata vyakti|cyclist
+🚴‍♂️	cycle chalaata aadmi	bicycle|biking|cycle chalaata aadmi|cyclist|man
+🚴‍♀️	cycle chalaati mahila	bicycle|biking|cycle chalaati mahila|cyclist|woman
+🚵	mountain biking karta vyakti	bicycle|bicyclist|bike|cyclist|mountain|mountain biking karta vyakti|person mountain biking
+🚵‍♂️	mountain biking karta aadmi	bicycle|bike|cyclist|man|mountain|mountain biking karta aadmi
+🚵‍♀️	mountain biking karti mahila	bicycle|bike|biking|cyclist|mountain|mountain biking karti mahila|woman
+🤸	cartwheeling karta vyakti	cartwheel|cartwheeling karta vyakti|gymnastics
+🤸‍♂️	cartwheeling karta aadmi	cartwheel|cartwheeling karta aadmi|gymnastics|man
+🤸‍♀️	cartwheeling karti mahila	cartwheel|cartwheeling karti mahila|gymnastics|woman
+🤼	wrestling karte log	wrestle|wrestler|wrestling karte log
+🤼‍♂️	wrestling karte aadmi	men|wrestle|wrestling karte aadmi
+🤼‍♀️	wrestling karti mahilaayein	women|wrestle|wrestling karti mahilaayein
+🤽	water polo khelta vyakti	polo|water|water polo khelta vyakti|water polo kheltaperson
+🤽‍♂️	water polo khelta aadmi	man|water polo|water polo khelta aadmi
+🤽‍♀️	water polo khelti mahila	water polo|water polo khelti mahila|woman
+🤾	handball khelta vyakti	ball|handball|handball khelta vyakti
+🤾‍♂️	handball khelta aadmi	handball|handball khelta aadmi|man
+🤾‍♀️	handball khelti mahila	handball|handball khelti mahila|woman
+🤹	juggling karta vyakti	balance|juggle|juggling karta vyakti|multitask|skill
+🤹‍♂️	juggling karta aadmi	juggling|juggling karta aadmi|man|multitask
+🤹‍♀️	juggling karti mahila	juggling|juggling karti mahila|multitask|woman
+🧘	padmaasan mein baitha vyakti	meditation|padmaasan mein baitha vyakti|yoga
+🧘‍♂️	padmaasan mein baitha aadmi	meditation|padmaasan mein baitha aadmi|yoga
+🧘‍♀️	padmaasan mein baithi mahila	meditation|padmaasan mein baithi mahila|yoga
+🛀	bath leta vyakti	bath|bath leta vyakti|bathtub|person taking bath
+🛌	bed par sota vyakti	bed par sota vyakti|good night|hotel|sleep
+🧑‍🤝‍🧑	haath pakde huye log	couple|haath pakde huye|haath pakde huye log|hand|hold|person
+👭	haath pakde do mahilaayein	couple|haath pakde do mahilaayein|haath pakdna|hand|women
+👫	haath mein haath liye aurat-aadmi	aadmi|aurat|couple|haath mein haath liye aurat-aadmi|haath pakadna|hand|hold
+👬	haath pakde do aadmi	couple|Gemini|haath pakadna|haath pakde do aadmi|men|twins|zodiac
+💏		anniversary|babe|couple|dating|heart|kiss|love|romance|together
+👩‍❤️‍💋‍👨		anniversary|babe|couple|dating|heart|kiss|love|man|romance|together|woman
+👨‍❤️‍💋‍👨		anniversary|babe|couple|dating|heart|kiss|love|man|romance|together
+👩‍❤️‍💋‍👩		anniversary|babe|couple|dating|heart|kiss|love|romance|together|woman
+💑	heart symbol ke saath couple	couple|heart symbol ke saath couple|love
+👩‍❤️‍👨	heart symbol ke saath couple: woman, man	couple|heart symbol ke saath couple|love|man|woman
+👨‍❤️‍👨	heart symbol ke saath couple: man, man	couple|heart symbol ke saath couple|love|man
+👩‍❤️‍👩	heart symbol ke saath couple: woman, woman	couple|heart symbol ke saath couple|love|woman
+🗣️	bolta face	bolta face|face|face kaa shape|head|speak
+👤	body ke upper part ki image	body kaa upper part|body ke upper part ki image|silhouette
+👥	body ke upper part ki images	body ke upper part ki image|body ke upper part ki images|bust|silhouette
+🫂	hug karte huye log	goodbye|hello|hug|hug karte huye log|thanks
+🐕‍🦺		accessibility|assistance|dog|help|service|seva
+🦁		animal|Leo|lion|order|power|raashi|roar|sher|strong|zodiac
+🐪		camel|ek hump kaa camel|hump
+🐫	do hump wala camel	bactrian|camel|do hump wala camel|hump
+🦙		alpaca|guanaco|llama|vicuna|wool
+🐾	panje ke prints	feet|panje ke prints|paw|print
+🐣	ande se baahar aata chick	anda phootna|ande se baahar aata chick|baby|bird|chick
+🐥	front face karta baby chick	baby|bird|chick|front face karta baby chick
+🪿		batakh|bird|duck|flock|fowl|gaggle|silly
+🐦‍🔥		fantasy|firebird|phoenix|punarjanm|rebirth
+🐳	spout karti whale	face|spout karna|spout karti whale|whale
+🪼		aquarium|aquatic|jellyfish|marine|ocean|sea|sea life|sting|water life
+🪷		Buddhism|flower|Hinduism|kamal|lotus|purity
+🥀	murjhaaya hua phool	flower|murjhaaya hua phool
+🪻		bluebonnet|hyacinth|indigo|lavender|lupine|purple flower|shrub|snapdragon|violet
+🪴	pot mein laga plant	boring|grow|house|nurture karna|plant|pot mein laga plant|useless
+🌾	chaawal ki baali	chaawal ki baali|ear|grain|rice
+🍀	4 leaves wali grass	4|4 leaves wali grass|clover|four|leaf
+🍂	giri hui leaf	falling|giri hui leaf|leaf
+🍃	hawa mein lahraati leaf	blow|flutter|hawa mein lahraati leaf|leaf|wind
+🪹	Khaali nest	Khaali nest|nesting
+🪺	eggs wala nest	eggs wala nest|nesting
+🪾	bina leaves kaa tree	bare|barren|branches|dead tree|drought|no leaf tree|tree|trunk|winter|wood
+🍋‍🟩	neebu	citrus|fruit|khatta|lime|neebu|tropical
+🥥		coconut|palm|pina colada
+🥬		bok choy|cabbage|kale|leafy green|lettuce
+🧄		flavoring|garlic
+🧅		flavoring|onion
+🍄‍🟫		food|fungus|mushroom|shiitake|shroom|sprout|toppings|truffle|vegetarian|veggie
+🥞		breakfast|crepe|food|hotcake|pancake|pancakes
+🧇		breakfast|indecisive|iron|waffle
+🍖	bone wala meat	bone|bone wala meat|meat
+🍗	chicken leg	
+🥩	meat kaa piece	chop|lambchop|meat kaa piece|porkchop|steak
+🥙	stuffed paraantha	falafel|food|gyro|kebab|paraantha|stuffed
+🍳		breakfast|cooking|easy breakfast|egg|egg-fry|frying|frying pan|omelette
+🥘	food ke liye kam deep pan	casserole|food|food ke liye kam deep pan|paella|pan|shallow
+🍲	food pot	food pot|pot|stew
+🥣	bowl ke saath spoon	bowl ke saath spoon|breakfast|cereal|congee
+🧂	namak	masaala|namak|shaker
+🍥	swirls wala fish cake	cake|fish|pastry|swirl|swirls wala fish cake
+🥮		autumn|festival|moon cake|yuebing
+🥟		dumpling|empanada|gyoza|jiaozi|pierogi|potsticker
+🥡		oyster pail|takeout box
+🥛	doodh kaa glass	doodh kaa glass|drink|glass|milk
+🍵	bina handle wala teacup	beverage|bina handle wala teacup|cup|drink|tea|teacup
+🍶		bar|beverage|bottle|cup|drink|sake
+🍾	cork khulti hui bottle	bar|bottle|cork|cork khulti hui bottle|drink|popping
+🍷		bar|beverage|booze|club|drink|party|wine glass
+🍸		bar|beverage glass|booze|club|cocktail|cocktail glass|drinks|martini
+🍹		alcohol|bar|booze|club|cocktail|drink|party|tropical drink
+🍺		bar|beer mug|booze|drinking|drinks|party
+🍻	cheers karte beer mugs	bar|beer|cheers karte beer mugs|clink|drink|mug
+🥂	cheers karte glasses	celebrate|cheers karte glasses|clink|drink|glass
+🥤	cup ke saath straw	cup ke saath straw|juice|soda
+🧉	mate	drink|mate
+🍽️	plate ke saath knife aur fork	cooking|fork|knife|plate|plate ke saath knife aur fork
+🍴	fork aur knife	cooking|cutlery|fork|fork aur knife|knife
+🫙		container|jar|khaali|masaala|sauce|store
+🏺		amphora|Aquarius|cooking|drink|jug|zodiac
+🎏		carp|celebration|streamer
+🎑	moon dekhne ki ceremony	celebration|ceremony|moon|moon dekhne ki ceremony
+🧧		gift|good luck|hongbao|lai see|money|red envelope
+⛳	hole mein flag	golf|hole|hole mein flag
+🔫	paani ki pistol	gun|handgun|paani ki pistol|pistol|revolver|tool|weapon
+🪄	jaadoo ki chhadi	jaadoo ki chhadi|magic|witch|wizard
+🧩	puzzle game	clue|interlocking|jigsaw|piece|puzzle|puzzle game
+🪅	pinata	celebration|party|pinata
+🪆	nesting dolls	doll|nesting|nesting dolls|russia
+🖼️	frame ki gai picture	art|frame|frame ki gai picture|museum|painting|picture
+🎨		art|artist|colorful|colours|creative|entertainment|museum|painter|painting|palette
+🌍	Europe-Africa dikhaata globe	Africa|earth|Europe|Europe-Africa dikhaata globe|globe|world
+🌎	Americas dikhaata globe	Americas|Americas dikhaata globe|earth|globe|world
+🌏	Asia-Australia dikhaata globe	Asia|Asia-Australia dikhaata globe|Australia|earth|globe|world
+🌐	meridians dikhaata globe	earth|globe|meridians|meridians dikhaata globe|world
+🗾	Japan kaa map	Japan|Japan kaa map|map
+🗻	mount fuji	fuji|mount fuji|mountain
+🏖️	beach par umbrella	beach|beach par umbrella|umbrella
+🏛️		classical|classical building
+🏠		building|cottage|home|house|simple house|suburb|suburban
+🏡	garden wala house	garden|garden wala house|home|house
+🕌		islam|mosque|Muslim|religion
+🛕	hindu temple	hindu|temple
+🕋	kaaba	islam|kaaba|Muslim|religion
+🌃	stars wali night	night|star|stars wali night
+🌆	shaam ke time kaa cityscape	city|evening|landscape|shaam|shaam ke time kaa cityscape|sunset
+🌉	night mein bridge kaa view	bridge|night|night mein bridge kaa view
+🚃		car|electric|railway|train|tram|trolleybus
+🚍	aati hui bus	aati hui bus|bus
+🚔	aati hui police car	aati hui police car|car|police
+🚖	aati hui taxi	aati hui taxi|taxi
+🚘	aati hui car	aati hui car|automobile|car
+🚙		recreational|sport utility|sport utility vehicle
+🦼	motorized wheelchair	accessibility|motorized wheelchair
+🛺		auto rickshaw|tuk tuk
+🛞		circle|tire|turn|wheel
+🚨	police car ki light	beacon|car|light|police|police car ki light|revolve karti light
+🛫		aeroplane|airplane|check-in|departure|departures
+🪂		hang-glide|parachute|parasail|skydive
+🕛	twelve o’ clock	00|12|12:00|clock|o’clock|twelve|twelve o’ clock
+🕧		12|12:30|clock|thirty|twelve|twelve-thirty
+🕜		1|1:30|clock|one|one-thirty|thirty
+🕝		2|2:30|clock|thirty|two|two-thirty
+🕞		3|3:30|clock|thirty|three|three-thirty
+🕟		4|4:30|clock|four|four-thirty|thirty
+🕠		5|5:30|clock|five|five-thirty|thirty
+🕡		6|6:30|clock|six|six-thirty|thirty
+🕢		7|7:30|clock|seven|seven-thirty|thirty
+🕣		8|8:30|clock|eight|eight-thirty|thirty
+🕤		9|9:30|clock|nine|nine-thirty|thirty
+🕥		10|10:30|clock|ten|ten-thirty|thirty
+🕦		11|11:30|clock|eleven|eleven-thirty|thirty
+🌝	full moon wala face	bright|face|full|full moon wala face|moon
+🌞	face wala sun	bright|face|face wala sun|sun
+🪐	ring wala planet	ring wala planet|saturn|saturnine
+🌟	chamakta star	chamakta star|glittery|glow|shining|sparkle|star
+⛅	baadlon ke peeche sun	baadlon ke peeche sun|cloud|sun
+⛈️	lightning aur baarish waale baadal	cloud|lightning aur baarish waale baadal|rain|thunder
+🌤️	chhote baadlon ke peeche chhupa sun	chhote baadlon ke peeche chhupa sun|cloud|sun
+🌥️	bade baadlon ke peeche chhupa sun	bade baadlon ke peeche chhupa sun|cloud|sun
+🌦️	baarish wale baadlon ke peeche chhupa sun	baarish wale baadlon ke peeche chhupa sun|cloud|rain|sun
+🌧️	baarish ke saath baadal	baarish ke saath baadal|cloud|cloud with rain|rain
+🌨️	barf ke saath baadal	barf ke saath baadal|cloud|cold|snow
+🌩️	lightning wale baadal	cloud|lightning|lightning wale baadal
+🌈		lgbt|lgbtq|lgbtqia|pride|rainbow|trans|transgender|weather
+🌂	band umbrella	band umbrella|clothing|rain|umbrella
+☔	rain drops wala umbrella	clothing|drop|rain|rain drops wala umbrella|umbrella
+⛱️	zameen par umbrella	rain|sun|umbrella|zameen par umbrella
+⛄	bina barf wala snowman	bina barf wala snowman|cold|snow|snowman
+🥽		eyes ki protection|goggles|swimming|welding
+🦺		emergency|safety|vest
+👔	necktie	
+👕		casual clothes|clothing|dress|shirt|shopping|t-shirt|tshirt|weekend
+👖		blue jeans|casuals|clothes|clothing|denim|jeans|pants|shopping|trousers|weekend
+🩱		bathing suit|one-piece swimsuit
+🩲		bathing suit|briefs|one-piece|swimsuit|underwear
+🩳		bathing suit|pants|shorts|underwear
+👚		blouse|clothes|clothing|collared shirt|dress|lady|shirt|shopping|women shirt
+🩴	thong sandal	beach sandals|sandals|thong sandal|thong sandals|thongs|zori
+👞		feet|footwear|kick|men shoes|shoe|shoes|shopping
+👟		athletic|clothes|clothing|fast|running|shoe|shoes|shopping|sneaker|tennis
+🥿		ballet flat|flat shoe|slip-on|slipper
+👠	high-heel kaa shoe	clothing|heel|high-heel kaa shoe|shoe|woman
+👡	mahilaaon ki sandal	clothing|mahilaaon ki sandal|sandal|shoe|woman
+👢	mahilaaon kaa boot	boot|clothing|mahilaaon kaa boot|shoe|woman
+👒	mahilaaon ki hat	clothing|hat|mahilaaon ki hat|woman
+⛑️	rescue worker kaa helmet	aid|cross|face|hat|helmet|rescue worker kaa helmet
+📿	pooja ki maala ke manke	beads|clothing|necklace|pooja ki maala ke manke|prayer|religion
+🔇	mute kiya speaker	mute|mute kiya speaker|quiet|silent|speaker
+🔈	speaker kaa low volume	soft|speaker kaa low volume
+🔉	speaker kaa medium volume	medium|speaker kaa medium volume
+🔊	speaker kaa high volume	loud|speaker kaa high volume
+📯	postal horn	
+🔕	slash ke saath bell	bell|forbidden|mute|quiet|silent|slash ke saath bell
+🪘	long drum	
+📲	arrow ke saath mobile phone	arrow|arrow ke saath mobile phone|cell|mobile|phone|receive
+📸	flash wala camera	camera|flash|flash wala camera|video
+🔍	left ki taraf tilted magnifying glass	glass|left ki taraf tilted magnifying glass|magnifying|search|tool
+🔎	right ki taraf tilted magnifying glass	glass|magnifying|right ki taraf tilted magnifying glass|search|tool
+🏮	red paper wala lantern	bar|lantern|light|red|red paper wala lantern
+📔	decorative cover wali notebook	book|cover|decorated|decorative cover wali notebook|notebook
+📃	muda hua page	curl|document|muda hua page|page
+🗞️	roll kiya hua newspaper	news|newspaper|paper|roll kiya hua newspaper|rolled
+💰	paise wala bag	bag|dollar|money|paise wala bag
+💷		banknote|bill|currency|money|note|pound
+💸	paise kharch karna	banknote|bill|fly|money|paise kharch karna|wings
+💹	yen ki badhat dikhaane wala chart	chart|graph|growth|money|yen|yen ki badhat dikhaane wala chart
+📩	arrow wala envelope	arrow|arrow wala envelope|e-mail|email|envelope|envelope with arrow|outgoing
+📫	lahraate flag wala band mailbox	closed|lahraate flag wala band mailbox|mail|mailbox|postbox
+📪	jhuke flag wala band mailbox	closed|jhuke flag wala band mailbox|lowered|mail|mailbox|postbox
+📬	lahraate flag wala khula mailbox	lahraate flag wala khula mailbox|mail|mailbox|open|postbox
+📭	jhuke flag wala khula mailbox	jhuke flag wala khula mailbox|lowered|mail|mailbox|open|postbox
+🗳️	ballot ke saath ballot box	ballot|ballot ke saath ballot box|box
+📈	Badhat dikhaata chart	Badhat dikhaata chart|chart|graph|growth|trend|upward
+📉	Kami dikhaata chart	chart|down|graph|Kami dikhaata chart|trend
+🖇️	link kiye gaye paperclips	link|link kiye gaye paperclips|paperclip
+🔒		closed|locked
+🔓		lock|open|unlock|unlocked
+🔏	pen ke saath lock	ink|lock|nib|pen|pen ke saath lock|privacy
+🔐	key se lock kiya gaya	closed|key|key se lock kiya gaya|lock|secure
+🗝️	puraani key	clue|key|lock|old|puraani key
+🔨	hathouda	hathouda|tool
+🪓	kulhaadi	axe|chop|kulhaadi|split|wood
+⛏️	kudaali	kudaali|mining|tool
+⚒️	hathouda aur kudaali	hammer|hathouda aur kudaali|pick|tool
+🛠️	hathouda aur wrench	hammer|hathouda aur wrench|spanner|tool|wrench
+🗡️	kataar	kataar|knife|weapon
+🪃		boomerang|effect|rebound|repercussion
+🏹	teer aur kamaan	archer|arrow|bow|Sagittarius|teer aur kamaan|zodiac
+🪚	carpenter ki aari	carpenter|carpenter ki aari|lumber|saw|tool
+🔩	nut aur bolt	bolt|nut|nut aur bolt|tool
+⚖️	taraazu	justice|Libra|scale|taraazu|zodiac
+🦯	white cane	accessibility|blind|white cane
+⛓️‍💥	tooti hui zanjeer	aazaadi|break|chain|cuffs|freedom|tooti hui zanjeer|tootna|zanjeer
+💉		medicine|needle|shot|sick|syringe
+🩸	blood ki drop	bleed|blood donation|blood ki drop|injury|medicine|menstruation
+🩹	chipkaane wali bandage	bandage|chipkaane wali bandage
+🛗	elevator	
+🛋️	sofa aur lamp	couch|hotel|lamp|sofa aur lamp
+🛁	bathtub	
+🪤	mouse trap	
+🪒		razor|sharp|shave
+🧴		lotion|lotion bottle|moisturizer|shampoo|sunscreen
+🧷		diaper|punk rock|safety pin
+🧻	paper kaa roll	paper kaa roll|paper towels|toilet paper
+🧿	nazar ki taabeez	bead|charm|evil-eye|nazar|nazar ki taabeez|talisman
+🪬		Fatima|hamsa|hand|Mary|Miriam|protection|tabeez
+🪪		credentials|ID|identification card|license|security
+🚮	bin mein garbage daalne kaa sign	bin mein garbage daalne kaa sign|litter|litter bin|litter in bin sign
+🚰	peene kaa paani	drinking|peene kaa paani|potable|water
+🚾		bathroom|closet|lavatory|restroom|toilet|water|WC
+🛅	chhuta hua luggage	baggage|chhuta hua luggage|locker|luggage
+🚸	bachche cross kar rahe hain	bachche cross kar rahe hain|child|crossing|pedestrian|traffic
+🚱	peene laayak paani nahi	non-drinking|peene laayak paani nahi|water
+🚷	paidal chalne ki permission nahi	forbidden|no|not|paidal chalne ki permission nahi|pedestrian|prohibited
+📵	mobile phones ki permission nahi	cell|forbidden|mobile|mobile phones ki permission nahi|mobile phones use karne ki permission nahi|no|phone
+🔞	under 18 ko permission nahi	18|age restriction|eighteen|prohibited|under 18 ko permission nahi|underage
+↙️	left-down arrow	arrow|intercardinal|left-down arrow|left-down direction|southwest
+↩️	left side muda hua right arrow	arrow|left side muda hua right arrow
+↪️	right side muda hua left arrow	arrow|right side muda hua left arrow
+⤴️	oopar ki taraf muda hua right arrow	arrow|oopar ki taraf muda hua right arrow
+⤵️	neeche ki taraf muda hua right arrow	arrow|down|neeche ki taraf muda hua right arrow
+🔄		anticlockwise|anticlockwise arrows button|arrow|counterclockwise|withershins
+🛐	pooja karne ki jagah	pooja karne ki jagah|religion|worship
+✡️	star of David	David|Jew|Jewish|religion|star|star of David
+☸️	dharma chakra	Buddhist|dharma|dharma chakra|religion|wheel
+✝️	latin cross	Christian|cross|latin cross|religion
+☦️	orthodox cross	Christian|cross|orthodox cross|religion
+☪️	star aur crescent	islam|Muslim|religion|star aur crescent
+🔯	6 point wala dotted star	6 point wala dotted star|fortune|star
+⏯️	play aur pause button	arrow|pause|play|play aur pause button|right|triangle
+🔼		arrow|button|red|upwards button
+⚧️		transgender|transgender symbol
+✖️		×|cancel|multiplication|multiply|sign|x
+➕		+|math|plus|sign
+➖		-|−|math|minus|sign
+🟰		baraabri|heavy equals sign|math
+⁉️		!|!?|?|exclamation|exclamation question mark|interrobang|question mark
+⚜️	lily flower	lily flower
+🔰	beginner ke liye Japanese symbol	beginner|beginner ke liye Japanese symbol|chevron|Japanese|leaf
+⭕	hole wala big red circle	circle|hole wala big red circle|large|o|red
+✅	check mark button	✓|button|check|mark
+☑️	check mark wala check box	✓|box|check|check mark wala check box
+✔️	check mark	✓|check|mark
+✳️	8 spoke wala asterisk	*|8 spoke wala asterisk|asterisk
+✴️	8 point wala star	*|8 point wala star|star
+®️		R|registered
+Ⓜ️	Circle kiya hua M	circle|Circle kiya hua M|circle mein M|M
+🔺	Oopar point karta red triangle	geometric|Oopar point karta red triangle|red
+🔻	Neeche point karta red triangle	down|geometric|Neeche point karta red triangle|red
+💠	dot wala diamond	comic|diamond|dot wala diamond|geometric|inside
+🏁	chess board wala flag	checkered|chequered|chess board wala flag|racing
+🚩		post|triangular flag
+🏳️		waving|white flag
+🏳️‍🌈		bisexual|gay|lesbian|lgbtq|lgbtqia|pride|rainbow|trans|transgender
+🏳️‍⚧️		flag|light blue|pink|transgender|white
+🇦🇽	flag: Aland Islands	
+🇧🇱	flag: St. Barthelemy	
+🇨🇮	flag: Cote d’Ivoire	
+🇨🇼	flag: Curacao	
+🇮🇳	flag: Bharat	
+🇰🇳	flag: St. Kitts & Nevis	
+🇱🇨	flag: St. Lucia	
+🇲🇫	flag: St. Martin	
+🇵🇲	flag: St. Pierre & Miquelon	
+🇷🇪	flag: Reunion	
+🇸🇭	flag: St. Helena	
+🇸🇹	flag: Sao Tome & Principe	
+🇹🇷	flag: Turkiye	
+🇺🇲	flag: U.S. Outlying Islands	
+🇻🇨	flag: St. Vincent & Grenadines	
+🇻🇮	flag: U.S. Virgin Islands	

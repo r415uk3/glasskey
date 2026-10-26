@@ -18,6 +18,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodSubtype;
+import helium314.keyboard.latin.utils.SubtypeSettings;
+import helium314.keyboard.latin.utils.SubtypeUtilsKt;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -209,6 +212,7 @@ public final class EmojiPalettesView extends LinearLayout
     private IosEmojiPalette mIosPalette;
     private IosEmojiBottomRow mIosBottomRow;
     private IosEmojiSearchIndex mIosSearchIndex;
+    private java.util.List<String> mIosSearchIndexTags;
     private Map<String, Key> mIosKeysByEmoji;
 
     public EmojiPalettesView(final Context context, final AttributeSet attrs) {
@@ -384,7 +388,14 @@ public final class EmojiPalettesView extends LinearLayout
         if (query.trim().isEmpty()) {
             keys.addAll(getRecentsKeyboard().getSortedKeys());
         } else {
-            if (mIosSearchIndex == null) mIosSearchIndex = IosEmojiSearchIndex.Companion.load(getContext());
+            // English and the enabled keyboard languages; reloaded when those change
+            final java.util.List<String> tags = new java.util.ArrayList<>();
+            for (final InputMethodSubtype subtype : SubtypeSettings.INSTANCE.getEnabledSubtypes(true))
+                tags.add(SubtypeUtilsKt.locale(subtype).toLanguageTag());
+            if (mIosSearchIndex == null || !tags.equals(mIosSearchIndexTags)) {
+                mIosSearchIndex = IosEmojiSearchIndex.Companion.load(getContext(), tags);
+                mIosSearchIndexTags = tags;
+            }
             if (mIosKeysByEmoji == null) {
                 mIosKeysByEmoji = new HashMap<>();
                 for (final IosEmojiLayout.Section section : mEmojiCategory.getIosSections()) {
