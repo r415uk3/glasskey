@@ -24,8 +24,8 @@ data class IosSettingsColors(
 
 object IosSettingsTheme {
     private val dark = IosSettingsColors(
-        background = Color(0xFF05060A),
-        groupFill = Color(0x14FFFFFF), // rgba(255,255,255,.08)
+        background = Color.Black,
+        groupFill = Color(0x1FFFFFFF), // over black ≈ iOS secondary grouped #1C1C1E
         text = Color.White,
         secondaryText = Color(0x99EBEBF5), // rgba(235,235,245,.6)
         separator = Color(0x24FFFFFF), // rgba(255,255,255,.14)
@@ -36,7 +36,7 @@ object IosSettingsTheme {
     )
     private val light = IosSettingsColors(
         background = Color(0xFFF2F2F7),
-        groupFill = Color(0x8CFFFFFF), // rgba(255,255,255,.55)
+        groupFill = Color(0xE6FFFFFF), // near-white cells on #F2F2F7
         text = Color.Black,
         secondaryText = Color(0x993C3C43), // rgba(60,60,67,.6)
         separator = Color(0x2E3C3C43), // rgba(60,60,67,.18)

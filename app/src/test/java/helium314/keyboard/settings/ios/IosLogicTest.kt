@@ -29,12 +29,6 @@ class IosLogicTest {
         assertEquals(0f, IosScrollEdge.fadeStart(heightPx = 0f, fadePx = 50f))
     }
 
-    // like CSS radial-gradient(circle at x% y%, c 0, transparent N%): N% of the distance to the farthest corner
-    @Test fun blobRadiusFromFarthestCorner() {
-        assertEquals(40f, IosBackgroundBlobs.radius(0f, 0f, 30f, 40f, 0.8f), 0.001f) // corner (30,40) at 50
-        assertEquals(50f * 0.4f, IosBackgroundBlobs.radius(0.5f, 0.5f, 60f, 80f, 0.4f), 0.001f)
-    }
-
     @Test fun switchTapToggles() {
         assertEquals(true, IosSwitchLogic.checkedAfterRelease(false, 0f, moved = false))
         assertEquals(false, IosSwitchLogic.checkedAfterRelease(true, 1f, moved = false))

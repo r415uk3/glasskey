@@ -71,12 +71,10 @@ fun rememberGroupBackdrop(): Backdrop {
     return LocalIosBackdrop.current ?: flat
 }
 
-/** Fill drawn over the backdrop by [iosGlass] at [level]: half the group fill over a lens, the full fill otherwise. */
+/** Fill drawn over the backdrop by [iosGlass]: the group fill at every [level] (the page background is plain). */
+@Suppress("UNUSED_PARAMETER")
 @Composable
-fun iosGlassSurface(level: GlassLevel): Color {
-    val fill = LocalIosColors.current.groupFill
-    return if (level == GlassLevel.LENS) fill.copy(alpha = fill.alpha / 2) else fill
-}
+fun iosGlassSurface(level: GlassLevel): Color = LocalIosColors.current.groupFill
 
 /** Records this node's content so that [iosGlass] elements can refract / blur it. */
 fun Modifier.iosBackdropSource(backdrop: IosBackdrop): Modifier = layerBackdrop(backdrop)
@@ -175,7 +173,7 @@ fun Modifier.iosGlass(
                 if (shape is CornerBasedShape) lens(12.dp.toPx(), 24.dp.toPx())
             },
             highlight = { Highlight.Default },
-            onDrawSurface = { drawRect(fill.copy(alpha = fill.alpha / 2)) },
+            onDrawSurface = { drawRect(fill) },
         )
         GlassLevel.BLUR -> iosBackdropRefresh().drawBackdrop(
             backdrop = backdrop,
