@@ -33,6 +33,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -45,6 +47,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.window.DialogWindowProvider
+import android.view.WindowManager
+import kotlinx.coroutines.android.awaitFrame
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.utils.SubtypeLocaleUtils
 import helium314.keyboard.settings.ios.IosBarButton
@@ -151,15 +156,23 @@ private fun ReplacementSheet(initial: TextReplacement, onDismiss: () -> Unit, on
         mutableStateOf(TextFieldValue(initial.shortcut.orEmpty(), TextRange(initial.shortcut.orEmpty().length)))
     }
     val canSave = phrase.text.isNotBlank() && shortcut.text.isNotBlank()
-    val focus = remember { FocusRequester() }
-    LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
+    val phraseFocus = remember { FocusRequester() }
 
     Dialog(onDismiss, DialogProperties(usePlatformDefaultWidth = false)) {
+        // focus and keyboard must be requested from inside the dialog window, once its content is attached
+        val dialogWindow = (LocalView.current.parent as? DialogWindowProvider)?.window
+        val keyboard = LocalSoftwareKeyboardController.current
+        LaunchedEffect(Unit) {
+            dialogWindow?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+            awaitFrame()
+            phraseFocus.requestFocus()
+            keyboard?.show()
+        }
         Column(
             Modifier
                 .padding(horizontal = 16.dp)
                 .fillMaxWidth()
-                .background(colors.background, IosGroupShape)
+                .background(colors.sheet, IosGroupShape)
                 .padding(bottom = 16.dp)
         ) {
             Box(Modifier.fillMaxWidth().heightIn(min = 56.dp).padding(horizontal = 16.dp)) {
@@ -177,7 +190,7 @@ private fun ReplacementSheet(initial: TextReplacement, onDismiss: () -> Unit, on
                 ) { if (canSave) onSave(phrase.text.trim(), shortcut.text.trim()) }
             }
             Column(Modifier.padding(horizontal = 16.dp).fillMaxWidth().iosPanel(IosGroupShape)) {
-                SheetField(stringResource(R.string.ios_phrase), phrase, { phrase = it }, Modifier.focusRequester(focus))
+                SheetField(stringResource(R.string.ios_phrase), phrase, { phrase = it }, phraseFocus)
                 IosSeparator()
                 SheetField(stringResource(R.string.ios_shortcut), shortcut, { shortcut = it })
             }
@@ -197,14 +210,31 @@ private fun SheetButton(text: String, color: Color, weight: FontWeight, modifier
 }
 
 @Composable
-private fun SheetField(label: String, value: TextFieldValue, onChange: (TextFieldValue) -> Unit, modifier: Modifier = Modifier) {
+private fun SheetField(
+    label: String,
+    value: TextFieldValue,
+    onChange: (TextFieldValue) -> Unit,
+    focus: FocusRequester = remember { FocusRequester() },
+) {
     val colors = LocalIosColors.current
-    Row(Modifier.fillMaxWidth().heightIn(min = 46.dp).padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+    val keyboard = LocalSoftwareKeyboardController.current
+    // the whole row, label included, focuses the field (and brings the keyboard back if it was hidden)
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .heightIn(min = 46.dp)
+            .clickable(remember { MutableInteractionSource() }, indication = null) {
+                focus.requestFocus()
+                keyboard?.show()
+            }
+            .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         BasicText(label, Modifier.width(120.dp), style = TextStyle(color = colors.text, fontSize = 16.sp))
         BasicTextField(
             value,
             onChange,
-            modifier.weight(1f).padding(vertical = 11.dp),
+            Modifier.weight(1f).focusRequester(focus).padding(vertical = 11.dp),
             singleLine = true,
             textStyle = TextStyle(color = colors.text, fontSize = 16.sp),
             cursorBrush = SolidColor(colors.tint),

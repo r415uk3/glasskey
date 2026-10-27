@@ -14,6 +14,27 @@ class IosLogicTest {
 
     @Test fun titleCollapseZeroHeight() = assertEquals(0f, IosLargeTitle.collapse(10, 0))
 
+    // the large title is gone before it can show through the bar
+    @Test fun largeTitleFadesOutEarly() {
+        assertEquals(1f, IosLargeTitle.alpha(0f))
+        assertEquals(0.5f, IosLargeTitle.alpha(0.3f), 0.001f)
+        assertEquals(0f, IosLargeTitle.alpha(0.6f))
+        assertEquals(0f, IosLargeTitle.alpha(1f))
+    }
+
+    // bar fully opaque down to where its fade starts, then fading to nothing at its bottom edge
+    @Test fun scrollEdgeMask() {
+        assertEquals(0.75f, IosScrollEdge.fadeStart(heightPx = 200f, fadePx = 50f))
+        assertEquals(0f, IosScrollEdge.fadeStart(heightPx = 30f, fadePx = 50f))
+        assertEquals(0f, IosScrollEdge.fadeStart(heightPx = 0f, fadePx = 50f))
+    }
+
+    // like CSS radial-gradient(circle at x% y%, c 0, transparent N%): N% of the distance to the farthest corner
+    @Test fun blobRadiusFromFarthestCorner() {
+        assertEquals(40f, IosBackgroundBlobs.radius(0f, 0f, 30f, 40f, 0.8f), 0.001f) // corner (30,40) at 50
+        assertEquals(50f * 0.4f, IosBackgroundBlobs.radius(0.5f, 0.5f, 60f, 80f, 0.4f), 0.001f)
+    }
+
     @Test fun switchTapToggles() {
         assertEquals(true, IosSwitchLogic.checkedAfterRelease(false, 0f, moved = false))
         assertEquals(false, IosSwitchLogic.checkedAfterRelease(true, 1f, moved = false))

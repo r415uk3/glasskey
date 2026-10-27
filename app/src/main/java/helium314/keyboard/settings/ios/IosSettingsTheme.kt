@@ -18,6 +18,8 @@ data class IosSettingsColors(
     val tint: Color,
     val switchOn: Color,
     val switchOff: Color,
+    /** Background of a modal sheet / card (iOS grouped sheet colour). */
+    val sheet: Color,
 )
 
 object IosSettingsTheme {
@@ -30,6 +32,7 @@ object IosSettingsTheme {
         tint = Color(0xFF0A84FF),
         switchOn = Color(0xFF34C759),
         switchOff = Color(0x5C787880), // rgba(120,120,128,.36)
+        sheet = Color(0xFF1C1C1E),
     )
     private val light = IosSettingsColors(
         background = Color(0xFFF2F2F7),
@@ -40,6 +43,7 @@ object IosSettingsTheme {
         tint = Color(0xFF0A84FF),
         switchOn = Color(0xFF34C759),
         switchOff = Color(0x29787880), // rgba(120,120,128,.16)
+        sheet = Color(0xFFF2F2F7),
     )
 
     fun colors(dark: Boolean): IosSettingsColors = if (dark) this.dark else light

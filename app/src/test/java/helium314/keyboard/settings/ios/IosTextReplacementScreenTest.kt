@@ -2,6 +2,7 @@
 package helium314.keyboard.settings.ios
 
 import android.content.Context
+import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -83,5 +84,23 @@ class IosTextReplacementScreenTest {
         compose.onNodeWithText("Готово").performClick()
         compose.waitForIdle()
         assertEquals(listOf(TextReplacement("сәлем!", "слм", kk)), store.entries)
+    }
+
+    @Test fun sheetFocusesPhraseOnOpen() {
+        show(FakeStore())
+        compose.onNodeWithContentDescription("Добавить").performClick()
+        compose.waitForIdle()
+        compose.onAllNodes(hasSetTextAction())[0].assertIsFocused()
+    }
+
+    @Test fun tappingRowLabelFocusesItsField() {
+        show(FakeStore())
+        compose.onNodeWithContentDescription("Добавить").performClick()
+        compose.onNodeWithText("Сокращение").performClick()
+        compose.waitForIdle()
+        compose.onAllNodes(hasSetTextAction())[1].assertIsFocused()
+        compose.onNodeWithText("Фраза").performClick()
+        compose.waitForIdle()
+        compose.onAllNodes(hasSetTextAction())[0].assertIsFocused()
     }
 }

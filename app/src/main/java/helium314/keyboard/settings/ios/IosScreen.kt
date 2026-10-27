@@ -36,7 +36,6 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
@@ -63,6 +62,7 @@ const val IosBackButtonTag = "ios_back_button"
 val LocalIosBackdrop = staticCompositionLocalOf<IosBackdrop?> { null }
 
 private val barHeight = 56.dp
+private val edgeOverhang = 12.dp
 
 /** Glass over [LocalIosBackdrop], or a plain translucent fill outside an [IosScreen]. */
 @Composable
@@ -119,6 +119,7 @@ fun IosScreen(
                                 .testTag(IosLargeTitleTag)
                                 .semantics { heading() }
                                 .onSizeChanged { titleHeightPx = it.height }
+                                .graphicsLayer { alpha = IosLargeTitle.alpha(collapse) }
                                 .padding(start = 20.dp, end = 20.dp, bottom = 12.dp),
                             style = TextStyle(color = colors.text, fontSize = 32.sp, fontWeight = FontWeight.Bold),
                         )
@@ -128,8 +129,15 @@ fun IosScreen(
             }
         }
 
+        // the status-bar area belongs to the bar; its background reaches a little below the bar and fades out there
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(statusTop + barHeight + edgeOverhang)
+                .graphicsLayer { alpha = collapse }
+                .iosScrollEdge(screenBackdrop, fade = edgeOverhang * 2)
+        )
         Box(Modifier.fillMaxWidth().height(statusTop + barHeight)) {
-            Box(Modifier.matchParentSize().graphicsLayer { alpha = collapse }.iosGlass(screenBackdrop, RectangleShape))
             BasicText(
                 title,
                 Modifier

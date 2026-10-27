@@ -7,13 +7,21 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kyant.backdrop.backdrops.LayerBackdrop
 import com.kyant.backdrop.backdrops.layerBackdrop
 import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 import com.kyant.backdrop.drawBackdrop
+import com.kyant.backdrop.drawPlainBackdrop
 import com.kyant.backdrop.effects.blur
 import com.kyant.backdrop.effects.lens
 import com.kyant.backdrop.effects.vibrancy
@@ -72,5 +80,43 @@ fun Modifier.iosGlass(
         )
         GlassLevel.FILL -> background(fill, shape)
             .border(0.5.dp, Color.White.copy(alpha = if (dark) 0.22f else 0.6f), shape)
+    }
+}
+
+/**
+ * iOS scroll-edge effect for a top bar: frosted (or, below Android 12, nearly opaque) background colour that fades
+ * out over the last [fade] of the bar instead of ending in a hard edge or rim line.
+ */
+@Composable
+fun Modifier.iosScrollEdge(
+    backdrop: IosBackdrop,
+    fade: Dp,
+    level: GlassLevel = IosGlass.levelFor(Build.VERSION.SDK_INT),
+): Modifier {
+    val background = LocalIosColors.current.background
+    val dark = LocalIosDark.current
+    val masked = graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+        .drawWithContent {
+            drawContent()
+            val start = IosScrollEdge.fadeStart(size.height, fade.toPx())
+            drawRect(
+                Brush.verticalGradient(0f to Color.Black, start to Color.Black, 1f to Color.Transparent),
+                blendMode = BlendMode.DstIn,
+            )
+        }
+    return when (level) {
+        GlassLevel.LENS, GlassLevel.BLUR -> {
+            val tint = background.copy(alpha = if (dark) 0.55f else 0.65f)
+            masked.drawPlainBackdrop(
+                backdrop = backdrop,
+                shape = { RectangleShape },
+                effects = {
+                    vibrancy()
+                    blur(16.dp.toPx())
+                },
+                onDrawSurface = { drawRect(tint) },
+            )
+        }
+        GlassLevel.FILL -> masked.background(background.copy(alpha = 0.94f))
     }
 }
