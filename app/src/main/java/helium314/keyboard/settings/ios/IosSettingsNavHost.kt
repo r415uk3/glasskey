@@ -10,7 +10,6 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -91,9 +90,9 @@ fun IosSettingsNavHost(
     Box(
         Modifier
             .fillMaxSize()
-            .background(LocalIosColors.current.background)
             .onGloballyPositioned { host.value = it }
     ) {
+        IosNavDiagnosticsEffect(navController, animationScale, duration) // TEMPORARY, see IosNavDiagnostics
         IosBackground(dark, Modifier.fillMaxSize().iosBackdropSource(wallpaper))
         CompositionLocalProvider(LocalIosWallpaper provides wallpaper) {
             NavHost(
@@ -118,7 +117,12 @@ fun IosSettingsNavHost(
             ) {
                 fun NavGraphBuilder.page(route: String, content: @Composable (NavBackStackEntry) -> Unit) =
                     composable(route) { entry ->
-                        Box(Modifier.fillMaxSize().iosNavOverlay(hostCoordinates, dark, rtl)) { content(entry) }
+                        Box(
+                            Modifier
+                                .fillMaxSize()
+                                .iosNavDiagnostics(route) // TEMPORARY, see IosNavDiagnostics
+                                .iosNavOverlay(hostCoordinates, dark, rtl, route)
+                        ) { content(entry) }
                     }
 
                 page(IosRoute.Main) { IosMainScreen(needsEnabling, onEnable, navigate) }

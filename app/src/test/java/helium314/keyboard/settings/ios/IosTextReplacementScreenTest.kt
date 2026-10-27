@@ -121,6 +121,19 @@ class IosTextReplacementScreenTest {
         compose.onAllNodes(hasSetTextAction())[0].assertIsFocused()
     }
 
+    // the field must already be composed when the sheet requests focus a frame after opening, not only once its
+    // enter animation has started
+    @Test fun sheetFocusesPhraseRightAway() {
+        show(FakeStore())
+        compose.waitForIdle()
+        compose.mainClock.autoAdvance = false
+        compose.onNodeWithContentDescription("Добавить").performClick()
+        repeat(3) { compose.mainClock.advanceTimeByFrame() }
+        compose.waitForIdle()
+        compose.onAllNodes(hasSetTextAction())[0].assertIsFocused()
+        compose.mainClock.autoAdvance = true
+    }
+
     @Test fun tappingRowLabelFocusesItsField() {
         show(FakeStore())
         compose.onNodeWithContentDescription("Добавить").performClick()

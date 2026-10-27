@@ -9,7 +9,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
+import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.geometry.Offset
+import androidx.annotation.VisibleForTesting
 import androidx.compose.ui.node.DrawModifierNode
 import androidx.compose.ui.node.GlobalPositionAwareModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
@@ -78,6 +82,47 @@ fun iosGlassSurface(level: GlassLevel): Color {
 fun Modifier.iosBackdropSource(backdrop: IosBackdrop): Modifier = layerBackdrop(backdrop)
 
 /**
+ * Put directly before a Kyant `drawBackdrop` (no layer in between, so both draw into the same layer): redraws it
+ * whenever this node moves on screen, e.g. while its page slides, so the glass never shows the backdrop at the
+ * offset of an earlier position.
+ */
+fun Modifier.iosBackdropRefresh(): Modifier = this then BackdropRefreshElement
+
+private data object BackdropRefreshElement : ModifierNodeElement<BackdropRefreshNode>() {
+    override fun create() = BackdropRefreshNode()
+    override fun update(node: BackdropRefreshNode) {}
+}
+
+private class BackdropRefreshNode : Modifier.Node(), DrawModifierNode, GlobalPositionAwareModifierNode {
+    private var coordinates: LayoutCoordinates? = null
+    private var drawnAt = Offset.Unspecified
+
+    private fun position(): Offset = coordinates?.takeIf { it.isAttached }?.positionInRoot() ?: Offset.Unspecified
+
+    override fun onGloballyPositioned(coordinates: LayoutCoordinates) {
+        this.coordinates = coordinates
+        if (position() != drawnAt) invalidateDraw()
+    }
+
+    override fun ContentDrawScope.draw() {
+        drawnAt = position()
+        IosBackdropProbe.onDraw?.invoke(this@BackdropRefreshNode, drawnAt) { position() }
+        drawContent()
+    }
+
+    override fun onDetach() {
+        coordinates = null
+        drawnAt = Offset.Unspecified
+    }
+}
+
+/** Test hook: called whenever glass is drawn, with where it was drawn and a way to ask where it is now. */
+@VisibleForTesting
+object IosBackdropProbe {
+    var onDraw: ((node: Any, drawnAt: Offset, current: () -> Offset) -> Unit)? = null
+}
+
+/**
  * Draws [backdrop] (the shared settings background) behind this node's content exactly where it is on screen, so
  * a page that slides over another hides it while the background itself stays still.
  */
@@ -100,7 +145,9 @@ private class WallpaperNode(var backdrop: IosBackdrop) : Modifier.Node(), DrawMo
     }
 
     override fun ContentDrawScope.draw() {
-        with(backdrop) { drawBackdrop(this@draw, coordinates) }
+        // the background is drawn shifted to where it is on screen; only this page's own area may show it, or a
+        // page sliding in would paint it over the page it is covering
+        clipRect { with(backdrop) { drawBackdrop(this@draw, coordinates) } }
         drawContent()
     }
 
@@ -118,7 +165,7 @@ fun Modifier.iosGlass(
     val fill = LocalIosColors.current.groupFill
     val dark = LocalIosDark.current
     return when (level) {
-        GlassLevel.LENS -> drawBackdrop(
+        GlassLevel.LENS -> iosBackdropRefresh().drawBackdrop(
             backdrop = backdrop,
             shape = { shape },
             effects = {
@@ -130,7 +177,7 @@ fun Modifier.iosGlass(
             highlight = { Highlight.Default },
             onDrawSurface = { drawRect(fill.copy(alpha = fill.alpha / 2)) },
         )
-        GlassLevel.BLUR -> drawBackdrop(
+        GlassLevel.BLUR -> iosBackdropRefresh().drawBackdrop(
             backdrop = backdrop,
             shape = { shape },
             effects = {
@@ -169,7 +216,7 @@ fun Modifier.iosScrollEdge(
     return when (level) {
         GlassLevel.LENS, GlassLevel.BLUR -> {
             val tint = background.copy(alpha = if (dark) 0.55f else 0.65f)
-            masked.drawPlainBackdrop(
+            masked.iosBackdropRefresh().drawPlainBackdrop(
                 backdrop = backdrop,
                 shape = { RectangleShape },
                 effects = {

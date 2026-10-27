@@ -92,8 +92,7 @@ fun IosScreen(
     val dark = LocalIosDark.current
     // groups refract only the background; chrome (top bar, back button, bottom bar) refracts the scrolling list too
     val wallpaper = LocalIosWallpaper.current
-    val ownBackground = rememberIosBackdrop()
-    val backgroundBackdrop = wallpaper ?: ownBackground
+    val backgroundBackdrop = wallpaper ?: rememberIosBackdrop() // whether there is a wallpaper never changes
     val screenBackdrop = rememberIosBackdrop()
     val listState = rememberLazyListState()
     var titleHeightPx by remember { mutableIntStateOf(0) }
@@ -110,8 +109,9 @@ fun IosScreen(
         Box(Modifier.fillMaxSize().iosBackdropSource(screenBackdrop)) {
             // opaque, so a page sliding in hides the one underneath; with a shared wallpaper it shows that one,
             // exactly where it is, so it does not move with the page
-            if (wallpaper != null) Box(Modifier.fillMaxSize().background(colors.background).iosWallpaper(wallpaper))
-            else IosBackground(dark, Modifier.fillMaxSize().iosBackdropSource(ownBackground))
+            // (the wallpaper is recorded behind the navigation host earlier in the same frame)
+            if (wallpaper != null) Box(Modifier.fillMaxSize().iosWallpaper(wallpaper))
+            else IosBackground(dark, Modifier.fillMaxSize().iosBackdropSource(backgroundBackdrop))
             CompositionLocalProvider(LocalIosBackdrop provides backgroundBackdrop) {
                 LazyColumn(
                     Modifier.fillMaxSize(),

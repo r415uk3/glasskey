@@ -164,10 +164,10 @@ private fun ReplacementSheet(initial: TextReplacement, onDismiss: () -> Unit, on
     }
     val canSave = phrase.text.isNotBlank() && shortcut.text.isNotBlank()
     val phraseFocus = remember { FocusRequester() }
-    val shown = remember { MutableTransitionState(false) }
+    // heading for shown from the start, so the fields are composed (and focusable) in the dialog's first frame
+    val shown = remember { MutableTransitionState(false).apply { targetState = true } }
     var closing by remember { mutableStateOf(false) }
     val close = { closing = true; shown.targetState = false }
-    LaunchedEffect(Unit) { shown.targetState = true }
     LaunchedEffect(shown.isIdle, shown.currentState) { if (closing && shown.isIdle && !shown.currentState) onDismiss() }
     val spec = tween<Float>(IosSheetMotion.DurationMillis)
 

@@ -60,19 +60,21 @@ object IosSheetMotion {
  * Dims this page while it is covered by a page sliding over it and draws a soft shadow on its leading edge while it
  * slides over another one, from where it is relative to [host] (the container both pages move in).
  */
-internal fun Modifier.iosNavOverlay(host: () -> LayoutCoordinates?, dark: Boolean, rtl: Boolean): Modifier =
-    this then NavOverlayElement(host, dark, rtl)
+internal fun Modifier.iosNavOverlay(host: () -> LayoutCoordinates?, dark: Boolean, rtl: Boolean, label: String): Modifier =
+    this then NavOverlayElement(host, dark, rtl, label)
 
 private data class NavOverlayElement(
     val host: () -> LayoutCoordinates?,
     val dark: Boolean,
     val rtl: Boolean,
+    val label: String,
 ) : ModifierNodeElement<NavOverlayNode>() {
-    override fun create() = NavOverlayNode(host, dark, rtl)
+    override fun create() = NavOverlayNode(host, dark, rtl, label)
     override fun update(node: NavOverlayNode) {
         node.host = host
         node.dark = dark
         node.rtl = rtl
+        node.label = label
         node.invalidateDraw()
     }
 }
@@ -81,6 +83,7 @@ private class NavOverlayNode(
     var host: () -> LayoutCoordinates?,
     var dark: Boolean,
     var rtl: Boolean,
+    var label: String,
 ) : Modifier.Node(), DrawModifierNode, GlobalPositionAwareModifierNode {
     private var offsetFraction = 0f
 
@@ -93,6 +96,7 @@ private class NavOverlayNode(
         }
         if (fraction != offsetFraction) {
             offsetFraction = fraction
+            IosNavDiagnostics.pageOffset(label, fraction) // TEMPORARY, see IosNavDiagnostics
             invalidateDraw()
         }
     }

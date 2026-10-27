@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastCoerceAtMost
 import androidx.compose.ui.util.lerp
 import com.kyant.backdrop.Backdrop
+import helium314.keyboard.settings.ios.iosBackdropRefresh
 import com.kyant.backdrop.drawBackdrop
 import com.kyant.backdrop.effects.blur
 import com.kyant.backdrop.effects.lens
@@ -170,7 +171,7 @@ fun Modifier.liquidButtonSurface(
         }
     }
     return when (level) {
-        GlassLevel.LENS -> drawBackdrop(
+        GlassLevel.LENS -> iosBackdropRefresh().drawBackdrop(
             backdrop = backdrop,
             shape = shape,
             effects = {
@@ -181,7 +182,7 @@ fun Modifier.liquidButtonSurface(
             layerBlock = layerBlock,
             onDrawSurface = onDrawSurface
         )
-        GlassLevel.BLUR -> drawBackdrop(
+        GlassLevel.BLUR -> iosBackdropRefresh().drawBackdrop(
             backdrop = backdrop,
             shape = shape,
             effects = {

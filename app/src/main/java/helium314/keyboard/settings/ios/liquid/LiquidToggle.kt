@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastCoerceIn
 import androidx.compose.ui.util.lerp
 import com.kyant.backdrop.Backdrop
+import helium314.keyboard.settings.ios.iosBackdropRefresh
 import com.kyant.backdrop.backdrops.layerBackdrop
 import com.kyant.backdrop.backdrops.rememberBackdrop
 import com.kyant.backdrop.backdrops.rememberCombinedBackdrop
@@ -191,6 +192,7 @@ private fun Modifier.thumbSurface(
     backdrop: Backdrop
 ): Modifier = when (level) {
     GlassLevel.LENS -> this
+        .iosBackdropRefresh()
         .drawBackdrop(
             backdrop = backdrop,
             shape = { Capsule() },
@@ -231,6 +233,7 @@ private fun Modifier.thumbSurface(
             }
         )
     GlassLevel.BLUR -> this
+        .iosBackdropRefresh()
         .drawBackdrop(
             backdrop = backdrop,
             shape = { Capsule() },
