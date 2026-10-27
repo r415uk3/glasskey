@@ -3,9 +3,9 @@ package helium314.keyboard.settings.ios
 
 // ---------------------------------------------------------------------------------------------------------------
 // TEMPORARY device diagnostics for the settings push / pop transitions (plan 5 task 9). Debug builds only; logs
-// with tag "GlasskeyNav" (adb logcat -s GlasskeyNav). Remove this file and its three call sites
-// (IosNavDiagnosticsEffect and Modifier.iosNavDiagnostics in IosSettingsNavHost, IosNavDiagnostics.pageOffset in
-// IosNavMotion) once the cause is known.
+// with tag "GlasskeyNav" (adb logcat -s GlasskeyNav). Remove this file and its four call sites
+// (IosNavDiagnosticsEffect, Modifier.iosNavDiagnostics and the clock's onSlideStart log in IosSettingsNavHost,
+// IosNavDiagnostics.pageOffset in IosNavMotion) once the cause is known.
 // ---------------------------------------------------------------------------------------------------------------
 
 import android.animation.ValueAnimator

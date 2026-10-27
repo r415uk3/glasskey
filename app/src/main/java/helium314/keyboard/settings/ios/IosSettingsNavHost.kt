@@ -73,6 +73,11 @@ fun IosSettingsNavHost(
     val wallpaper = rememberIosBackdrop()
     val host = remember { HostCoordinates() }
     val hostCoordinates = remember { { host.value } }
+    val clock = remember {
+        IosNavClock().apply {
+            onSlideStart = { IosNavDiagnostics.log("  slide starts, held ${it / 1_000_000}ms") } // TEMPORARY, see IosNavDiagnostics
+        }
+    }
 
     fun goBack() {
         if (!navController.popBackStack()) onClickBack()
@@ -80,10 +85,14 @@ fun IosSettingsNavHost(
     val navigate: (String) -> Unit = { navController.navigate(it) }
 
     // while a predictive back gesture runs, the page follows the finger linearly; the back stack is popped only
-    // when the gesture completes, so the target page is not yet the current one
+    // when the gesture completes, so the target page is not yet the current one. Otherwise the slide waits at its
+    // start until the incoming page has been drawn (IosNavGate): its first frame is slow, and the transition's clock
+    // already runs during it.
     fun AnimatedContentTransitionScope<NavBackStackEntry>.spec(): FiniteAnimationSpec<IntOffset> {
         val interactive = targetState != navController.currentBackStackEntry
-        return tween(duration, easing = if (interactive) LinearEasing else IosNavMotion.Easing)
+        if (interactive) return tween(duration, easing = LinearEasing)
+        val gate = clock.gate(initialState.id, targetState.id)
+        return IosHeldSpec(gate, tween(duration, easing = IosNavMotion.Easing))
     }
     val parallax = IosNavMotion.ParallaxFraction
 
@@ -121,6 +130,7 @@ fun IosSettingsNavHost(
                             Modifier
                                 .fillMaxSize()
                                 .iosNavDiagnostics(route) // TEMPORARY, see IosNavDiagnostics
+                                .iosNavPage(clock, entry.id)
                                 .iosNavOverlay(hostCoordinates, dark, rtl, route)
                         ) { content(entry) }
                     }

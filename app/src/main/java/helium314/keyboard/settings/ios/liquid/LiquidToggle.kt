@@ -11,15 +11,21 @@
 // - the once-created gesture callbacks read [selected] / [onSelect] through rememberUpdatedState;
 // - no `role = Role.Switch` on the thumb: the caller (IosSwitch) owns the semantics (role, state, click action);
 // - new [level] parameter: GlassLevel.LENS is the catalog's thumb as is; BLUR (Android 12) drops the lens and keeps a
-//   frosted, mostly white thumb; FILL (< 12) draws a plain white thumb with a shadow and no backdrop at all.
+//   frosted, mostly white thumb; FILL (< 12) draws a plain white thumb with a shadow and no backdrop at all;
+// - at LENS and BLUR the thumb is glass only while pressed or dragged: at rest the catalog's thumb is an opaque white
+//   capsule with a faint shadow (its blur, lens, highlight and inner shadow are all hidden or zero), so it is drawn
+//   as exactly that, without a backdrop layer, shaders or a track layer. Seven resting switches on a page then cost
+//   nothing extra in a page's first frame and are not re-rendered on every frame of a push / pop.
 package helium314.keyboard.settings.ios.liquid
 
+import android.graphics.BlurMaskFilter
 import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +38,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.GraphicsLayerScope
 import androidx.compose.ui.graphics.drawscope.scale
@@ -133,6 +144,7 @@ fun LiquidToggle(
     }
 
     val trackBackdrop = rememberLayerBackdrop()
+    val glass by remember { derivedStateOf { level != GlassLevel.FILL && dampedDragAnimation.pressProgress > 0f } }
 
     Box(
         modifier.then(dampedDragAnimation.modifier),
@@ -140,7 +152,7 @@ fun LiquidToggle(
     ) {
         Box(
             Modifier
-                .layerBackdrop(trackBackdrop)
+                .then(if (glass) Modifier.layerBackdrop(trackBackdrop) else Modifier)
                 .clip(Capsule())
                 .drawBehind {
                     val fraction = dampedDragAnimation.value
@@ -160,6 +172,7 @@ fun LiquidToggle(
                 }
                 .thumbSurface(
                     level = level,
+                    glass = glass,
                     pressProgress = { dampedDragAnimation.pressProgress },
                     layerBlock = {
                         scaleX = dampedDragAnimation.scaleX
@@ -187,11 +200,21 @@ fun LiquidToggle(
 
 private fun Modifier.thumbSurface(
     level: GlassLevel,
+    glass: Boolean,
     pressProgress: () -> Float,
     layerBlock: GraphicsLayerScope.() -> Unit,
     backdrop: Backdrop
-): Modifier = when (level) {
-    GlassLevel.LENS -> this
+): Modifier = when {
+    level == GlassLevel.FILL -> this
+        .graphicsLayer {
+            layerBlock()
+            shadowElevation = 2f.dp.toPx()
+            shape = Capsule()
+            clip = true
+        }
+        .background(Color.White)
+    !glass -> this.restingThumb(layerBlock)
+    level == GlassLevel.LENS -> this
         .iosBackdropRefresh()
         .drawBackdrop(
             backdrop = backdrop,
@@ -232,7 +255,7 @@ private fun Modifier.thumbSurface(
                 drawRect(Color.White.copy(alpha = 1f - progress))
             }
         )
-    GlassLevel.BLUR -> this
+    else -> this
         .iosBackdropRefresh()
         .drawBackdrop(
             backdrop = backdrop,
@@ -252,12 +275,25 @@ private fun Modifier.thumbSurface(
                 drawRect(Color.White.copy(alpha = 1f - 0.4f * progress))
             }
         )
-    GlassLevel.FILL -> this
-        .graphicsLayer {
-            layerBlock()
-            shadowElevation = 2f.dp.toPx()
-            shape = Capsule()
-            clip = true
-        }
-        .background(Color.White)
 }
+
+/**
+ * The LENS / BLUR thumb at rest, as the glass thumb draws it there: an opaque white capsule over Kyant's
+ * Shadow(radius = 4.dp, color = 5% black), a blurred copy of the shape moved down by radius / 6.
+ */
+private fun Modifier.restingThumb(layerBlock: GraphicsLayerScope.() -> Unit): Modifier = this
+    .graphicsLayer(layerBlock)
+    .drawWithCache {
+        val radius = 4f.dp.toPx()
+        val shadow = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.Black.copy(alpha = 0.05f).toArgb()
+            maskFilter = BlurMaskFilter(radius, BlurMaskFilter.Blur.NORMAL)
+        }
+        val corner = size.height / 2
+        onDrawBehind {
+            drawIntoCanvas {
+                it.nativeCanvas.drawRoundRect(0f, radius / 6, size.width, size.height + radius / 6, corner, corner, shadow)
+            }
+            drawRoundRect(Color.White, cornerRadius = CornerRadius(corner))
+        }
+    }

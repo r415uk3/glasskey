@@ -71,9 +71,9 @@ private val edgeOverhang = 12.dp
 /** Glass over [LocalIosBackdrop], or a plain translucent fill outside an [IosScreen]. */
 @Composable
 fun Modifier.iosPanel(shape: Shape, level: GlassLevel = IosGlass.levelFor(Build.VERSION.SDK_INT)): Modifier {
-    val fallback = rememberIosBackdrop()
+    // whether there is a backdrop never changes for a panel; the FILL fallback needs no layer of its own
     val backdrop = LocalIosBackdrop.current
-    return if (backdrop != null) iosGlass(backdrop, shape, level) else iosGlass(fallback, shape, GlassLevel.FILL)
+    return if (backdrop != null) iosGlass(backdrop, shape, level) else iosGlass(rememberIosBackdrop(), shape, GlassLevel.FILL)
 }
 
 /**
@@ -197,11 +197,12 @@ fun IosGlassButton(
     backdrop: IosBackdrop? = LocalIosBackdrop.current,
     content: @Composable RowScope.() -> Unit,
 ) {
-    val fallback = rememberIosBackdrop()
+    // whether there is a backdrop never changes for a button; only the FILL fallback needs a (never drawn) one
+    val fallback = if (backdrop == null) rememberIosBackdrop() else null
     val level = if (backdrop != null) IosGlass.levelFor(Build.VERSION.SDK_INT) else GlassLevel.FILL
     LiquidButton(
         onClick,
-        backdrop ?: fallback,
+        backdrop ?: fallback!!,
         if (circle) modifier.size(44.dp) else modifier,
         // the same fill as the other glass panels (iosGlass) keeps the label legible over busy content
         surfaceColor = iosGlassSurface(level),
