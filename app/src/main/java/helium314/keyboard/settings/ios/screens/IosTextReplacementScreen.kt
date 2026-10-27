@@ -1,6 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-only
 package helium314.keyboard.settings.ios.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,6 +25,7 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +42,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -56,6 +65,7 @@ import helium314.keyboard.settings.ios.IosGlassButton
 import helium314.keyboard.settings.ios.IosGroupShape
 import helium314.keyboard.settings.ios.IosRow
 import helium314.keyboard.settings.ios.IosScreen
+import helium314.keyboard.settings.ios.IosSheetMotion
 import helium314.keyboard.settings.ios.IosSeparator
 import helium314.keyboard.settings.ios.IosTextReplacements
 import helium314.keyboard.settings.ios.LocalIosColors
@@ -120,7 +130,6 @@ fun IosTextReplacementScreen(onBack: () -> Unit, store: TextReplacementStore = I
                 if (edited.shortcut != null) store.delete(ctx, edited)
                 store.add(ctx, word, shortcut, edited.locale)
                 entries = store.all(ctx)
-                sheet = null
             },
         )
     }
@@ -139,7 +148,12 @@ private fun PlusButton(onClick: () -> Unit) {
     }
 }
 
-/** iOS-style card with Отменить / title / Готово and the two fields. */
+const val IosSheetTag = "ios_sheet"
+
+/**
+ * iOS-style card with Отменить / title / Готово and the two fields; fades and scales in, and out again before
+ * [onDismiss] (also after [onSave]) removes it.
+ */
 @Composable
 private fun ReplacementSheet(initial: TextReplacement, onDismiss: () -> Unit, onSave: (String, String) -> Unit) {
     val colors = LocalIosColors.current
@@ -150,10 +164,18 @@ private fun ReplacementSheet(initial: TextReplacement, onDismiss: () -> Unit, on
     }
     val canSave = phrase.text.isNotBlank() && shortcut.text.isNotBlank()
     val phraseFocus = remember { FocusRequester() }
+    val shown = remember { MutableTransitionState(false) }
+    var closing by remember { mutableStateOf(false) }
+    val close = { closing = true; shown.targetState = false }
+    LaunchedEffect(Unit) { shown.targetState = true }
+    LaunchedEffect(shown.isIdle, shown.currentState) { if (closing && shown.isIdle && !shown.currentState) onDismiss() }
+    val spec = tween<Float>(IosSheetMotion.DurationMillis)
 
-    Dialog(onDismiss, DialogProperties(usePlatformDefaultWidth = false)) {
+    Dialog(close, DialogProperties(usePlatformDefaultWidth = false)) {
         // focus and keyboard must be requested from inside the dialog window, once its content is attached
         val dialogWindow = (LocalView.current.parent as? DialogWindowProvider)?.window
+        // the card animates itself (below) instead of the platform's dialog window animation
+        SideEffect { dialogWindow?.setWindowAnimations(0) }
         val keyboard = LocalSoftwareKeyboardController.current
         LaunchedEffect(Unit) {
             dialogWindow?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
@@ -161,31 +183,43 @@ private fun ReplacementSheet(initial: TextReplacement, onDismiss: () -> Unit, on
             phraseFocus.requestFocus()
             keyboard?.show()
         }
-        Column(
-            Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth()
-                .background(colors.sheet, IosGroupShape)
-                .padding(bottom = 16.dp)
+        AnimatedVisibility(
+            shown,
+            enter = fadeIn(spec) + scaleIn(spec, initialScale = IosSheetMotion.InitialScale),
+            exit = fadeOut(spec) + scaleOut(spec, targetScale = IosSheetMotion.InitialScale),
         ) {
-            Box(Modifier.fillMaxWidth().heightIn(min = 56.dp).padding(horizontal = 16.dp)) {
-                SheetButton(stringResource(R.string.ios_cancel), colors.tint, FontWeight.Normal, Modifier.align(Alignment.CenterStart), onDismiss)
-                BasicText(
-                    stringResource(R.string.ios_text_replacement),
-                    Modifier.align(Alignment.Center),
-                    style = TextStyle(color = colors.text, fontSize = 17.sp, fontWeight = FontWeight.SemiBold),
-                )
-                SheetButton(
-                    stringResource(R.string.ios_done),
-                    if (canSave) colors.tint else colors.secondaryText,
-                    FontWeight.SemiBold,
-                    Modifier.align(Alignment.CenterEnd),
-                ) { if (canSave) onSave(phrase.text.trim(), shortcut.text.trim()) }
-            }
-            Column(Modifier.padding(horizontal = 16.dp).fillMaxWidth().iosPanel(IosGroupShape)) {
-                SheetField(stringResource(R.string.ios_phrase), phrase, { phrase = it }, phraseFocus)
-                IosSeparator()
-                SheetField(stringResource(R.string.ios_shortcut), shortcut, { shortcut = it })
+            Column(
+                Modifier
+                    .testTag(IosSheetTag)
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth()
+                    .background(colors.sheet, IosGroupShape)
+                    .padding(bottom = 16.dp)
+            ) {
+                Box(Modifier.fillMaxWidth().heightIn(min = 56.dp).padding(horizontal = 16.dp)) {
+                    SheetButton(stringResource(R.string.ios_cancel), colors.tint, FontWeight.Normal, Modifier.align(Alignment.CenterStart), close)
+                    BasicText(
+                        stringResource(R.string.ios_text_replacement),
+                        Modifier.align(Alignment.Center),
+                        style = TextStyle(color = colors.text, fontSize = 17.sp, fontWeight = FontWeight.SemiBold),
+                    )
+                    SheetButton(
+                        stringResource(R.string.ios_done),
+                        if (canSave) colors.tint else colors.secondaryText,
+                        FontWeight.SemiBold,
+                        Modifier.align(Alignment.CenterEnd),
+                    ) {
+                        if (canSave && !closing) {
+                            onSave(phrase.text.trim(), shortcut.text.trim())
+                            close()
+                        }
+                    }
+                }
+                Column(Modifier.padding(horizontal = 16.dp).fillMaxWidth().iosPanel(IosGroupShape)) {
+                    SheetField(stringResource(R.string.ios_phrase), phrase, { phrase = it }, phraseFocus)
+                    IosSeparator()
+                    SheetField(stringResource(R.string.ios_shortcut), shortcut, { shortcut = it })
+                }
             }
         }
     }

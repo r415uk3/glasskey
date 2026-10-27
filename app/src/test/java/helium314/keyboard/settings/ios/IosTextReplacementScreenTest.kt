@@ -7,11 +7,14 @@ import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import helium314.keyboard.settings.ios.screens.IosDeleteTag
+import helium314.keyboard.settings.ios.screens.IosSheetTag
 import helium314.keyboard.settings.ios.screens.IosTextReplacementScreen
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -20,6 +23,7 @@ import org.robolectric.annotation.Config
 import java.util.Locale
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "ru-w402dp-h2000dp")
@@ -62,6 +66,30 @@ class IosTextReplacementScreenTest {
         assertEquals(listOf(TextReplacement("до свидания", "дсв", null)), store.entries)
         compose.onNodeWithText("дсв").assertExists()
     }
+
+    @Test fun sheetScalesInAndOut() {
+        show(FakeStore())
+        compose.waitForIdle()
+        compose.mainClock.autoAdvance = false
+        compose.onNodeWithContentDescription("Добавить").performClick()
+        compose.mainClock.advanceTimeBy(80)
+        val opening = sheetWidth()
+        compose.mainClock.autoAdvance = true
+        compose.waitForIdle()
+        val open = sheetWidth()
+        assertTrue(opening < open - 1f, "opening $opening, open $open") // scaled up from 0.9
+        compose.mainClock.autoAdvance = false
+        compose.onNodeWithText("Отменить").performClick()
+        compose.waitForIdle() // lets the dialog window pick up the click (the clock stays paused)
+        compose.mainClock.advanceTimeBy(150)
+        val closing = sheetWidth() // still there, on its way out
+        assertTrue(closing < open - 1f, "closing $closing, open $open")
+        compose.mainClock.autoAdvance = true
+        compose.waitForIdle()
+        compose.onAllNodesWithTag(IosSheetTag).assertCountEquals(0)
+    }
+
+    private fun sheetWidth() = compose.onNodeWithTag(IosSheetTag).fetchSemanticsNode().boundsInRoot.width
 
     @Test fun editModeDeletes() {
         val omw = TextReplacement("on my way!", "omw", null)

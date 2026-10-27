@@ -59,6 +59,12 @@ const val IosBackButtonTag = "ios_back_button"
 /** What glass panels drawn here refract; provided by [IosScreen]. */
 val LocalIosBackdrop = staticCompositionLocalOf<IosBackdrop?> { null }
 
+/**
+ * The settings background shared by all pages, recorded once behind the navigation host so that it stays still
+ * while pages slide over it; without it (a page shown on its own) each [IosScreen] draws its own.
+ */
+val LocalIosWallpaper = staticCompositionLocalOf<IosBackdrop?> { null }
+
 private val barHeight = 56.dp
 private val edgeOverhang = 12.dp
 
@@ -85,7 +91,9 @@ fun IosScreen(
     val colors = LocalIosColors.current
     val dark = LocalIosDark.current
     // groups refract only the background; chrome (top bar, back button, bottom bar) refracts the scrolling list too
-    val backgroundBackdrop = rememberIosBackdrop()
+    val wallpaper = LocalIosWallpaper.current
+    val ownBackground = rememberIosBackdrop()
+    val backgroundBackdrop = wallpaper ?: ownBackground
     val screenBackdrop = rememberIosBackdrop()
     val listState = rememberLazyListState()
     var titleHeightPx by remember { mutableIntStateOf(0) }
@@ -98,9 +106,12 @@ fun IosScreen(
     val statusTop = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
     val navBottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
 
-    Box(Modifier.fillMaxSize().background(colors.background)) {
+    Box(Modifier.fillMaxSize()) {
         Box(Modifier.fillMaxSize().iosBackdropSource(screenBackdrop)) {
-            IosBackground(dark, Modifier.fillMaxSize().iosBackdropSource(backgroundBackdrop))
+            // opaque, so a page sliding in hides the one underneath; with a shared wallpaper it shows that one,
+            // exactly where it is, so it does not move with the page
+            if (wallpaper != null) Box(Modifier.fillMaxSize().background(colors.background).iosWallpaper(wallpaper))
+            else IosBackground(dark, Modifier.fillMaxSize().iosBackdropSource(ownBackground))
             CompositionLocalProvider(LocalIosBackdrop provides backgroundBackdrop) {
                 LazyColumn(
                     Modifier.fillMaxSize(),

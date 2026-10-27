@@ -8,6 +8,12 @@ import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.drawscope.ContentDrawScope
+import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.node.DrawModifierNode
+import androidx.compose.ui.node.GlobalPositionAwareModifierNode
+import androidx.compose.ui.node.ModifierNodeElement
+import androidx.compose.ui.node.invalidateDraw
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -70,6 +76,38 @@ fun iosGlassSurface(level: GlassLevel): Color {
 
 /** Records this node's content so that [iosGlass] elements can refract / blur it. */
 fun Modifier.iosBackdropSource(backdrop: IosBackdrop): Modifier = layerBackdrop(backdrop)
+
+/**
+ * Draws [backdrop] (the shared settings background) behind this node's content exactly where it is on screen, so
+ * a page that slides over another hides it while the background itself stays still.
+ */
+fun Modifier.iosWallpaper(backdrop: IosBackdrop): Modifier = this then WallpaperElement(backdrop)
+
+private data class WallpaperElement(val backdrop: IosBackdrop) : ModifierNodeElement<WallpaperNode>() {
+    override fun create() = WallpaperNode(backdrop)
+    override fun update(node: WallpaperNode) {
+        node.backdrop = backdrop
+        node.invalidateDraw()
+    }
+}
+
+private class WallpaperNode(var backdrop: IosBackdrop) : Modifier.Node(), DrawModifierNode, GlobalPositionAwareModifierNode {
+    private var coordinates: LayoutCoordinates? = null
+
+    override fun onGloballyPositioned(coordinates: LayoutCoordinates) {
+        this.coordinates = coordinates
+        invalidateDraw() // the offset to the background changes while the page slides
+    }
+
+    override fun ContentDrawScope.draw() {
+        with(backdrop) { drawBackdrop(this@draw, coordinates) }
+        drawContent()
+    }
+
+    override fun onDetach() {
+        coordinates = null
+    }
+}
 
 @Composable
 fun Modifier.iosGlass(

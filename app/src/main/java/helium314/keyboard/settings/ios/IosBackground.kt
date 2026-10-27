@@ -8,6 +8,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.platform.testTag
 
 private val blobs = listOf(
     Triple(Color(0xFF1F4FBF), Offset(0.15f, 0.20f), 0.40f),
@@ -18,10 +19,12 @@ private val blobs = listOf(
 // mockup v3: radial-gradient(circle at x y, color 0, transparent stop) on #05060a, blurred 40px
 private val darkStops = listOf(0.40f, 0.38f, 0.40f)
 
+const val IosBackgroundTag = "ios_background"
+
 /** Soft colour blobs behind the settings glass, so the glass has something to refract. */
 @Composable
 fun IosBackground(dark: Boolean, modifier: Modifier = Modifier) {
-    Canvas(modifier) {
+    Canvas(modifier.testTag(IosBackgroundTag)) {
         if (dark) {
             drawRect(Color(0xFF05060A))
             blobs.forEachIndexed { i, (color, center, _) -> drawDarkBlob(color, center, darkStops[i]) }
