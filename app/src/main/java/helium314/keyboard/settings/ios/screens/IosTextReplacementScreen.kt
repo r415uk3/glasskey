@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.runtime.Composable
@@ -53,6 +52,7 @@ import kotlinx.coroutines.android.awaitFrame
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.utils.SubtypeLocaleUtils
 import helium314.keyboard.settings.ios.IosBarButton
+import helium314.keyboard.settings.ios.IosGlassButton
 import helium314.keyboard.settings.ios.IosGroupShape
 import helium314.keyboard.settings.ios.IosRow
 import helium314.keyboard.settings.ios.IosScreen
@@ -130,14 +130,7 @@ fun IosTextReplacementScreen(onBack: () -> Unit, store: TextReplacementStore = I
 private fun PlusButton(onClick: () -> Unit) {
     val color = LocalIosColors.current.tint
     val description = stringResource(R.string.ios_add)
-    Box(
-        Modifier
-            .size(44.dp)
-            .iosPanel(RoundedCornerShape(percent = 50))
-            .clickable(remember { MutableInteractionSource() }, indication = null, role = Role.Button, onClick = onClick)
-            .semantics { contentDescription = description },
-        contentAlignment = Alignment.Center,
-    ) {
+    IosGlassButton(onClick, Modifier.semantics { contentDescription = description }, circle = true) {
         Canvas(Modifier.size(18.dp)) {
             val w = 2.4.dp.toPx()
             drawLine(color, Offset(size.width / 2, 0f), Offset(size.width / 2, size.height), w, StrokeCap.Round)

@@ -4,10 +4,9 @@ package helium314.keyboard.settings.ios
 import android.os.Build
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,7 +22,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -44,7 +42,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -54,6 +51,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import helium314.keyboard.latin.R
+import helium314.keyboard.settings.ios.liquid.LiquidButton
 
 const val IosLargeTitleTag = "ios_large_title"
 const val IosBackButtonTag = "ios_back_button"
@@ -168,35 +166,52 @@ fun IosScreen(
     }
 }
 
-/** Glass capsule with a tint text label for the top bar, e.g. «Изменить». */
+/** Glass capsule with a tint text label for the top bar, e.g. «Изменить»: Kyant's LiquidButton. */
 @Composable
 fun IosBarButton(text: String, onClick: () -> Unit) {
-    val capsule = RoundedCornerShape(percent = 50)
-    Box(
-        Modifier
-            .height(44.dp)
-            .iosPanel(capsule)
-            .clickable(remember { MutableInteractionSource() }, indication = null, role = Role.Button, onClick = onClick)
-            .padding(horizontal = 16.dp),
-        contentAlignment = Alignment.Center,
-    ) {
+    IosGlassButton(onClick) {
         BasicText(text, style = TextStyle(color = LocalIosColors.current.tint, fontSize = 17.sp, fontWeight = FontWeight.SemiBold))
     }
+}
+
+/**
+ * Kyant's LiquidButton over [LocalIosBackdrop] (outside an [IosScreen]: a plain translucent fill), 44dp high;
+ * [circle] makes it a 44dp circle for an icon.
+ */
+@Composable
+fun IosGlassButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    circle: Boolean = false,
+    backdrop: IosBackdrop? = LocalIosBackdrop.current,
+    content: @Composable RowScope.() -> Unit,
+) {
+    val fallback = rememberIosBackdrop()
+    val level = if (backdrop != null) IosGlass.levelFor(Build.VERSION.SDK_INT) else GlassLevel.FILL
+    LiquidButton(
+        onClick,
+        backdrop ?: fallback,
+        if (circle) modifier.size(44.dp) else modifier,
+        // the same fill as the other glass panels (iosGlass) keeps the label legible over busy content
+        surfaceColor = iosGlassSurface(level),
+        level = level,
+        height = 44.dp,
+        horizontalPadding = if (circle) 0.dp else 16.dp,
+        content = content,
+    )
 }
 
 @Composable
 private fun BackButton(onBack: () -> Unit, backdrop: IosBackdrop, modifier: Modifier) {
     val color = LocalIosColors.current.text
     val description = stringResource(R.string.ios_back)
-    val circle = RoundedCornerShape(percent = 50)
-    Box(
+    IosGlassButton(
+        onBack,
         modifier
             .testTag(IosBackButtonTag)
-            .size(44.dp)
-            .iosGlass(backdrop, circle)
-            .clickable(remember { MutableInteractionSource() }, indication = null, role = Role.Button, onClick = onBack)
             .semantics { contentDescription = description },
-        contentAlignment = Alignment.Center,
+        circle = true,
+        backdrop = backdrop,
     ) {
         Canvas(Modifier.size(width = 11.dp, height = 19.dp)) {
             val path = Path().apply {

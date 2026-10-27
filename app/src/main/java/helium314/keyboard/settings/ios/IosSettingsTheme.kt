@@ -30,7 +30,7 @@ object IosSettingsTheme {
         secondaryText = Color(0x99EBEBF5), // rgba(235,235,245,.6)
         separator = Color(0x24FFFFFF), // rgba(255,255,255,.14)
         tint = Color(0xFF0A84FF),
-        switchOn = Color(0xFF34C759),
+        switchOn = Color(0xFF30D158),
         switchOff = Color(0x5C787880), // rgba(120,120,128,.36)
         sheet = Color(0xFF1C1C1E),
     )

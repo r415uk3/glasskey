@@ -19,7 +19,8 @@ class IosGlassTest {
     @Test fun fillBelow12() = assertEquals(GlassLevel.FILL, IosGlass.levelFor(30))
 
     @Test fun darkAndLightColors() {
-        assertEquals(Color(0xFF34C759), IosSettingsTheme.colors(dark = true).switchOn)
+        assertEquals(Color(0xFF30D158), IosSettingsTheme.colors(dark = true).switchOn)
+        assertEquals(Color(0xFF34C759), IosSettingsTheme.colors(dark = false).switchOn)
         assertEquals(Color(0xFF0A84FF), IosSettingsTheme.colors(dark = false).tint)
         assertEquals(Color.White, IosSettingsTheme.colors(dark = true).text)
         assertEquals(Color.Black, IosSettingsTheme.colors(dark = false).text)

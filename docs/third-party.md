@@ -19,11 +19,14 @@ Emoji search files are made by `tools/emoji/make_emoji_search.py` from the CLDR 
 |---|---|---|
 | `org.lsposed.hiddenapibypass:hiddenapibypass` | https://github.com/LSPosed/AndroidHiddenApiBypass | Apache-2.0 |
 | `io.github.kyant0:backdrop` 1.0.1 | https://github.com/Kyant0/AndroidLiquidGlass | Apache-2.0 |
+| AndroidLiquidGlass catalog components (LiquidToggle, LiquidButton, DampedDragAnimation, InteractiveHighlight) @65ab177, ported to `app/src/main/java/helium314/keyboard/settings/ios/liquid/` | https://github.com/Kyant0/AndroidLiquidGlass (`catalog/`), Copyright Kyant | Apache-2.0 |
 
 HiddenApiBypass exempts exactly two platform classes (`ViewRootImpl`, `BackgroundBlurDrawable`) so the iOS style can blur
 only what is behind the keyboard panel (`latin/ios/IosBlur.kt`). Without it Android 16 blocks that API; the panel then
 stays opaque. This is fine for a GitHub release; Google Play discourages non-SDK interfaces.
 
-Backdrop draws the Liquid Glass of the settings screens (`settings/ios/IosGlass.kt`, the only file that imports it):
-lens refraction on Android 13+, blur on Android 12, a plain translucent fill below. 1.0.1 is the newest release built
+Backdrop draws the Liquid Glass of the settings screens (`settings/ios/IosGlass.kt` and the ported catalog components in
+`settings/ios/liquid/`, the only files that import it): lens refraction on Android 13+, blur on Android 12, a plain
+translucent fill below. The switches and the glass buttons are the library author's own LiquidToggle / LiquidButton from
+the catalog app (the published artifact has no components); each ported file's header lists what was changed. 1.0.1 is the newest release built
 against Compose foundation 1.9.x (1.0.2+ needs 1.10, which the minSdk 21 Compose BOM 2025.11.01 does not provide).

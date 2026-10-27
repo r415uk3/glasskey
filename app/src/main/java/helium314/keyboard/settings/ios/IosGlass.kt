@@ -17,7 +17,9 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.kyant.backdrop.Backdrop
 import com.kyant.backdrop.backdrops.LayerBackdrop
+import com.kyant.backdrop.backdrops.rememberCanvasBackdrop
 import com.kyant.backdrop.backdrops.layerBackdrop
 import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 import com.kyant.backdrop.drawBackdrop
@@ -27,7 +29,8 @@ import com.kyant.backdrop.effects.lens
 import com.kyant.backdrop.effects.vibrancy
 import com.kyant.backdrop.highlight.Highlight
 
-// The only file that touches io.github.kyant0:backdrop; everything else goes through these wrappers.
+// The only file outside liquid/ (the components ported from Kyant's catalog) that touches io.github.kyant0:backdrop;
+// everything else goes through these wrappers.
 
 enum class GlassLevel { LENS, BLUR, FILL }
 
@@ -43,6 +46,27 @@ typealias IosBackdrop = LayerBackdrop
 
 @Composable
 fun rememberIosBackdrop(): IosBackdrop = rememberLayerBackdrop()
+
+/**
+ * What a glass control inside a group (e.g. a switch thumb) refracts: [LocalIosBackdrop], or, outside an [IosScreen],
+ * the group fill over the page background.
+ */
+@Composable
+fun rememberGroupBackdrop(): Backdrop {
+    val colors = LocalIosColors.current
+    val flat = rememberCanvasBackdrop {
+        drawRect(colors.background)
+        drawRect(colors.groupFill)
+    }
+    return LocalIosBackdrop.current ?: flat
+}
+
+/** Fill drawn over the backdrop by [iosGlass] at [level]: half the group fill over a lens, the full fill otherwise. */
+@Composable
+fun iosGlassSurface(level: GlassLevel): Color {
+    val fill = LocalIosColors.current.groupFill
+    return if (level == GlassLevel.LENS) fill.copy(alpha = fill.alpha / 2) else fill
+}
 
 /** Records this node's content so that [iosGlass] elements can refract / blur it. */
 fun Modifier.iosBackdropSource(backdrop: IosBackdrop): Modifier = layerBackdrop(backdrop)

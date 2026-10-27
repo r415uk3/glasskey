@@ -44,6 +44,7 @@ class IosAboutScreenTest {
         listOf(
             "Glasskey", "HeliBoard", "Inter 4.1", "Golos Text", "Onest", "Noto Sans", "Названия эмодзи (Unicode CLDR)",
             "Казахский словарь (aosp-dictionaries)", "AndroidHiddenApiBypass", "Backdrop (AndroidLiquidGlass) 1.0.1",
+            "Liquid Glass catalog (AndroidLiquidGlass)",
         )
             .forEach { compose.onNodeWithText(it).assertExists() }
         assertEquals(2, compose.onAllNodesWithText("GPL-3.0-only").fetchSemanticsNodes().size)

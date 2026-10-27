@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 package helium314.keyboard.settings.ios
 
+import android.os.Build
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -30,6 +31,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import helium314.keyboard.latin.R
+import helium314.keyboard.settings.ios.liquid.liquidButtonSurface
+import helium314.keyboard.settings.ios.liquid.rememberInteractiveHighlight
 
 const val IosSearchFieldTag = "ios_search_field"
 
@@ -44,12 +47,25 @@ fun IosSearchField(
     placeholder: String = stringResource(R.string.label_search_key),
 ) {
     val colors = LocalIosColors.current
+    // LiquidButton's glass surface and press response; the text field keeps its own tap / selection handling
+    val backdrop = LocalIosBackdrop.current
+    val fallback = rememberIosBackdrop()
+    val level = if (backdrop != null) IosGlass.levelFor(Build.VERSION.SDK_INT) else GlassLevel.FILL
+    val highlight = rememberInteractiveHighlight(level)
     Row(
         modifier
             .testTag(IosSearchFieldTag)
             .fillMaxWidth()
             .height(48.dp)
-            .iosPanel(fieldShape)
+            .liquidButtonSurface(
+                backdrop ?: fallback,
+                { fieldShape },
+                level,
+                highlight,
+                surfaceColor = iosGlassSurface(level),
+            )
+            .then(highlight.modifier)
+            .then(highlight.gestureModifier)
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

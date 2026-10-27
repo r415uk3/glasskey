@@ -94,6 +94,7 @@ private val thirdPartyLicenses = listOf(
     License("", R.string.ios_kazakh_dictionary, "", R.string.ios_license_as_in_repo, "https://codeberg.org/Helium314/aosp-dictionaries"),
     License("AndroidHiddenApiBypass", null, "Apache-2.0", null, "https://github.com/LSPosed/AndroidHiddenApiBypass"),
     License("Backdrop (AndroidLiquidGlass) 1.0.1", null, "Apache-2.0", null, "https://github.com/Kyant0/AndroidLiquidGlass"),
+    License("Liquid Glass catalog (AndroidLiquidGlass)", null, "Apache-2.0", null, "https://github.com/Kyant0/AndroidLiquidGlass/tree/65ab177e90e5c1d8c62e70cf7755841982da65f6/catalog"),
 )
 
 /** Glasskey's own licence and those of the bundled third-party parts; a tap opens a part's source. */
