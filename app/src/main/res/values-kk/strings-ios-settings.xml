@@ -51,4 +51,9 @@
     <string name="ios_kazakh_dictionary">Қазақ сөздігі (aosp-dictionaries)</string>
     <string name="ios_license_as_in_repo">Оның репозиторийінде көрсетілгендей</string>
     <string name="ios_emoji_names">Эмодзи атаулары (Unicode CLDR)</string>
+    <string name="ios_add_dictionary">Сөздік қосу…</string>
+    <string name="ios_get_dictionaries">Сөздіктерді жүктеу</string>
+    <string name="ios_add_dictionary_footer">.dict пішіміндегі сөздік файлын қосыңыз; көп тілдің сөздіктерін интернеттен жүктеуге болады.</string>
+    <string name="ios_languages">ТІЛДЕР</string>
+    <string name="ios_internal_dictionary">Кірістірілген сөздік</string>
 </resources>

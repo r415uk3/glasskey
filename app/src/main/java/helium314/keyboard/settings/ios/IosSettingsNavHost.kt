@@ -22,7 +22,7 @@ import helium314.keyboard.settings.ios.screens.IosLayoutScreen
 import helium314.keyboard.settings.ios.screens.IosLicensesScreen
 import helium314.keyboard.settings.ios.screens.IosMainScreen
 import helium314.keyboard.settings.ios.screens.IosTextReplacementScreen
-import helium314.keyboard.settings.screens.DictionaryScreen
+import helium314.keyboard.settings.ios.screens.IosDictionariesScreen
 
 object IosRoute {
     const val Main = "ios_main"
@@ -70,6 +70,6 @@ fun IosSettingsNavHost(onClickBack: () -> Unit, needsEnabling: Boolean, onEnable
         composable(IosRoute.Appearance) { IosAppearanceScreen(::goBack) }
         composable(IosRoute.About) { IosAboutScreen(::goBack, navigate) }
         composable(IosRoute.Licenses) { IosLicensesScreen(::goBack) }
-        composable(IosRoute.Dictionaries) { DictionaryScreen(onClickBack = ::goBack) }
+        composable(IosRoute.Dictionaries) { IosDictionariesScreen(::goBack) }
     }
 }

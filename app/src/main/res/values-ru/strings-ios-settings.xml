@@ -51,4 +51,9 @@
     <string name="ios_kazakh_dictionary">Казахский словарь (aosp-dictionaries)</string>
     <string name="ios_license_as_in_repo">Как указано в его репозитории</string>
     <string name="ios_emoji_names">Названия эмодзи (Unicode CLDR)</string>
+    <string name="ios_add_dictionary">Добавить словарь…</string>
+    <string name="ios_get_dictionaries">Скачать словари</string>
+    <string name="ios_add_dictionary_footer">Добавьте файл словаря в формате .dict; словари для многих языков можно скачать в интернете.</string>
+    <string name="ios_languages">ЯЗЫКИ</string>
+    <string name="ios_internal_dictionary">Встроенный словарь</string>
 </resources>

@@ -52,4 +52,9 @@
     <string name="ios_kazakh_dictionary">Kazakh dictionary (aosp-dictionaries)</string>
     <string name="ios_license_as_in_repo">As stated in its repository</string>
     <string name="ios_emoji_names">Emoji names (Unicode CLDR)</string>
+    <string name="ios_add_dictionary">Add Dictionary…</string>
+    <string name="ios_get_dictionaries">Get Dictionaries</string>
+    <string name="ios_add_dictionary_footer">Add a dictionary file in .dict format; dictionaries for many languages can be downloaded online.</string>
+    <string name="ios_languages">LANGUAGES</string>
+    <string name="ios_internal_dictionary">Built-in dictionary</string>
 </resources>
