@@ -47,17 +47,24 @@ class IosNavMotionTest {
         assertEquals(0.9f, IosSheetMotion.InitialScale)
     }
 
-    @Test fun backGestureFollowsTheFingerFromTheLeadingEdge() {
+    @Test fun backGestureFollowsTheFingersMovement() {
         val w = 1000f
         fun left(x: Float, p: Float) = BackEventCompat(x, 500f, p, BackEventCompat.EDGE_LEFT)
         fun right(x: Float, p: Float) = BackEventCompat(x, 500f, p, BackEventCompat.EDGE_RIGHT)
-        assertEquals(0f, IosNavMotion.gestureFraction(left(0f, 0f), w, rtl = false))
-        // the system's progress is not where the finger is; the page follows the finger
-        assertEquals(0.3f, IosNavMotion.gestureFraction(left(300f, 0.6f), w, rtl = false), 1e-4f)
-        assertEquals(1f, IosNavMotion.gestureFraction(left(1200f, 1f), w, rtl = false))
-        // from the other edge: the system's progress
-        assertEquals(0.4f, IosNavMotion.gestureFraction(right(700f, 0.4f), w, rtl = false), 1e-4f)
+        fun pos(base: Float, start: Float, e: BackEventCompat, rtl: Boolean = false) = IosNavMotion.gesturePosition(base, start, e, w, rtl)
+        // split screen: the window starts at 600 on screen; no jump at the start
+        assertEquals(0f, pos(0f, 610f, left(610f, 0f)))
+        // the system's progress is not where the finger is; the page moves as far as the finger
+        assertEquals(0.3f, pos(0f, 610f, left(910f, 0.6f)), 1e-4f)
+        // a page caught while sliding in moves on from where it is, never back
+        assertEquals(0.5f, pos(0.4f, 0f, left(100f, 0.1f)), 1e-4f)
+        assertEquals(0.4f, pos(0.4f, 100f, left(50f, 0.1f)), 1e-4f)
+        assertEquals(1f, pos(0f, 0f, left(1500f, 1f)))
+        // from the other edge, or without a position: the system's progress over the rest of the way
+        assertEquals(0.4f, pos(0f, 900f, right(700f, 0.4f)), 1e-4f)
+        assertEquals(0.5f, pos(0f, Float.NaN, left(Float.NaN, 0.5f)), 1e-4f)
+        assertEquals(0f, pos(0f, 0f, left(Float.NaN, Float.NaN)))
         // right to left: mirrored
-        assertEquals(0.3f, IosNavMotion.gestureFraction(right(700f, 0.9f), w, rtl = true), 1e-4f)
+        assertEquals(0.3f, pos(0f, 990f, right(690f, 0.9f), rtl = true), 1e-4f)
     }
 }

@@ -50,28 +50,33 @@ object IosNavMotion {
     /** Strength (0..1) of the shadow on the leading edge of the page on top, fading out as it settles. */
     fun shadowAlpha(offsetFraction: Float): Float = offsetFraction.coerceIn(0f, 1f)
 
-    /**
-     * Where a back gesture puts the top page (0 in place, 1 gone): from the leading edge it follows the finger, the
-     * page's edge under the finger as on iOS; from the other edge (no iOS equivalent) the system's progress.
-     */
     /** How long nothing must happen before a page is prepared ahead of time. */
     const val PrewarmIdleMillis = 400L
 
     /**
      * Pages prepared ahead of time on [route], so that pushing them starts moving on the next frame: the plain
      * pages behind its rows. Not those that read lists or files once when composed (adding a keyboard,
-     * dictionaries), which could be out of date by the time they are pushed.
+     * dictionaries, text replacements from the system user dictionary), which could be out of date by the time they
+     * are pushed.
      */
     fun prewarmRoutes(route: String): List<String> = when (route) {
-        IosRoute.Main -> listOf(IosRoute.Keyboards, IosRoute.TextReplacement, IosRoute.Appearance, IosRoute.About)
+        IosRoute.Main -> listOf(IosRoute.Keyboards, IosRoute.Appearance, IosRoute.About)
         IosRoute.About -> listOf(IosRoute.Licenses)
         else -> emptyList()
     }
 
-    fun gestureFraction(event: BackEventCompat, width: Float, rtl: Boolean): Float {
+    /**
+     * Where a back gesture puts the top page (0 in place, 1 gone) when it started at [startX] with the page at [base]:
+     * from the leading edge the page moves with the finger, by the distance it moved (BackEvent.touchX is in screen
+     * coordinates, which in split screen or a window do not start at the window's edge); from the other edge (no iOS
+     * equivalent), or without a touch position, by the system's progress over the rest of the way.
+     */
+    fun gesturePosition(base: Float, startX: Float, event: BackEventCompat, width: Float, rtl: Boolean): Float {
         val leading = if (rtl) BackEventCompat.EDGE_RIGHT else BackEventCompat.EDGE_LEFT
-        if (event.swipeEdge != leading || width <= 0f) return event.progress
-        return ((if (rtl) width - event.touchX else event.touchX) / width).coerceIn(0f, 1f)
+        val p = if (event.swipeEdge != leading || width <= 0f || event.touchX.isNaN() || startX.isNaN())
+            base + (1f - base) * event.progress.let { if (it.isNaN()) 0f else it }
+        else base + (if (rtl) startX - event.touchX else event.touchX - startX) / width
+        return p.coerceIn(base, 1f)
     }
 }
 

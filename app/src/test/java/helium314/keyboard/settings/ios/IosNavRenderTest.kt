@@ -65,4 +65,21 @@ class IosNavRenderTest {
         assertTrue(dark > 20, "old title pixels visible: $dark (title $title, incoming at $incoming)")
         compose.mainClock.autoAdvance = true
     }
+
+    // review M5: a page prepared ahead is drawn once just off screen (so its first frame on screen is cheap), then
+    // no longer placed, so it costs nothing in later frames
+    @Test fun preparedPagesAreDrawnOnceThenLeftOut() {
+        SettingsActivity.settingsContainer = SettingsContainer(compose.activity)
+        lateinit var stack: IosNavStack
+        compose.setContent { stack = rememberIosNavStack(); IosSettingsTheme(dark = false) { IosSettingsNavHost({}, false, {}, 1f, stack) } }
+        compose.mainClock.advanceTimeBy(IosNavMotion.PrewarmIdleMillis * 6)
+        compose.waitForIdle()
+        assertTrue(stack.spares.isNotEmpty())
+        capture() // draws
+        compose.waitForIdle()
+        assertTrue(stack.spares.all { it.warm }, "not drawn: ${stack.spares.filter { !it.warm }.map { it.route }}")
+        val appearanceTitle = compose.onAllNodesWithTag(IosLargeTitleTag, useUnmergedTree = true).fetchSemanticsNodes()
+            .first { it.config[SemanticsProperties.Text].joinToString() == "Appearance" }
+        assertTrue(!appearanceTitle.layoutInfo.isPlaced, "the prepared Appearance page is still placed")
+    }
 }

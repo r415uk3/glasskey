@@ -119,6 +119,7 @@ open class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPre
                                 onClickBack = { this.finish() },
                                 needsEnabling = needsEnabling,
                                 onEnable = { setupShown = true },
+                                prepareAhead = !setupShown,
                             )
                             if (setupShown)
                                 IosSetupScreen(onClose = { setupShown = false; checkEnabled() })

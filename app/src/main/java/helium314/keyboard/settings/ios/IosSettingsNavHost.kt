@@ -3,7 +3,9 @@ package helium314.keyboard.settings.ios
 
 import android.net.Uri
 import androidx.activity.BackEventCompat
-import androidx.activity.compose.PredictiveBackHandler
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
@@ -12,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
@@ -24,6 +27,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.foundation.focusGroup
+import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.isImeVisible
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.LayoutCoordinates
@@ -46,9 +56,7 @@ import helium314.keyboard.settings.ios.screens.IosTextReplacementScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import kotlin.coroutines.cancellation.CancellationException
 import kotlin.math.roundToInt
 
 object IosRoute {
@@ -67,6 +75,8 @@ object IosRoute {
 class IosNavEntry(val id: Long, val route: String) {
     internal var placed = false
     internal var onPlaced: (() -> Unit)? = null
+    /** A spare that has been drawn once (off screen); it then stays unplaced until it is pushed. */
+    internal var warm by mutableStateOf(false)
 }
 
 /**
@@ -93,11 +103,16 @@ class IosNavStack internal constructor(initial: List<IosNavEntry>, private var n
     internal var durationMillis = IosNavMotion.DurationMillis
     internal lateinit var scope: CoroutineScope
     internal var onLeaveRoot: () -> Unit = {}
+    /** Called when pages start to move: the page going away (or staying composed below) must not keep the focus. */
+    internal var onMove: () -> Unit = {}
     private var job: Job? = null
+    /** The running transition is a pop that will remove the top page when it ends. */
+    private var popping = false
 
     val currentRoute: String get() = entries.last().route
 
     private fun runTransition(block: suspend () -> Unit) {
+        onMove()
         transitioning = true
         val previous = job
         job = scope.launch {
@@ -147,34 +162,67 @@ class IosNavStack internal constructor(initial: List<IosNavEntry>, private var n
     }
 
     private suspend fun finishPop(millis: Int) {
+        popping = true
         slide(1f, millis)
+        endPop()
+    }
+
+    private fun endPop() {
+        popping = false
         entries.removeAt(entries.lastIndex)
         position = 0f
     }
 
+    /** The running back gesture: where the page was when it started, and where the finger started. */
+    private class Gesture(val base: Float, val startX: Float)
+    private var gesture: Gesture? = null
+
     /**
-     * The predictive back gesture: the top page follows the finger (from the edge it started at, 1:1, never back
-     * behind where the page already is), slides out when the gesture completes and back in when it is cancelled.
-     * It may start during a push; the page is then caught where it is.
+     * Back starts: a gesture (API 34+) or, without one, a back press ([backPressed] right after). It may start
+     * during a push (the page is caught where it is) or during a pop: that pop then counts as done and this back
+     * goes to the page below, as with NavHost, where each back press popped a page at once. False when that pop
+     * left only the first page and back has gone to [onLeaveRoot].
      */
-    internal suspend fun backGesture(progress: Flow<BackEventCompat>, width: () -> Float, rtl: Boolean) {
+    internal fun backStarted(touchX: Float): Boolean {
         job?.cancel()
-        transitioning = true
-        val base = position
-        try {
-            progress.collect { event ->
-                position = maxOf(base, IosNavMotion.gestureFraction(event, width(), rtl)).coerceIn(0f, 1f)
-            }
-        } catch (e: CancellationException) {
-            job = scope.launch {
-                slide(0f, (durationMillis * position).roundToInt())
+        onMove()
+        if (popping) {
+            endPop()
+            if (entries.size < 2) {
                 transitioning = false
+                gesture = null
+                onLeaveRoot()
+                return false
             }
-            throw e
         }
-        // the rest of the way at the normal speed, decelerating
+        transitioning = true
+        gesture = Gesture(position, touchX)
+        return true
+    }
+
+    /** The top page follows the finger: by the distance it moved, never back behind where the page already is. */
+    internal fun backProgressed(event: BackEventCompat, width: Float, rtl: Boolean) {
+        val g = gesture ?: return
+        position = IosNavMotion.gesturePosition(g.base, g.startX, event, width, rtl)
+    }
+
+    /** Back completes: the rest of the way at the normal speed, decelerating. */
+    internal fun backPressed() {
+        if (gesture == null && !backStarted(Float.NaN)) return
+        gesture = null
+        popping = true // already now: a back press right after this one pops the next page
         job = scope.launch {
             finishPop((durationMillis * (1f - position)).roundToInt())
+            transitioning = false
+        }
+    }
+
+    /** The gesture is cancelled: the page slides back in. */
+    internal fun backCancelled() {
+        if (gesture == null) return
+        gesture = null
+        job = scope.launch {
+            slide(0f, (durationMillis * position).roundToInt())
             transitioning = false
         }
     }
@@ -209,6 +257,7 @@ private class HostCoordinates { var value: LayoutCoordinates? = null }
  * while the old one moves [IosNavMotion.ParallaxFraction] toward the leading edge and dims. All pages are drawn over
  * one still background ([LocalIosWallpaper]). The predictive back gesture drags the top page with the finger.
  */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun IosSettingsNavHost(
     onClickBack: () -> Unit,
@@ -216,8 +265,11 @@ fun IosSettingsNavHost(
     onEnable: () -> Unit,
     animationScale: Float = getTransitionAnimationScale(LocalContext.current),
     stack: IosNavStack = rememberIosNavStack(),
+    /** False while something covers the pages (the setup): no pages are prepared ahead then. */
+    prepareAhead: Boolean = true,
 ) {
     val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+    val rtlState = remember { mutableStateOf(rtl) }
     val dark = LocalIosDark.current
     val wallpaper = rememberIosBackdrop()
     val host = remember { HostCoordinates() }
@@ -226,21 +278,44 @@ fun IosSettingsNavHost(
     stack.scope = rememberCoroutineScope()
     stack.durationMillis = IosNavMotion.durationMillis(animationScale)
     stack.onLeaveRoot = onClickBack
+    val focusManager = LocalFocusManager.current
+    stack.onMove = { focusManager.clearFocus(force = true) }
+    val imeVisible = WindowInsets.isImeVisible
 
     val goBack: () -> Unit = { stack.pop() }
     val navigate: (String) -> Unit = { stack.push(it) }
 
     // prepare the pages the top page can push while nothing happens (the composition takes a while on the main thread)
-    LaunchedEffect(stack.currentRoute, stack.transitioning) {
-        if (stack.transitioning) return@LaunchedEffect
+    // (not while the user types: the keyboard is up; nor while the setup covers the pages)
+    LaunchedEffect(stack.currentRoute, stack.transitioning, imeVisible, prepareAhead) {
+        if (stack.transitioning || imeVisible || !prepareAhead) return@LaunchedEffect
         while (true) {
             delay(IosNavMotion.PrewarmIdleMillis)
             if (stack.touched) { stack.touched = false; continue }
             if (!stack.addSpare()) break
         }
     }
-    PredictiveBackHandler(enabled = stack.entries.size > 1) { progress ->
-        stack.backGesture(progress, { host.value?.size?.width?.toFloat() ?: 1f }, rtl)
+    // back from the second page on; at the first page the activity gets it. A plain OnBackPressedCallback rather
+    // than PredictiveBackHandler, whose progress flow does not include the gesture's start (where the finger began)
+    val width = { host.value?.size?.width?.toFloat() ?: 1f }
+    val callback = remember(stack) {
+        object : OnBackPressedCallback(false) {
+            override fun handleOnBackStarted(backEvent: BackEventCompat) { stack.backStarted(backEvent.touchX) }
+            override fun handleOnBackProgressed(backEvent: BackEventCompat) { stack.backProgressed(backEvent, width(), rtlState.value) }
+            override fun handleOnBackPressed() = stack.backPressed()
+            override fun handleOnBackCancelled() = stack.backCancelled()
+        }
+    }
+    val enabled = stack.entries.size > 1
+    SideEffect {
+        rtlState.value = rtl
+        callback.isEnabled = enabled
+    }
+    val dispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(dispatcher, lifecycleOwner, callback) {
+        dispatcher?.addCallback(lifecycleOwner, callback)
+        onDispose { callback.remove() }
     }
 
     Box(
@@ -272,12 +347,15 @@ fun IosSettingsNavHost(
                         Modifier
                             .fillMaxSize()
                             .then(if (shown) Modifier else Modifier.clearAndSetSemantics {})
+                            // hidden pages and spares take no focus (Tab, D-pad) either
+                            .focusProperties { onEnter = { if (!shown) cancelFocusChange() } }
+                            .focusGroup()
                             .layout { measurable, constraints ->
                                 val page = measurable.measure(constraints)
                                 layout(page.width, page.height) {
                                     val x = when {
-                                        // a spare waits just off screen where a push starts, drawn once already
-                                        i < 0 -> page.width.toFloat()
+                                        // a spare is drawn once just off screen, where a push starts; then not placed
+                                        i < 0 -> if (entry.warm) return@layout else page.width.toFloat()
                                         // pages further down stay composed and measured, but are not placed (not drawn)
                                         !shown -> return@layout
                                         i == top -> stack.position * page.width
@@ -288,7 +366,10 @@ fun IosSettingsNavHost(
                                 }
                             }
                             // a spare casts no shadow onto the screen edge
-                            .then(if (i < 0) Modifier else Modifier.iosNavOverlay(hostCoordinates, dark, rtl, entry.route))
+                            .then(
+                                if (i >= 0) Modifier.iosNavOverlay(hostCoordinates, dark, rtl, entry.route)
+                                else Modifier.drawWithContent { drawContent(); entry.warm = true }
+                            )
                             .pointerInput(Unit) {} // a hit on this page does not fall through to the one below
                     ) {
                         holder.SaveableStateProvider(entry.id.toString()) { Page(entry.route, stack, needsEnabling, onEnable, goBack, navigate) }

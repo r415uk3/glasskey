@@ -5,7 +5,10 @@ import androidx.activity.BackEventCompat
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.semantics.SemanticsNode
 import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.assertIsFocused
+import androidx.compose.ui.test.assertIsNotFocused
 import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
@@ -185,11 +188,12 @@ class IosNavTransitionTest {
         val dispatcher = compose.activity.onBackPressedDispatcher
         compose.runOnUiThread {
             dispatcher.dispatchOnBackStarted(back(0f, 0f))
-            dispatcher.dispatchOnBackProgressed(back(10f, 0.1f)) // finger behind the page
+            dispatcher.dispatchOnBackProgressed(back(10f, 0.1f)) // the finger moved 10 px
         }
         compose.mainClock.advanceTimeByFrame()
         compose.mainClock.advanceTimeByFrame()
-        assertTrue(abs(pageLeft("Клавиатуры") - before) < 2f, "jumped from $before to ${pageLeft("Клавиатуры")}")
+        // caught where it was and moved with the finger, not reset to the finger's position on screen
+        assertTrue(abs(pageLeft("Клавиатуры") - (before + 10f)) < 2f, "jumped from $before to ${pageLeft("Клавиатуры")}")
         compose.runOnUiThread { dispatcher.onBackPressed() }
         compose.mainClock.autoAdvance = true
         compose.waitForIdle()
@@ -240,5 +244,109 @@ class IosNavTransitionTest {
         openKeyboards()
         assertTrue(stack.entries.last() === spare)
         assertTrue(stack.spares.none { it.route == IosRoute.Keyboards })
+    }
+
+    // review I1: Text Replacement reads the system user dictionary once when composed; prepared ahead it would show
+    // shortcuts added or deleted elsewhere in the meantime wrongly, so it is composed when pushed
+    @Test fun textReplacementIsReadWhenPushed() {
+        showApp()
+        compose.mainClock.advanceTimeBy(IosNavMotion.PrewarmIdleMillis * 6)
+        compose.waitForIdle()
+        assertTrue(stack.spares.none { it.route == IosRoute.TextReplacement })
+        val before = stack.spares.toList()
+        compose.onNodeWithText("Замена текста").performClick()
+        compose.waitForIdle()
+        assertTrue(stack.entries.last() !in before)
+    }
+
+    // review I2: Main stays composed under a pushed page; its focused search field must not keep focus (and the
+    // keyboard), or typing would go into the hidden query
+    @Test fun pushTakesFocusAwayFromThePageBelow() {
+        showApp()
+        compose.waitForIdle()
+        compose.onNode(hasSetTextAction()).performClick()
+        compose.onNode(hasSetTextAction()).assertIsFocused()
+        compose.runOnUiThread { stack.push(IosRoute.Keyboards) }
+        compose.waitForIdle()
+        assertEquals(listOf("Клавиатуры"), titles())
+        compose.onNode(hasSetTextAction()).assertDoesNotExist() // hidden: no semantics
+        compose.onNodeWithTag(IosBackButtonTag).performClick()
+        compose.waitForIdle()
+        compose.onNode(hasSetTextAction()).assertIsNotFocused()
+    }
+
+    // review I3: BackEvent.touchX is in screen coordinates; in split screen the window does not start at 0. The page
+    // follows the finger's movement from where the gesture started
+    @Test fun backGestureFollowsTheFingerFromWhereItStarted() {
+        showApp()
+        openKeyboards()
+        val dispatcher = compose.activity.onBackPressedDispatcher
+        compose.runOnUiThread {
+            dispatcher.dispatchOnBackStarted(back(500f, 0f))
+            dispatcher.dispatchOnBackProgressed(back(500f, 0f))
+        }
+        compose.waitForIdle()
+        assertTrue(abs(pageLeft("Клавиатуры")) < 2f, "jumped to ${pageLeft("Клавиатуры")} at the start")
+        compose.runOnUiThread { dispatcher.dispatchOnBackProgressed(back(560f, 0.2f)) }
+        compose.waitForIdle()
+        assertTrue(abs(pageLeft("Клавиатуры") - 60f) < 2f, "at ${pageLeft("Клавиатуры")}, finger moved 60")
+        compose.runOnUiThread { dispatcher.dispatchOnBackProgressed(BackEventCompat(Float.NaN, Float.NaN, 0.5f, BackEventCompat.EDGE_LEFT)) }
+        compose.waitForIdle() // review M6: no crash
+        compose.runOnUiThread { dispatcher.dispatchOnBackCancelled() }
+        compose.waitForIdle()
+        assertEquals(listOf("Клавиатуры"), titles())
+    }
+
+    // review M1: each back press pops one page, also when the previous pop is still sliding
+    @Test fun quickBackPressesPopOnePageEach() {
+        showApp()
+        openKeyboards()
+        compose.runOnUiThread { stack.push(IosRoute.AddKeyboard) }
+        compose.waitForIdle()
+        compose.mainClock.autoAdvance = false
+        val dispatcher = compose.activity.onBackPressedDispatcher
+        compose.runOnUiThread { dispatcher.onBackPressed() }
+        compose.mainClock.advanceTimeBy(100)
+        compose.runOnUiThread { dispatcher.onBackPressed() }
+        compose.mainClock.autoAdvance = true
+        compose.waitForIdle()
+        assertEquals(listOf(IosRoute.Main), stack.entries.map { it.route })
+        assertEquals(listOf("Glasskey"), titles())
+    }
+
+    // review I4: at the root the stack does not handle back, so the activity gets it (and finishes)
+    @Test fun backAtTheRootGoesToTheActivity() {
+        showApp()
+        compose.waitForIdle()
+        val dispatcher = compose.activity.onBackPressedDispatcher
+        assertTrue(!dispatcher.hasEnabledCallbacks())
+        openKeyboards()
+        assertTrue(dispatcher.hasEnabledCallbacks())
+        compose.runOnUiThread { dispatcher.onBackPressed() }
+        compose.waitForIdle()
+        assertTrue(!dispatcher.hasEnabledCallbacks())
+    }
+
+    // review I4: the back stack and each page's saved state survive recreation (as NavHost's did)
+    @Test fun backStackAndPageStateSurviveRestore() {
+        val tester = StateRestorationTester(compose)
+        tester.setContent {
+            stack = rememberIosNavStack()
+            IosSettingsTheme(dark = true) {
+                IosSettingsNavHost(onClickBack = {}, needsEnabling = false, onEnable = {}, animationScale = 1f, stack = stack)
+            }
+        }
+        compose.onNodeWithText("Клавиатуры").performClick()
+        compose.waitForIdle()
+        compose.onNodeWithText("Изменить").performClick() // rememberSaveable editing state of the Keyboards page
+        compose.runOnUiThread { stack.push(IosRoute.AddKeyboard) }
+        compose.waitForIdle()
+        tester.emulateSavedInstanceStateRestore()
+        compose.waitForIdle()
+        assertEquals(listOf(IosRoute.Main, IosRoute.Keyboards, IosRoute.AddKeyboard), stack.entries.map { it.route })
+        compose.onNodeWithTag(IosBackButtonTag).performClick()
+        compose.waitForIdle()
+        assertEquals(listOf("Клавиатуры"), titles())
+        compose.onNodeWithText("Готово").assertExists() // still editing
     }
 }
