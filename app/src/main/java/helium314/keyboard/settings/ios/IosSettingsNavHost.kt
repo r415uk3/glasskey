@@ -76,6 +76,8 @@ fun IosSettingsNavHost(
     val clock = remember {
         IosNavClock().apply {
             onSlideStart = { IosNavDiagnostics.log("  slide starts, held ${it / 1_000_000}ms") } // TEMPORARY, see IosNavDiagnostics
+            onGateEvaluate = { p, l, o -> IosNavDiagnostics.gateEvaluated(p, l, o) } // TEMPORARY
+            onPagePlaced = { IosNavDiagnostics.log("+${IosNavDiagnostics.sinceNav()} page placed $it") } // TEMPORARY
         }
     }
 

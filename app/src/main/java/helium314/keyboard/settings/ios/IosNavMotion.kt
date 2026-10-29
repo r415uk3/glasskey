@@ -59,7 +59,7 @@ object IosNavMotion {
      * Longest a push / pop waits at its start for the incoming page's first frame (see [IosNavGate]); a page that
      * takes longer starts moving anyway. Not scaled by the animation scale: it is waiting, not motion.
      */
-    const val MaxHoldMillis = 300
+    const val MaxHoldMillis = 500
 }
 
 /**
@@ -69,24 +69,48 @@ object IosNavMotion {
  * transition at its start until the incoming page has been drawn once, and the curve starts from the first frame
  * after that ([localPlayTimeNanos]).
  */
-class IosNavGate(private val onStart: (holdNanos: Long) -> Unit = {}) {
+class IosNavGate(
+    private val onStart: (holdNanos: Long) -> Unit = {},
+    private val onEvaluate: (playTimeNanos: Long, localNanos: Long, open: Boolean) -> Unit = { _, _, _ -> }, // TEMPORARY diagnostics
+) {
     var isOpen = false
         private set
     private var holdNanos = -1L
+    private var lastPlayTimeNanos = -1L // latest play time the slide was evaluated at
+    private var openedAfterNanos = -1L // play time of the frame in which the gate opened
 
-    /** The incoming page has been drawn. */
-    fun open() { isOpen = true }
+    /**
+     * The incoming page has been laid out (and is drawn in this same frame): the slide starts on the next frame.
+     * The page is laid out at the earliest in the transition's first frame, at play time 0.
+     */
+    fun open() {
+        if (isOpen) return
+        isOpen = true
+        openedAfterNanos = maxOf(lastPlayTimeNanos, 0L)
+    }
+
+    /** The incoming page is already shown (e.g. back during a push): the slide starts right away. */
+    fun openNow() {
+        if (isOpen) return
+        isOpen = true
+        openedAfterNanos = -1L
+    }
 
     /**
      * Play time of the motion itself for the transition's [playTimeNanos]: 0 until the first frame after [open],
      * then counting from that frame; at most [maxHoldNanos] are held back.
+     *
+     * The slide is evaluated again in the frame in which the page is laid out (the layout pass sets the slide's
+     * offsets), at that frame's play time; only a later play time is a new frame.
      */
     fun localPlayTimeNanos(playTimeNanos: Long, maxHoldNanos: Long): Long {
-        if (holdNanos < 0 && isOpen) {
+        if (playTimeNanos < maxHoldNanos) lastPlayTimeNanos = maxOf(lastPlayTimeNanos, playTimeNanos)
+        if (holdNanos < 0 && isOpen && (playTimeNanos > openedAfterNanos || playTimeNanos >= maxHoldNanos)) {
             holdNanos = min(playTimeNanos, maxHoldNanos)
             onStart(holdNanos)
         }
         val hold = if (holdNanos >= 0) holdNanos else min(playTimeNanos, maxHoldNanos)
+        onEvaluate(playTimeNanos, playTimeNanos - hold, isOpen)
         return playTimeNanos - hold
     }
 }
@@ -133,6 +157,8 @@ class IosNavClock {
 
     /** Called when a push / pop starts to move, with how long it was held at its start. */
     var onSlideStart: (holdNanos: Long) -> Unit = {}
+    var onGateEvaluate: (playTimeNanos: Long, localNanos: Long, open: Boolean) -> Unit = { _, _, _ -> } // TEMPORARY
+    var onPagePlaced: (page: String) -> Unit = {} // TEMPORARY
 
     /**
      * The gate of the push / pop from page [initial] to page [target]. AnimatedContent asks for the transition
@@ -143,8 +169,8 @@ class IosNavClock {
     fun gate(initial: String, target: String): IosNavGate {
         val key = initial to target
         current?.let { if (currentKey == key) return it }
-        val gate = IosNavGate { onSlideStart(it) }
-        if ((drawnPages[target] ?: 0) > 0) gate.open()
+        val gate = IosNavGate({ onSlideStart(it) }, { p, l, o -> onGateEvaluate(p, l, o) })
+        if ((drawnPages[target] ?: 0) > 0) gate.openNow()
         current = gate
         currentKey = key
         currentTarget = target
@@ -152,6 +178,7 @@ class IosNavClock {
     }
 
     internal fun onPageDrawn(page: String) {
+        onPagePlaced(page)
         drawnPages[page] = (drawnPages[page] ?: 0) + 1
         if (page == currentTarget) current?.open()
     }

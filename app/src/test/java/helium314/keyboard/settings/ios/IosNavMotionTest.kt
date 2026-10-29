@@ -70,6 +70,39 @@ class IosNavMotionTest {
         assertEquals(0f, slide.at(slide.durationNanos / 1_000_000))
     }
 
+    // the order seen on the device (GlasskeyNav file log, fix round 3): in the transition's first frame the incoming
+    // page is laid out (the gate opens) and only then, still in that frame's layout pass, the slide is evaluated at
+    // 0 ms, four times; the next frame comes 165 ms later. Those 0 ms evaluations are not a new frame.
+    @Test fun evaluationInTheSameFrameAsTheLayoutDoesNotStartTheSlide() {
+        val gate = IosNavGate()
+        val slide = heldSlide(gate)
+        gate.open()
+        repeat(4) { assertEquals(1f, slide.at(0)) }
+        assertEquals(1f, slide.at(165), 1e-4f) // first rendered frame: still at the start
+        val next = slide.at(182)
+        assertTrue(next < 1f && next > 0.9f, "17 ms in: $next")
+        assertEquals(0f, slide.at(165 + 450), 1e-4f)
+    }
+
+    @Test fun pageLaidOutInALaterFrameStartsOnTheFrameAfterIt() {
+        val gate = IosNavGate()
+        val slide = heldSlide(gate)
+        assertEquals(1f, slide.at(0))
+        assertEquals(1f, slide.at(16))
+        gate.open() // laid out in the frame at 16 ms
+        assertEquals(1f, slide.at(16))
+        assertEquals(1f, slide.at(200), 1e-4f)
+        assertEquals(1f - IosNavMotion.Easing.transform(16f / 450), slide.at(216), 1e-3f)
+    }
+
+    @Test fun pageAlreadyShownStartsRightAway() {
+        val gate = IosNavGate()
+        val slide = heldSlide(gate)
+        gate.openNow()
+        assertEquals(1f, slide.at(0))
+        assertEquals(1f - IosNavMotion.Easing.transform(16f / 450), slide.at(16), 1e-3f)
+    }
+
     @Test fun fastFirstFrameStartsRightAway() {
         val gate = IosNavGate()
         val slide = heldSlide(gate)

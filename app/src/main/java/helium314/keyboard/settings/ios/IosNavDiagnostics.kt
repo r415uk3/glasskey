@@ -3,9 +3,12 @@ package helium314.keyboard.settings.ios
 
 // ---------------------------------------------------------------------------------------------------------------
 // TEMPORARY device diagnostics for the settings push / pop transitions (plan 5 task 9). Debug builds only; logs
-// with tag "GlasskeyNav" (adb logcat -s GlasskeyNav). Remove this file and its four call sites
-// (IosNavDiagnosticsEffect, Modifier.iosNavDiagnostics and the clock's onSlideStart log in IosSettingsNavHost,
-// IosNavDiagnostics.pageOffset in IosNavMotion) once the cause is known.
+// with tag "GlasskeyNav" (adb logcat -s GlasskeyNav) and, because the vivo test phone drops app logcat output, also
+// to files/glasskey-nav.log (adb shell run-as io.github.r415uk3.glasskey.debug cat files/glasskey-nav.log; written
+// when a navigation starts and when it has settled). Remove this file and its call sites once the transitions are
+// confirmed: IosNavDiagnosticsEffect, Modifier.iosNavDiagnostics and the clock's onSlideStart / onGateEvaluate /
+// onPagePlaced logs in IosSettingsNavHost; IosNavDiagnostics.pageOffset in IosNavMotion; the TEMPORARY onEvaluate,
+// onGateEvaluate and onPagePlaced hooks in IosNavMotion.
 // ---------------------------------------------------------------------------------------------------------------
 
 import android.animation.ValueAnimator
@@ -34,15 +37,33 @@ internal object IosNavDiagnostics {
     /** Uptime of the latest navigation, so per-page logs can say how long after it they happened. */
     @Volatile var navigatedAt = 0L
 
+    /** Lines also go to files/glasskey-nav.log (adb shell run-as <pkg> cat files/glasskey-nav.log): some ROMs drop app logcat. */
+    @Volatile var file: java.io.File? = null
+    private val pending = StringBuilder()
+    var gateLines = 0
+
     fun log(message: String) {
-        if (enabled) Log.i(TAG, message)
+        if (!enabled) return
+        Log.i(TAG, message)
+        synchronized(pending) { pending.append(SystemClock.uptimeMillis()).append(' ').append(message).append('\n') }
     }
 
-    private fun sinceNav() = if (navigatedAt == 0L) "-" else "${SystemClock.uptimeMillis() - navigatedAt}ms"
+    fun flush() {
+        val f = file ?: return
+        val text = synchronized(pending) { pending.toString().also { pending.setLength(0) } }
+        if (text.isNotEmpty()) runCatching { f.appendText(text) }
+    }
+
+    fun gateEvaluated(playTimeNanos: Long, localNanos: Long, open: Boolean) {
+        if (!enabled || gateLines++ > 400) return
+        log("+${sinceNav()}   gate play=${playTimeNanos / 1_000_000}ms local=${localNanos / 1_000_000}ms open=$open")
+    }
+
+    fun sinceNav() = if (navigatedAt == 0L) "-" else "${SystemClock.uptimeMillis() - navigatedAt}ms"
 
     /** From the page overlay: the page's leading-edge offset, as a fraction of the width, whenever it changes. */
     fun pageOffset(label: String, fraction: Float) {
-        if (enabled) Log.i(TAG, "+${sinceNav()} page $label offset ${String.format(java.util.Locale.US, "%.3f", fraction)}")
+        if (enabled) log("+${sinceNav()} page $label offset ${String.format(java.util.Locale.US, "%.3f", fraction)}")
     }
 
     fun firstCompose(label: String) = log("+${sinceNav()} page $label first composed")
@@ -55,6 +76,7 @@ internal fun IosNavDiagnosticsEffect(navController: NavHostController, animation
     if (!IosNavDiagnostics.enabled) return
     val context = LocalContext.current
     LaunchedEffect(Unit) {
+        IosNavDiagnostics.file = java.io.File(context.filesDir, "glasskey-nav.log")
         val motion = coroutineContext[MotionDurationScale]?.scaleFactor
         val enabled = if (Build.VERSION.SDK_INT >= 26) ValueAnimator.areAnimatorsEnabled().toString() else "n/a"
         val animatorScale = if (Build.VERSION.SDK_INT >= 33) ValueAnimator.getDurationScale().toString() else "n/a"
@@ -69,7 +91,9 @@ internal fun IosNavDiagnosticsEffect(navController: NavHostController, animation
         navController.currentBackStackEntryFlow.collectLatest { entry ->
             val route = entry.destination.route
             if (previous == null) { previous = route; return@collectLatest } // the start destination
+            IosNavDiagnostics.flush()
             IosNavDiagnostics.navigatedAt = SystemClock.uptimeMillis()
+            IosNavDiagnostics.gateLines = 0
             IosNavDiagnostics.log("navigate $previous -> $route, back stack ${navController.currentBackStack.value.size}")
             previous = route
             var start = -1L
@@ -81,6 +105,7 @@ internal fun IosNavDiagnosticsEffect(navController: NavHostController, animation
                 if (visible.size <= 1) settledFrames++ else settledFrames = 0
                 if (ms > 1500) { IosNavDiagnostics.log("  still not settled after 1.5 s"); break }
             }
+            IosNavDiagnostics.flush()
         }
     }
 }
