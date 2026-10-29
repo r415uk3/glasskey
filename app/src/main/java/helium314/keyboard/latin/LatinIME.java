@@ -6,6 +6,10 @@
 
 package helium314.keyboard.latin;
 
+import android.os.SystemClock;
+
+import helium314.keyboard.latin.ios.GlobeCycle;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -131,6 +135,7 @@ public class LatinIME extends InputMethodService implements
     private RichInputMethodManager mRichImm;
     final KeyboardSwitcher mKeyboardSwitcher;
     private final SubtypeState mSubtypeState = new SubtypeState((InputMethodSubtype subtype) -> { switchToSubtype(subtype); return Unit.INSTANCE; });
+    private final GlobeCycle<InputMethodSubtype> mGlobeCycle = new GlobeCycle<>();
     private final StatsUtilsManager mStatsUtilsManager;
     // Working variable for {@link #startShowingInputView()} and
     // {@link #onEvaluateInputViewShown()}.
@@ -748,6 +753,7 @@ public class LatinIME extends InputMethodService implements
         if (DebugFlags.DEBUG_ENABLED)
             Log.d(TAG, "switching to subtype " + SettingsSubtype.Companion.toSettingsSubtype(subtype));
         mSubtypeState.onSubtypeChanged(oldSubtype, subtype);
+        mGlobeCycle.onShown(subtype);
         StatsUtils.onSubtypeChanged(oldSubtype, subtype);
         mRichImm.onSubtypeChanged(subtype);
         mInputLogic.onSubtypeChanged(SubtypeLocaleUtils.getCombiningRulesExtraValue(subtype),
@@ -1337,9 +1343,10 @@ public class LatinIME extends InputMethodService implements
     }
 
     // called when language switch key is pressed (either the keyboard key, or long-press comma)
-    /** iOS globe: always the next enabled language in list order (the language key toggles back to the last used one) */
-    public void switchToNextSubtypeInOrder() {
-        final InputMethodSubtype next = mRichImm.getNextSubtypeInThisIme(true);
+    /** iOS globe: one tap goes back to the previous language, quick taps go on through all of them */
+    public void switchSubtypeFromGlobe() {
+        final InputMethodSubtype next = mGlobeCycle.next(mRichImm.getCurrentSubtype().getRawSubtype(),
+                SubtypeSettings.INSTANCE.getEnabledSubtypes(true), SystemClock.uptimeMillis());
         if (next != null && !next.equals(mRichImm.getCurrentSubtype().getRawSubtype()))
             switchToSubtype(next);
     }

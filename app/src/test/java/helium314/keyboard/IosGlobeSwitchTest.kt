@@ -52,16 +52,23 @@ class IosGlobeSwitchTest {
 
     private fun currentLanguage() = RichInputMethodManager.getInstance().currentSubtype.locale.toLanguageTag()
 
-    @Test fun globeCyclesThroughAllLanguagesEvenAfterTyping() {
+    private fun globe() {
+        ShadowLooper.idleMainLooper(2, java.util.concurrent.TimeUnit.SECONDS) // a pause, so a single tap
+        latinIME.switchSubtypeFromGlobe()
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks()
+    }
+
+    @Test fun singleGlobeTapsToggleBetweenLastTwoLanguagesEvenAfterTyping() {
         val seen = mutableListOf(currentLanguage())
         repeat(3) {
-            press('a'.code) // typing marks the language as used; stock HeliBoard would then toggle back
-            latinIME.switchToNextSubtypeInOrder()
-            ShadowLooper.runUiThreadTasksIncludingDelayedTasks()
+            press('a'.code)
+            globe()
             seen.add(currentLanguage())
         }
-        assertEquals(listOf("ru", "en-US", "kk", "ru"), seen)
+        assertEquals(listOf("ru", "en-US", "ru", "en-US"), seen)
     }
+
+    // quick taps cycling is covered by GlobeCycleTest: Robolectric's clock jumps ~1 s per keyboard switch here
 
     @Test fun globeFromShiftedSymbolsGoesToNextLanguageAlphabet() {
         assertEquals("ru", currentLanguage())
@@ -73,17 +80,12 @@ class IosGlobeSwitchTest {
         assertEquals(KeyboardElement.ALPHABET, keyboardSwitcher.keyboard?.mId?.element)
     }
 
-    // kk -> ru (the brief's example) holds for the default and the alphabetical order too, so use en-US, ru, kk
-    @Test fun globeFollowsUserOrder() {
-        SubtypeSettings.moveEnabledSubtype(latinIME, 1, 0) // en-US, ru, kk
+    // languages not used yet follow the user's order
+    @Test fun globeFollowsUserOrderForUnusedLanguages() {
+        SubtypeSettings.moveEnabledSubtype(latinIME, 2, 0) // kk, ru, en-US
         assertEquals("ru", currentLanguage())
-        assertEquals("kk", RichInputMethodManager.getInstance().getNextSubtypeInThisIme(true)?.locale()?.toLanguageTag())
-        latinIME.switchToNextSubtypeInOrder()
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks()
+        globe()
         assertEquals("kk", currentLanguage())
-        latinIME.switchToNextSubtypeInOrder()
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks()
-        assertEquals("en-US", currentLanguage())
     }
 
     @Test fun disablingTheCurrentLanguageOnUntouchedDefaultsSwitchesAway() {

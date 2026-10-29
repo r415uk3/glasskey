@@ -28,7 +28,7 @@
     <string name="ios_done">Done</string>
     <string name="ios_delete">Delete</string>
     <string name="ios_reorder">Reorder</string>
-    <string name="ios_keyboards_footer">The globe key switches languages in this order.</string>
+    <string name="ios_keyboards_footer">Tap the globe key to go back to the previous language, tap it repeatedly to go through all of them. Languages not used yet follow this order.</string>
     <string name="ios_dictionaries">Dictionaries</string>
     <string name="ios_dictionaries_footer">Suggestions for languages without a built-in dictionary.</string>
     <string name="ios_layout">LAYOUT</string>

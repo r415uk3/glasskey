@@ -71,7 +71,7 @@ class IosKeyboardsScreenTest {
         compose.onNodeWithText("Русский").assertExists()
         assertEquals(2, compose.onAllNodesWithText("ЙЦУКЕН").fetchSemanticsNodes().size) // ru and kk
         compose.onNodeWithText("QWERTY").assertExists()
-        compose.onNodeWithText("Глобус переключает языки в этом порядке.").assertExists()
+        compose.onNodeWithText("Нажатие на глобус возвращает прошлый язык", substring = true).assertExists()
     }
 
     // English (US) is named via runInLocale, which must not switch the app's own strings to English
