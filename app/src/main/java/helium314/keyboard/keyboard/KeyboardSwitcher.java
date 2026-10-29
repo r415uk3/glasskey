@@ -165,6 +165,8 @@ public final class KeyboardSwitcher {
 
     public void loadKeyboard(EditorInfo editorInfo, SettingsValues settingsValues, int currentAutoCapsState,
                              @Nullable RecapitalizeMode currentRecapitalizeState, KeyboardLayoutSet.InternalAction internalAction) {
+        // per text field: predictive text may be off for it (password, user setting)
+        if (mIosStripHeight != null) mIosStripHeight.setShown(settingsValues.mSuggestionsEnabled);
         KeyboardLayoutSet.Builder builder = new KeyboardLayoutSet.Builder(mThemeContext, editorInfo, settingsValues);
         int keyboardWidth = ResourceUtils.getKeyboardWidth(mThemeContext, settingsValues);
         int keyboardHeight = ResourceUtils.getKeyboardHeight(mThemeContext.getResources(), settingsValues);
@@ -575,27 +577,26 @@ public final class KeyboardSwitcher {
         return mKeyboardViewWrapper;
     }
 
-    // iOS: the suggestion bar collapses when empty and springs up when suggestions appear
+    // iOS: the suggestion bar keeps its full height while predictive text is on, and is hidden when it is off
     private void setupIosStripHeight() {
         mIosStripHeight = null;
-        mSuggestionStripView.setIosContentListener(null);
         final SettingsValues sv = Settings.getValues();
         if (!KeyboardTheme.STYLE_IOS.equals(sv.mColors.getThemeStyle()) || sv.mIsFloatingKeyboard) return;
-        final int expanded = mThemeContext.getResources().getDimensionPixelSize(R.dimen.config_suggestions_strip_height);
-        final int collapsed = Math.round(8 * mThemeContext.getResources().getDisplayMetrics().density);
-        // the bar keeps its full height and sits at the bottom of the container, which clips it while collapsed
+        final int shown = mThemeContext.getResources().getDimensionPixelSize(R.dimen.config_suggestions_strip_height);
+        final int hidden = Math.round(8 * mThemeContext.getResources().getDisplayMetrics().density);
+        // the bar keeps its full height and sits at the bottom of the container, which clips it while hidden
         final FrameLayout.LayoutParams stripParams = (FrameLayout.LayoutParams) mSuggestionStripView.getLayoutParams();
-        stripParams.height = expanded;
+        stripParams.height = shown;
         stripParams.gravity = android.view.Gravity.BOTTOM;
         mSuggestionStripView.setLayoutParams(stripParams);
-        mIosStripHeight = new IosStripHeight(collapsed, expanded, height -> {
+        mIosStripHeight = new IosStripHeight(hidden, shown, height -> {
             final ViewGroup.LayoutParams params = mStripContainer.getLayoutParams();
             // emoji tabs and clipboard strip share the container and always need the full height
-            params.height = mSuggestionStripView.getVisibility() == View.VISIBLE ? height : expanded;
+            params.height = mSuggestionStripView.getVisibility() == View.VISIBLE ? height : shown;
             mStripContainer.setLayoutParams(params);
             return kotlin.Unit.INSTANCE;
         });
-        mSuggestionStripView.setIosContentListener(hasContent -> { mIosStripHeight.update(hasContent); return kotlin.Unit.INSTANCE; });
+        mIosStripHeight.setShown(sv.mSuggestionsEnabled);
     }
 
     private void reapplyIosStripHeight() {
