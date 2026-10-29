@@ -38,6 +38,7 @@ import helium314.keyboard.settings.ios.IosScreen
 import helium314.keyboard.settings.ios.IosSeparator
 import helium314.keyboard.settings.ios.LocalIosColors
 import helium314.keyboard.settings.ios.iosGroup
+import helium314.keyboard.settings.ios.rememberPrefsVersion
 import sh.calvin.reorderable.ReorderableColumn
 
 const val IosDragHandleTag = "ios_drag_handle"
@@ -46,7 +47,10 @@ const val IosDragHandleTag = "ios_drag_handle"
 @Composable
 fun IosKeyboardsScreen(onBack: () -> Unit, navigate: (String) -> Unit) {
     val ctx = LocalContext.current
-    var subtypes by remember { mutableStateOf(SubtypeSettings.getEnabledSubtypes().toList()) }
+    // re-read when the enabled keyboards change elsewhere, e.g. added on a page pushed from here (this page stays
+    // composed underneath it)
+    val prefsVersion = rememberPrefsVersion()
+    var subtypes by remember(prefsVersion) { mutableStateOf(SubtypeSettings.getEnabledSubtypes().toList()) }
     var editing by rememberSaveable { mutableStateOf(false) }
     var pendingDelete by remember { mutableStateOf<InputMethodSubtype?>(null) }
     val canDelete = subtypes.size > 1 // at least one keyboard must stay
