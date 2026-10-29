@@ -57,4 +57,28 @@
     <string name="ios_add_dictionary_footer">Add a dictionary file in .dict format; dictionaries for many languages can be downloaded online.</string>
     <string name="ios_languages">LANGUAGES</string>
     <string name="ios_internal_dictionary">Built-in dictionary</string>
+    <!-- keyboard setup -->
+    <string name="ios_setup_subtitle">A keyboard like on iPhone</string>
+    <string name="ios_setup_f1_title">Just Like iOS</string>
+    <string name="ios_setup_f1">Layout, suggestions and emoji like on iPhone.</string>
+    <string name="ios_setup_f2_title">Your Languages</string>
+    <string name="ios_setup_f2">Switch between them with the globe key.</string>
+    <string name="ios_setup_f3_title">No Internet</string>
+    <string name="ios_setup_f3">What you type stays on your phone.</string>
+    <string name="ios_continue">Continue</string>
+    <string name="ios_setup_enable_title">Turn On Glasskey</string>
+    <string name="ios_setup_enable_subtitle">Two steps in Android settings, then you can type.</string>
+    <string name="ios_setup_step1">Turn on in the keyboard list</string>
+    <string name="ios_setup_step1_hint">Opens Android settings</string>
+    <string name="ios_setup_step2">Choose Glasskey as your keyboard</string>
+    <string name="ios_setup_step2_hint">Opens the keyboard picker</string>
+    <string name="ios_setup_step_done">Done</string>
+    <string name="ios_setup_warning">Android may warn that a keyboard can collect what you type. It says this about every keyboard: Glasskey has no internet access and sends nothing anywhere.</string>
+    <string name="ios_setup_enable_action">Open Android Settings</string>
+    <string name="ios_setup_choose_action">Choose Keyboard</string>
+    <string name="ios_later">Later</string>
+    <string name="ios_setup_done_title">All Set</string>
+    <string name="ios_setup_done_subtitle">Try typing something. The globe key below switches languages.</string>
+    <string name="ios_setup_try_hint">Type here…</string>
+    <string name="ios_setup_go_to_settings">Go to Settings</string>
 </resources>

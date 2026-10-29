@@ -56,4 +56,28 @@
     <string name="ios_add_dictionary_footer">Добавьте файл словаря в формате .dict; словари для многих языков можно скачать в интернете.</string>
     <string name="ios_languages">ЯЗЫКИ</string>
     <string name="ios_internal_dictionary">Встроенный словарь</string>
+    <!-- keyboard setup -->
+    <string name="ios_setup_subtitle">Клавиатура как на iPhone</string>
+    <string name="ios_setup_f1_title">Как на iOS</string>
+    <string name="ios_setup_f1">Раскладка, подсказки и эмодзи как на iPhone.</string>
+    <string name="ios_setup_f2_title">Ваши языки</string>
+    <string name="ios_setup_f2">Переключайте их глобусом.</string>
+    <string name="ios_setup_f3_title">Без интернета</string>
+    <string name="ios_setup_f3">Всё, что вы печатаете, остаётся на телефоне.</string>
+    <string name="ios_continue">Продолжить</string>
+    <string name="ios_setup_enable_title">Включите Glasskey</string>
+    <string name="ios_setup_enable_subtitle">Два шага в настройках Android, потом можно печатать.</string>
+    <string name="ios_setup_step1">Включить в списке клавиатур</string>
+    <string name="ios_setup_step1_hint">Откроются настройки Android</string>
+    <string name="ios_setup_step2">Выбрать Glasskey основной</string>
+    <string name="ios_setup_step2_hint">Откроется выбор клавиатуры</string>
+    <string name="ios_setup_step_done">Готово</string>
+    <string name="ios_setup_warning">Android может предупредить, что клавиатура может собирать вводимый текст. Так он пишет про любую клавиатуру: у Glasskey нет доступа в интернет, она ничего никуда не отправляет.</string>
+    <string name="ios_setup_enable_action">Открыть настройки Android</string>
+    <string name="ios_setup_choose_action">Выбрать клавиатуру</string>
+    <string name="ios_later">Позже</string>
+    <string name="ios_setup_done_title">Всё готово</string>
+    <string name="ios_setup_done_subtitle">Попробуйте напечатать что-нибудь. Глобус внизу переключает языки.</string>
+    <string name="ios_setup_try_hint">Напишите здесь…</string>
+    <string name="ios_setup_go_to_settings">К настройкам</string>
 </resources>

@@ -47,6 +47,7 @@ import helium314.keyboard.latin.utils.prefs
 import helium314.keyboard.settings.dialogs.ConfirmationDialog
 import helium314.keyboard.settings.dialogs.NewDictionaryDialog
 import helium314.keyboard.settings.ios.IosSettingsNavHost
+import helium314.keyboard.settings.ios.screens.IosSetupScreen
 import helium314.keyboard.settings.ios.IosSettingsTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.io.BufferedOutputStream
@@ -91,7 +92,6 @@ open class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPre
                     val dictUri by dictUriFlow.collectAsState()
                     val crashReports by crashReportFiles.collectAsState()
                     val crashFilePicker = filePicker { saveCrashReports(it) }
-                    var showWelcomeWizard by rememberSaveable { mutableStateOf(false) }
                     if (spellchecker)
                         Scaffold(contentWindowInsets = WindowInsets.safeDrawing) { innerPadding ->
                             Column(Modifier.padding(innerPadding)) {
@@ -110,16 +110,20 @@ open class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPre
                         }
                     else {
                         val needsEnabling by needsEnablingFlow.collectAsState()
+                        // the setup opens by itself while the keyboard is not even turned on
+                        var setupShown by rememberSaveable {
+                            mutableStateOf(!UncachedInputMethodManagerUtils.isThisImeEnabled(this@SettingsActivity, imm))
+                        }
                         IosSettingsTheme {
                             IosSettingsNavHost(
                                 onClickBack = { this.finish() },
                                 needsEnabling = needsEnabling,
-                                onEnable = { showWelcomeWizard = true },
+                                onEnable = { setupShown = true },
                             )
+                            if (setupShown)
+                                IosSetupScreen(onClose = { setupShown = false; checkEnabled() })
                         }
-                        if (showWelcomeWizard) {
-                            WelcomeWizard(close = { showWelcomeWizard = false; checkEnabled() }, finish = this::finish)
-                        } else if (crashReports.isNotEmpty()) {
+                        if (!setupShown && crashReports.isNotEmpty()) {
                             val ctx = LocalContext.current
                             ConfirmationDialog(
                                 cancelButtonText = "ignore",

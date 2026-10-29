@@ -56,4 +56,28 @@
     <string name="ios_add_dictionary_footer">.dict пішіміндегі сөздік файлын қосыңыз; көп тілдің сөздіктерін интернеттен жүктеуге болады.</string>
     <string name="ios_languages">ТІЛДЕР</string>
     <string name="ios_internal_dictionary">Кірістірілген сөздік</string>
+    <!-- keyboard setup -->
+    <string name="ios_setup_subtitle">iPhone-дағыдай пернетақта</string>
+    <string name="ios_setup_f1_title">iOS сияқты</string>
+    <string name="ios_setup_f1">Пернелер, ұсыныстар мен эмодзи iPhone-дағыдай.</string>
+    <string name="ios_setup_f2_title">Сіздің тілдеріңіз</string>
+    <string name="ios_setup_f2">Оларды глобуспен ауыстырыңыз.</string>
+    <string name="ios_setup_f3_title">Интернетсіз</string>
+    <string name="ios_setup_f3">Терген мәтініңіз телефонда қалады.</string>
+    <string name="ios_continue">Жалғастыру</string>
+    <string name="ios_setup_enable_title">Glasskey-ді қосыңыз</string>
+    <string name="ios_setup_enable_subtitle">Android баптауларында екі қадам, сосын тере аласыз.</string>
+    <string name="ios_setup_step1">Пернетақталар тізімінде қосу</string>
+    <string name="ios_setup_step1_hint">Android баптаулары ашылады</string>
+    <string name="ios_setup_step2">Glasskey-ді негізгі ету</string>
+    <string name="ios_setup_step2_hint">Пернетақта таңдауы ашылады</string>
+    <string name="ios_setup_step_done">Дайын</string>
+    <string name="ios_setup_warning">Android пернетақта терілген мәтінді жинай алады деп ескертуі мүмкін. Бұл кез келген пернетақтаға айтылады: Glasskey-де интернетке қатынас жоқ, ол ештеңені ешқайда жібермейді.</string>
+    <string name="ios_setup_enable_action">Android баптауларын ашу</string>
+    <string name="ios_setup_choose_action">Пернетақтаны таңдау</string>
+    <string name="ios_later">Кейінірек</string>
+    <string name="ios_setup_done_title">Бәрі дайын</string>
+    <string name="ios_setup_done_subtitle">Бірдеңе теріп көріңіз. Төмендегі глобус тілдерді ауыстырады.</string>
+    <string name="ios_setup_try_hint">Осында жазыңыз…</string>
+    <string name="ios_setup_go_to_settings">Баптауларға өту</string>
 </resources>
