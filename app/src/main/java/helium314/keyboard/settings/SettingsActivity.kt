@@ -48,6 +48,8 @@ import helium314.keyboard.settings.dialogs.ConfirmationDialog
 import helium314.keyboard.settings.dialogs.NewDictionaryDialog
 import helium314.keyboard.settings.ios.IosSettingsNavHost
 import helium314.keyboard.settings.ios.screens.IosSetupScreen
+import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import helium314.keyboard.settings.ios.IosSettingsTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.io.BufferedOutputStream
@@ -115,12 +117,15 @@ open class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPre
                             mutableStateOf(!UncachedInputMethodManagerUtils.isThisImeEnabled(this@SettingsActivity, imm))
                         }
                         IosSettingsTheme {
-                            IosSettingsNavHost(
-                                onClickBack = { this.finish() },
-                                needsEnabling = needsEnabling,
-                                onEnable = { setupShown = true },
-                                prepareAhead = !setupShown,
-                            )
+                            // the setup screen covers the pages: TalkBack must not read them behind it
+                            Box(if (setupShown) Modifier.clearAndSetSemantics {} else Modifier) {
+                                IosSettingsNavHost(
+                                    onClickBack = { this@SettingsActivity.finish() },
+                                    needsEnabling = needsEnabling,
+                                    onEnable = { setupShown = true },
+                                    prepareAhead = !setupShown,
+                                )
+                            }
                             if (setupShown)
                                 IosSetupScreen(onClose = { setupShown = false; checkEnabled() })
                         }

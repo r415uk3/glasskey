@@ -254,9 +254,13 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
         updateKeys()
     }
 
+    /** iOS style: told when an autofill or clipboard suggestion appears or goes, so a hidden bar can show it */
+    var iosExternalListener: ((Boolean) -> Unit)? = null
+
     fun setExternalSuggestionView(view: View?, addCloseButton: Boolean) {
         clear()
         isExternalSuggestionVisible = true
+        iosExternalListener?.invoke(view != null)
 
         if (addCloseButton) {
             val wrapper = LinearLayout(context)
@@ -523,6 +527,7 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
 
         toolbarExpandKey.setOnClickListener(if (!toolbarIsExpandable) null else this)
         pinnedKeys.visibility = if (isIos) GONE else suggestionsStrip.visibility
+        if (isExternalSuggestionVisible) iosExternalListener?.invoke(false)
         isExternalSuggestionVisible = false
     }
 

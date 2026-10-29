@@ -10,6 +10,14 @@ import helium314.keyboard.settings.ios.screens.IosSetupPrimaryTag
 import helium314.keyboard.settings.ios.screens.IosSetupScreen
 import helium314.keyboard.settings.ios.screens.IosSetupStep
 import helium314.keyboard.settings.ios.screens.IosSetupSystem
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.test.click
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performTouchInput
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -74,6 +82,22 @@ class IosSetupScreenTest {
         compose.mainClock.advanceTimeBy(1000)
         val settled = compose.onNodeWithText("Включите Glasskey").fetchSemanticsNode().boundsInRoot.left
         assertTrue(incoming > settled + 100, "incoming $incoming, settled $settled")
+    }
+
+    // drawn over the settings pages: nothing behind it may be touched or read out
+    @Test fun settingsBehindTheSetupCannotBeTouched() {
+        val sys = FakeSystem(enabled = false, current = false)
+        var behind = 0
+        compose.setContent {
+            IosSettingsTheme(dark = true) {
+                Box(Modifier.fillMaxSize()) {
+                    Box(Modifier.fillMaxSize().clickable { behind++ })
+                    IosSetupScreen(onClose = {}, system = sys)
+                }
+            }
+        }
+        compose.onRoot().performTouchInput { click(Offset(4f, centerY)); click(Offset(4f, 4f)) }
+        assertEquals(0, behind)
     }
 
     @Test fun laterCloses() {

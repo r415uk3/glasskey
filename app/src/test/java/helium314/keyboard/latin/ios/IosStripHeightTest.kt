@@ -18,6 +18,14 @@ class IosStripHeightTest {
         assertEquals(listOf(8), applied)
     }
 
+    // password-manager autofill and the clipboard code chip show even where predictive text is off
+    @Test fun externalSuggestionsShowAHiddenStrip() {
+        strip.setShown(false)
+        strip.setExternal(true)
+        strip.setExternal(false)
+        assertEquals(listOf(8, 40, 8), applied)
+    }
+
     @Test fun reapplyResendsTheCurrentHeight() {
         strip.setShown(true)
         strip.reapply()

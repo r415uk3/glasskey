@@ -580,6 +580,7 @@ public final class KeyboardSwitcher {
     // iOS: the suggestion bar keeps its full height while predictive text is on, and is hidden when it is off
     private void setupIosStripHeight() {
         mIosStripHeight = null;
+        mSuggestionStripView.setIosExternalListener(null);
         final SettingsValues sv = Settings.getValues();
         if (!KeyboardTheme.STYLE_IOS.equals(sv.mColors.getThemeStyle()) || sv.mIsFloatingKeyboard) return;
         final int shown = mThemeContext.getResources().getDimensionPixelSize(R.dimen.config_suggestions_strip_height);
@@ -597,6 +598,7 @@ public final class KeyboardSwitcher {
             return kotlin.Unit.INSTANCE;
         });
         mIosStripHeight.setShown(sv.mSuggestionsEnabled);
+        mSuggestionStripView.setIosExternalListener(external -> { mIosStripHeight.setExternal(external); return kotlin.Unit.INSTANCE; });
     }
 
     private void reapplyIosStripHeight() {

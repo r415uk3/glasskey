@@ -51,6 +51,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.graphics.asImageBitmap
@@ -144,7 +145,8 @@ fun IosSetupScreen(onClose: () -> Unit, system: IosSetupSystem? = null) {
     val top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
     val bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
 
-    Box(Modifier.fillMaxSize()) {
+    // drawn over the settings pages, so it takes every touch itself
+    Box(Modifier.fillMaxSize().pointerInput(Unit) {}) {
         IosBackground(LocalIosDark.current, Modifier.fillMaxSize().iosBackdropSource(backdrop))
         // pushed and popped like settings pages: the new step slides in over the old one, which moves a little
         AnimatedContent(step, transitionSpec = {
