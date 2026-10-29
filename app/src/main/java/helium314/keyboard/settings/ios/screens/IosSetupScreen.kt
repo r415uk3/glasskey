@@ -8,8 +8,8 @@ import android.view.inputmethod.InputMethodManager
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -63,6 +63,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
@@ -78,6 +79,7 @@ import helium314.keyboard.settings.ios.iosBackdropSource
 import helium314.keyboard.settings.ios.liquid.LiquidButton
 import helium314.keyboard.settings.ios.rememberIosBackdrop
 import helium314.keyboard.settings.ios.IosGlass
+import helium314.keyboard.settings.ios.IosNavMotion
 import kotlinx.coroutines.delay
 
 enum class IosSetupStep { WELCOME, ENABLE, DONE }
@@ -144,8 +146,16 @@ fun IosSetupScreen(onClose: () -> Unit, system: IosSetupSystem? = null) {
 
     Box(Modifier.fillMaxSize()) {
         IosBackground(LocalIosDark.current, Modifier.fillMaxSize().iosBackdropSource(backdrop))
-        AnimatedContent(step, transitionSpec = { fadeIn(tween(250)) togetherWith fadeOut(tween(200)) }, label = "setup") { s ->
-            Column(Modifier.fillMaxSize().padding(top = top, bottom = bottom).padding(horizontal = 24.dp)) {
+        // pushed and popped like settings pages: the new step slides in over the old one, which moves a little
+        AnimatedContent(step, transitionSpec = {
+            val forward = targetState > initialState
+            val spec = tween<IntOffset>(IosNavMotion.DurationMillis, easing = IosNavMotion.Easing)
+            val parallax = { w: Int -> (w * IosNavMotion.ParallaxFraction).toInt() }
+            (if (forward) slideInHorizontally(spec) { it } togetherWith slideOutHorizontally(spec) { -parallax(it) }
+            else slideInHorizontally(spec) { -parallax(it) } togetherWith slideOutHorizontally(spec) { it })
+                .apply { targetContentZIndex = if (forward) 1f else -1f }
+        }, label = "setup") { s ->
+            Column(Modifier.fillMaxSize().background(colors.background).padding(top = top, bottom = bottom).padding(horizontal = 24.dp)) {
                 Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
                     when (s) {
                         IosSetupStep.WELCOME -> Welcome()

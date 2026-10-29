@@ -16,6 +16,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 @Config(qualifiers = "ru-w402dp-h900dp")
@@ -60,6 +61,19 @@ class IosSetupScreenTest {
         compose.onNodeWithText("Всё готово").assertExists()
         compose.onNodeWithText("К настройкам").performClick()
         assertEquals(1, closed)
+    }
+
+    @Test fun nextStepSlidesInFromTheRight() {
+        val sys = FakeSystem(enabled = false, current = false)
+        compose.setContent { IosSettingsTheme(dark = true) { IosSetupScreen(onClose = {}, system = sys) } }
+        compose.mainClock.autoAdvance = false
+        compose.onNodeWithTag(IosSetupPrimaryTag).performClick()
+        compose.mainClock.advanceTimeBy(80)
+        val incoming = compose.onNodeWithText("Включите Glasskey").fetchSemanticsNode().boundsInRoot.left
+        compose.onNodeWithText("Клавиатура как на iPhone").assertExists() // the old step is still there, sliding away
+        compose.mainClock.advanceTimeBy(1000)
+        val settled = compose.onNodeWithText("Включите Glasskey").fetchSemanticsNode().boundsInRoot.left
+        assertTrue(incoming > settled + 100, "incoming $incoming, settled $settled")
     }
 
     @Test fun laterCloses() {
