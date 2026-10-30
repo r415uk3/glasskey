@@ -4,6 +4,12 @@ An Android keyboard that looks and feels like the iOS 27 keyboard. Clean layout,
 
 Built on [HeliBoard](https://github.com/Helium314/HeliBoard), so it stays fully offline: no internet permission, nothing leaves the phone.
 
+<p>
+  <img src="docs/screenshots/keyboard.png" width="270" alt="Keyboard with suggestions">
+  <img src="docs/screenshots/emoji.png" width="270" alt="Emoji keyboard">
+  <img src="docs/screenshots/settings.png" width="270" alt="Settings">
+</p>
+
 ## Features
 
 - iOS 27 look: key shapes, popups, long-press panel, blurred glass panel (Android 12+)
