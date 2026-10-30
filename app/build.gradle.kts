@@ -14,7 +14,7 @@ android {
         minSdk = 21
         targetSdk = 37
         versionCode = 4300
-        versionName = "4.3-beta1"
+        versionName = "1.0"
         ndk {
             abiFilters.clear()
             abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
@@ -22,8 +22,20 @@ android {
         proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
     }
 
+    // release key stays outside the repo: GLASSKEY_STORE_FILE etc. in ~/.gradle/gradle.properties
+    val releaseStore = providers.gradleProperty("GLASSKEY_STORE_FILE").orNull
+    signingConfigs {
+        if (releaseStore != null) create("release") {
+            storeFile = file(releaseStore)
+            storePassword = providers.gradleProperty("GLASSKEY_STORE_PASSWORD").get()
+            keyAlias = providers.gradleProperty("GLASSKEY_KEY_ALIAS").get()
+            keyPassword = providers.gradleProperty("GLASSKEY_KEY_PASSWORD").get()
+        }
+    }
+
     buildTypes {
         release {
+            if (releaseStore != null) signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             isShrinkResources = false
             isDebuggable = false
