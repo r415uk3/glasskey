@@ -29,6 +29,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -59,6 +60,7 @@ import androidx.compose.ui.window.DialogWindowProvider
 import android.view.WindowManager
 import kotlinx.coroutines.android.awaitFrame
 import helium314.keyboard.latin.R
+import helium314.keyboard.latin.common.LocaleUtils.constructLocale
 import helium314.keyboard.latin.utils.SubtypeLocaleUtils
 import helium314.keyboard.settings.ios.IosBarButton
 import helium314.keyboard.settings.ios.IosGlassButton
@@ -82,7 +84,7 @@ fun IosTextReplacementScreen(onBack: () -> Unit, store: TextReplacementStore = I
     var editing by rememberSaveable { mutableStateOf(false) }
     var pendingDelete by remember { mutableStateOf<TextReplacement?>(null) }
     // the entry being edited, or a blank one with a null shortcut for «+»
-    var sheet by remember { mutableStateOf<TextReplacement?>(null) }
+    var sheet by rememberSaveable(stateSaver = SheetSaver) { mutableStateOf<TextReplacement?>(null) }
     val footer = stringResource(R.string.ios_text_replacement_footer)
 
     IosScreen(
@@ -128,12 +130,19 @@ fun IosTextReplacementScreen(onBack: () -> Unit, store: TextReplacementStore = I
             onDismiss = { sheet = null },
             onSave = { word, shortcut ->
                 if (edited.shortcut != null) store.delete(ctx, edited)
-                store.add(ctx, word, shortcut, edited.locale)
+                val same = store.all(ctx).any { it.word == word && it.shortcut == shortcut && it.storedLocale == edited.storedLocale }
+                if (!same) store.add(ctx, word, shortcut, edited.locale)
                 entries = store.all(ctx)
             },
         )
     }
 }
+
+// keeps the open sheet across activity recreation (rotation); an empty list means no sheet
+private val SheetSaver = listSaver<TextReplacement?, String?>(
+    save = { r -> if (r == null) emptyList() else listOf(r.word, r.shortcut, r.storedLocale) },
+    restore = { if (it.isEmpty()) null else TextReplacement(it[0]!!, it[1], it[2]?.constructLocale(), it[2]) },
+)
 
 @Composable
 private fun PlusButton(onClick: () -> Unit) {

@@ -3,6 +3,7 @@ package helium314.keyboard.settings.ios
 
 import androidx.activity.BackEventCompat
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.ui.semantics.SemanticsNode
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.assertIsFocused
@@ -348,5 +349,40 @@ class IosNavTransitionTest {
         compose.waitForIdle()
         assertEquals(listOf("Клавиатуры"), titles())
         compose.onNodeWithText("Готово").assertExists() // still editing
+    }
+
+    // the page being popped is gone for good: rotating the phone mid-pop does not bring it back
+    @Test fun stateSavedDuringAPopLeavesThePoppedPageOut() {
+        showApp()
+        openKeyboards()
+        compose.mainClock.autoAdvance = false
+        compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
+        compose.mainClock.advanceTimeBy(100)
+        assertTrue(stack.transitioning)
+        val saver = IosNavStack.saver()
+        val saved = with(saver) { SaverScope { true }.save(stack) }!!
+        assertEquals(listOf(IosRoute.Main), saver.restore(saved)!!.entries.map { it.route })
+        compose.mainClock.autoAdvance = true
+    }
+
+    // a swipe that starts while a back press pops a page, and is then cancelled, leaves the page below it shown
+    @Test fun cancelledSwipeAfterABackPressKeepsThePageBelow() {
+        showApp()
+        openKeyboards()
+        compose.runOnUiThread { stack.push(IosRoute.AddKeyboard) }
+        compose.waitForIdle()
+        compose.mainClock.autoAdvance = false
+        val dispatcher = compose.activity.onBackPressedDispatcher
+        compose.runOnUiThread { dispatcher.onBackPressed() }
+        compose.mainClock.advanceTimeBy(100)
+        compose.runOnUiThread {
+            dispatcher.dispatchOnBackStarted(back(0f, 0f))
+            dispatcher.dispatchOnBackProgressed(back(60f, 0.1f))
+            dispatcher.dispatchOnBackCancelled()
+        }
+        compose.mainClock.autoAdvance = true
+        compose.waitForIdle()
+        assertEquals(listOf(IosRoute.Main, IosRoute.Keyboards), stack.entries.map { it.route })
+        assertEquals(listOf("Клавиатуры"), titles())
     }
 }

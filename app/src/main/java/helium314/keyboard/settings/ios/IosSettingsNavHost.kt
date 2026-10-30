@@ -238,7 +238,8 @@ class IosNavStack internal constructor(initial: List<IosNavEntry>, private var n
 
     companion object {
         fun saver() = listSaver<IosNavStack, String>(
-            save = { s -> listOf(s.nextId.toString()) + s.entries.map { "${it.id}|${it.route}" } },
+            // a page being popped is already gone
+            save = { s -> listOf(s.nextId.toString()) + s.entries.dropLast(if (s.popping) 1 else 0).map { "${it.id}|${it.route}" } },
             restore = { l ->
                 IosNavStack(l.drop(1).map { val (id, route) = it.split('|', limit = 2); IosNavEntry(id.toLong(), route) }, l[0].toLong())
             },

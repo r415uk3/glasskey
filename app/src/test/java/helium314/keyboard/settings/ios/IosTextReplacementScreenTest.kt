@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
@@ -65,6 +66,33 @@ class IosTextReplacementScreenTest {
         compose.waitForIdle()
         assertEquals(listOf(TextReplacement("до свидания", "дсв", null)), store.entries)
         compose.onNodeWithText("дсв").assertExists()
+    }
+
+    // rotating the phone recreates the activity: the open sheet and what was typed stay
+    @Test fun sheetSurvivesRecreation() {
+        val restore = StateRestorationTester(compose)
+        val store = FakeStore(TextReplacement("сәлем", "слм", Locale.forLanguageTag("kk")))
+        restore.setContent { IosSettingsTheme(dark = true) { IosTextReplacementScreen(onBack = {}, store = store) } }
+        compose.onNodeWithText("сәлем").performClick()
+        compose.onAllNodes(hasSetTextAction())[1].performTextInput("2")
+        restore.emulateSavedInstanceStateRestore()
+        compose.waitForIdle()
+        compose.onNodeWithTag(IosSheetTag).assertExists()
+        compose.onNodeWithText("Готово").performClick()
+        compose.waitForIdle()
+        assertEquals(listOf(TextReplacement("сәлем", "слм2", Locale.forLanguageTag("kk"))), store.entries)
+    }
+
+    @Test fun addingAnExistingEntryAgainKeepsOneCopy() {
+        val store = FakeStore(TextReplacement("до свидания", "дсв", null))
+        show(store)
+        compose.onNodeWithContentDescription("Добавить").performClick()
+        val fields = compose.onAllNodes(hasSetTextAction())
+        fields[0].performTextInput("до свидания")
+        fields[1].performTextInput("дсв")
+        compose.onNodeWithText("Готово").performClick()
+        compose.waitForIdle()
+        assertEquals(listOf(TextReplacement("до свидания", "дсв", null)), store.entries)
     }
 
     @Test fun sheetScalesInAndOut() {
