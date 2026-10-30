@@ -24,6 +24,7 @@ import helium314.keyboard.latin.utils.SubtypeSettings
 import helium314.keyboard.latin.utils.locale
 import helium314.keyboard.settings.dialogs.DictionaryDialog
 import helium314.keyboard.settings.dictionaryFilePicker
+import helium314.keyboard.settings.ios.openLink
 import helium314.keyboard.settings.ios.IosRow
 import helium314.keyboard.settings.ios.IosScreen
 import helium314.keyboard.settings.ios.IosSearchField
@@ -92,7 +93,7 @@ fun IosDictionariesScreen(
                         picker.launch(IntentUtils.getResolvableTypeIntent(ctx, "*/*").setAction(Intent.ACTION_OPEN_DOCUMENT))
                     })
                 },
-                { -> IosRow(getDictionaries, titleColor = tint, chevron = false, onClick = { uriHandler.openUri(Links.DICTIONARY_URL) }) },
+                { -> IosRow(getDictionaries, titleColor = tint, chevron = false, onClick = { uriHandler.openLink(Links.DICTIONARY_URL) }) },
             ))
         if (shown.isEmpty())
             iosGroup(footer = noResults, rows = emptyList())

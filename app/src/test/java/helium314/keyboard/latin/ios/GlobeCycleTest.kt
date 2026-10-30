@@ -56,6 +56,13 @@ class GlobeCycleTest {
         assertEquals("ru", cycle.next("en", listOf("en", "ru"), now))
     }
 
+    // the current language was just turned off: a tap goes to the last used one that is still on
+    @Test fun currentLanguageNotEnabledGoesToTheLastUsed() {
+        cycle.onShown("ru"); cycle.onShown("kk"); cycle.onShown("en")
+        now += 5000
+        assertEquals("kk", cycle.next("en", listOf("kk", "ru"), now))
+    }
+
     @Test fun nothingToSwitchToWithOneLanguage() {
         assertNull(cycle.next("en", listOf("en"), 0))
     }

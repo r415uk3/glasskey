@@ -31,7 +31,8 @@ class GlobeCycle<T> @JvmOverloads constructor(private val windowMs: Long = 1000)
             recent.retainAll(enabled.toSet())
             enabled.forEach { if (it !in recent) recent.add(it) }
             burst = recent.toList()
-            burstIndex = 1
+            // a current language that is not enabled any more is not in the list: go to the first one
+            burstIndex = if (current in enabled) 1 else 0
         }
         val target = burst[burstIndex]
         // as if the cycle stopped here: the language the cycle started from is the one to go back to

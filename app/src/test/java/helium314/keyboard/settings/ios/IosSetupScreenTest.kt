@@ -18,6 +18,11 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performTouchInput
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -33,7 +38,8 @@ class IosSetupScreenTest {
 
     private class FakeSystem(var enabled: Boolean, var current: Boolean) : IosSetupSystem {
         val calls = mutableListOf<String>()
-        override fun isEnabled() = enabled
+        var checks = 0
+        override fun isEnabled() = enabled.also { checks++ }
         override fun isCurrent() = current
         override fun openKeyboardList() { calls += "list" }
         override fun showPicker() { calls += "picker" }
@@ -106,5 +112,24 @@ class IosSetupScreenTest {
         compose.setContent { IosSettingsTheme(dark = true) { IosSetupScreen(onClose = { closed++ }, system = sys) } }
         compose.onNodeWithText("Позже").performClick()
         assertEquals(1, closed)
+    }
+
+    // in the background (Android's keyboard list in front) there is nothing to see, so nothing is checked
+    @Test fun noCheckingWhileTheAppIsInTheBackground() {
+        val sys = FakeSystem(enabled = true, current = false)
+        val owner = object : LifecycleOwner { val registry = LifecycleRegistry(this); override val lifecycle get() = registry }
+        compose.runOnUiThread { owner.registry.currentState = Lifecycle.State.RESUMED }
+        compose.setContent {
+            CompositionLocalProvider(LocalLifecycleOwner provides owner) {
+                IosSettingsTheme(dark = true) { IosSetupScreen(onClose = {}, system = sys) }
+            }
+        }
+        compose.mainClock.advanceTimeBy(300)
+        assertTrue(sys.checks > 1) // checks while shown (the picker dialog does not pause the activity)
+        compose.runOnUiThread { owner.registry.currentState = Lifecycle.State.CREATED }
+        compose.waitForIdle()
+        val stopped = sys.checks
+        compose.mainClock.advanceTimeBy(1000)
+        assertEquals(stopped, sys.checks)
     }
 }

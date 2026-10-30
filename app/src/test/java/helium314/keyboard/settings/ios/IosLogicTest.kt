@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 package helium314.keyboard.settings.ios
 
+import android.content.ActivityNotFoundException
+import androidx.compose.ui.platform.UriHandler
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -38,5 +40,11 @@ class IosLogicTest {
         assertEquals(true, IosSwitchLogic.checkedAfterRelease(false, 0.8f, moved = true))
         assertEquals(false, IosSwitchLogic.checkedAfterRelease(true, 0.3f, moved = true))
         assertEquals(true, IosSwitchLogic.checkedAfterRelease(true, 0.7f, moved = true))
+    }
+
+    // a phone without a browser: the link does nothing instead of closing the settings
+    @Test fun linkWithoutABrowserDoesNotCrash() {
+        val handler = object : UriHandler { override fun openUri(uri: String) = throw ActivityNotFoundException() }
+        handler.openLink("https://example.org")
     }
 }

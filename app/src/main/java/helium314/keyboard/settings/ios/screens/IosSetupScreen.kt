@@ -69,6 +69,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.utils.UncachedInputMethodManagerUtils
 import helium314.keyboard.settings.ios.IosBackground
@@ -132,10 +134,15 @@ fun IosSetupScreen(onClose: () -> Unit, system: IosSetupSystem? = null) {
     // back from Android's keyboard list
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { refresh() }
     // the keyboard picker is a dialog over this screen, so there is no resume: poll while a step is open
-    LaunchedEffect(step) {
-        while (step == IosSetupStep.ENABLE) {
-            delay(100)
-            refresh()
+    // (and the app is visible: the picker leaves it started)
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    LaunchedEffect(step, lifecycle) {
+        if (step != IosSetupStep.ENABLE) return@LaunchedEffect
+        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            while (true) {
+                delay(100)
+                refresh()
+            }
         }
     }
     BackHandler(onBack = onClose)

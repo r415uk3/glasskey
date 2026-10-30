@@ -1,6 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-only
 package helium314.keyboard.settings.ios
 
+import android.content.ActivityNotFoundException
+import androidx.compose.ui.platform.UriHandler
+
+/** Opens [url] in the browser; with no app that can open it, does nothing. */
+fun UriHandler.openLink(url: String) {
+    try { openUri(url) } catch (_: ActivityNotFoundException) {}
+}
+
 object IosLargeTitle {
     /** 0 while the large title is fully visible, 1 once it has scrolled away by its own height. */
     fun collapse(scrollPx: Int, titleHeightPx: Int): Float {

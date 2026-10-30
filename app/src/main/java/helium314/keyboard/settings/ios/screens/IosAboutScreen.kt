@@ -28,6 +28,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import helium314.keyboard.latin.BuildConfig
 import helium314.keyboard.latin.R
+import helium314.keyboard.settings.ios.openLink
 import helium314.keyboard.settings.ios.IosRoute
 import helium314.keyboard.settings.ios.IosRow
 import helium314.keyboard.settings.ios.IosScreen
@@ -49,7 +50,7 @@ fun IosAboutScreen(onBack: () -> Unit, navigate: (String) -> Unit) {
         item { AppHeader() }
         iosGroup(rows = listOf { IosRow(version, BuildConfig.VERSION_NAME, chevron = false) })
         iosGroup(rows = listOf(
-            { IosRow(source, titleColor = tint, chevron = false, onClick = { uriHandler.openUri(IOS_SOURCE_URL) }) },
+            { IosRow(source, titleColor = tint, chevron = false, onClick = { uriHandler.openLink(IOS_SOURCE_URL) }) },
             { IosRow(licenses, onClick = { navigate(IosRoute.Licenses) }) },
         ))
     }
@@ -115,6 +116,6 @@ private fun LicenseRow(license: License) {
         license.nameRes?.let { stringResource(it) } ?: license.name,
         subtitle = license.licenseRes?.let { stringResource(it) } ?: license.license,
         chevron = false,
-        onClick = { uriHandler.openUri(license.url) },
+        onClick = { uriHandler.openLink(license.url) },
     )
 }
