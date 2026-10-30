@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -22,8 +23,6 @@ import helium314.keyboard.latin.dictionary.getDictionaryLocales
 import helium314.keyboard.latin.utils.IntentUtils
 import helium314.keyboard.latin.utils.SubtypeSettings
 import helium314.keyboard.latin.utils.locale
-import helium314.keyboard.settings.dialogs.DictionaryDialog
-import helium314.keyboard.settings.dictionaryFilePicker
 import helium314.keyboard.settings.ios.openLink
 import helium314.keyboard.settings.ios.IosRow
 import helium314.keyboard.settings.ios.IosScreen
@@ -46,8 +45,14 @@ fun iosDictionaryLanguages(context: Context): List<IosDictionaryLanguage> {
         val (dicts, hasInternal) = getUserAndInternalDictionaries(context, locale)
         val types = dicts.mapTo(mutableListOf()) { it.name.substringBefore("_${DictionaryInfoUtils.USER_DICTIONARY_SUFFIX}") }
         if (hasInternal && !types.contains(Dictionary.TYPE_MAIN)) types.add(0, internal)
-        IosDictionaryLanguage(locale, locale.localizedDisplayName(context.resources), types.joinToString(", "))
+        IosDictionaryLanguage(locale, dictionaryLanguageName(locale, context), types.joinToString(", "))
     }
+}
+
+/** The language's name as a title: Russian names start lower-case («казахский»). */
+fun dictionaryLanguageName(locale: Locale, context: Context): String {
+    val uiLocale = context.resources.configuration.locales[0]
+    return locale.localizedDisplayName(context.resources).replaceFirstChar { it.titlecase(uiLocale) }
 }
 
 /** Same matching as HeliBoard's dictionary screen: any word of the name starts with the term. */
@@ -62,15 +67,15 @@ private fun IosDictionaryLanguage.matches(term: String) =
 fun IosDictionariesScreen(
     onBack: () -> Unit,
     loadLanguages: (Context) -> List<IosDictionaryLanguage> = ::iosDictionaryLanguages,
-    onOpenLanguage: ((Locale) -> Unit)? = null,
+    onOpenLanguage: (Locale) -> Unit,
 ) {
     val ctx = LocalContext.current
     val uriHandler = LocalUriHandler.current
     val tint = LocalIosColors.current.tint
     var query by rememberSaveable { mutableStateOf("") }
-    var selected by remember { mutableStateOf<Locale?>(null) }
-    val picker = dictionaryFilePicker(null)
-    // re-read on every composition (as HeliBoard does), so dictionaries added or deleted in the dialogs show up
+    var added by remember { mutableIntStateOf(0) }
+    val picker = iosDictionaryFilePicker(null) { added++ }
+    // re-read on every composition (as HeliBoard does), so dictionaries added or deleted on the language pages show up
     val languages = loadLanguages(ctx)
     val term = query.trim()
     val shown = if (term.isEmpty()) languages else languages.filter { it.matches(term) }
@@ -101,11 +106,9 @@ fun IosDictionariesScreen(
             iosGroup(header = header, rows = shown.map { language ->
                 { ->
                     IosRow(language.name, subtitle = language.dictionaries.ifEmpty { null }, onClick = {
-                        if (onOpenLanguage != null) onOpenLanguage(language.locale) else selected = language.locale
+                        onOpenLanguage(language.locale)
                     })
                 }
             })
     }
-
-    selected?.let { DictionaryDialog(onDismissRequest = { selected = null }, locale = it) }
 }

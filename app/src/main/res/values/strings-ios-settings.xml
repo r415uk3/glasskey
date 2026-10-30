@@ -81,4 +81,22 @@
     <string name="ios_setup_done_subtitle">Try typing something. The globe key below switches languages.</string>
     <string name="ios_setup_try_hint">Type here…</string>
     <string name="ios_setup_go_to_settings">Go to Settings</string>
+    <!-- dictionary pages -->
+    <string name="ios_dictionaries_header">DICTIONARIES</string>
+    <string name="ios_dictionary_builtin">Built-in</string>
+    <string name="ios_dictionary_added">Added</string>
+    <string name="ios_dictionary_replaced_footer">The added main dictionary replaces the built-in one.</string>
+    <string name="ios_dictionary_download_header">DOWNLOAD</string>
+    <string name="ios_dictionary_language">Language</string>
+    <string name="ios_dictionary_version">Version</string>
+    <string name="ios_dictionary_date">Date</string>
+    <string name="ios_dictionary_name">Name</string>
+    <string name="ios_delete_dictionary">Delete Dictionary</string>
+    <string name="ios_delete_dictionary_message">The dictionary “%s” will be removed from the phone.</string>
+    <string name="ios_new_dictionary">New Dictionary</string>
+    <string name="ios_replace">Replace</string>
+    <string name="ios_new_dictionary_replaces">This language already has the dictionary “%1$s” (v %2$s). The new one will replace it.</string>
+    <string name="ios_dictionary_wrong_script">This dictionary is written in a different alphabet than the chosen language.</string>
+    <string name="ios_dictionary_file_error">This file is not a dictionary.</string>
+    <string name="ios_ok">OK</string>
 </resources>

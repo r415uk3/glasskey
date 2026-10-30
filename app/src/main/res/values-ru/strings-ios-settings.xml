@@ -80,4 +80,22 @@
     <string name="ios_setup_done_subtitle">Попробуйте напечатать что-нибудь. Глобус внизу переключает языки.</string>
     <string name="ios_setup_try_hint">Напишите здесь…</string>
     <string name="ios_setup_go_to_settings">К настройкам</string>
+    <!-- dictionary pages -->
+    <string name="ios_dictionaries_header">СЛОВАРИ</string>
+    <string name="ios_dictionary_builtin">Встроенный</string>
+    <string name="ios_dictionary_added">Добавлен</string>
+    <string name="ios_dictionary_replaced_footer">Добавленный основной словарь заменяет встроенный.</string>
+    <string name="ios_dictionary_download_header">СКАЧАТЬ</string>
+    <string name="ios_dictionary_language">Язык</string>
+    <string name="ios_dictionary_version">Версия</string>
+    <string name="ios_dictionary_date">Дата</string>
+    <string name="ios_dictionary_name">Название</string>
+    <string name="ios_delete_dictionary">Удалить словарь</string>
+    <string name="ios_delete_dictionary_message">Словарь «%s» будет удалён с телефона.</string>
+    <string name="ios_new_dictionary">Новый словарь</string>
+    <string name="ios_replace">Заменить</string>
+    <string name="ios_new_dictionary_replaces">Для этого языка уже есть словарь «%1$s» (v %2$s). Новый заменит его.</string>
+    <string name="ios_dictionary_wrong_script">Словарь написан другим алфавитом, чем выбранный язык.</string>
+    <string name="ios_dictionary_file_error">Этот файл не является словарём.</string>
+    <string name="ios_ok">ОК</string>
 </resources>

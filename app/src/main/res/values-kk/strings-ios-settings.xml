@@ -80,4 +80,22 @@
     <string name="ios_setup_done_subtitle">Бірдеңе теріп көріңіз. Төмендегі глобус тілдерді ауыстырады.</string>
     <string name="ios_setup_try_hint">Осында жазыңыз…</string>
     <string name="ios_setup_go_to_settings">Баптауларға өту</string>
+    <!-- dictionary pages -->
+    <string name="ios_dictionaries_header">СӨЗДІКТЕР</string>
+    <string name="ios_dictionary_builtin">Кірістірілген</string>
+    <string name="ios_dictionary_added">Қосылған</string>
+    <string name="ios_dictionary_replaced_footer">Қосылған негізгі сөздік кірістірілгенін алмастырады.</string>
+    <string name="ios_dictionary_download_header">ЖҮКТЕП АЛУ</string>
+    <string name="ios_dictionary_language">Тіл</string>
+    <string name="ios_dictionary_version">Нұсқа</string>
+    <string name="ios_dictionary_date">Күні</string>
+    <string name="ios_dictionary_name">Атауы</string>
+    <string name="ios_delete_dictionary">Сөздікті жою</string>
+    <string name="ios_delete_dictionary_message">«%s» сөздігі телефоннан жойылады.</string>
+    <string name="ios_new_dictionary">Жаңа сөздік</string>
+    <string name="ios_replace">Алмастыру</string>
+    <string name="ios_new_dictionary_replaces">Бұл тілде «%1$s» сөздігі бар (v %2$s). Жаңасы оны алмастырады.</string>
+    <string name="ios_dictionary_wrong_script">Сөздік таңдалған тілден басқа әліпбимен жазылған.</string>
+    <string name="ios_dictionary_file_error">Бұл файл сөздік емес.</string>
+    <string name="ios_ok">ОК</string>
 </resources>

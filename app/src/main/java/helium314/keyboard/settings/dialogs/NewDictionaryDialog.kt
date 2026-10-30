@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 package helium314.keyboard.settings.dialogs
 
+import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -51,42 +52,15 @@ fun NewDictionaryDialog(
     } else if (header != null) {
         val ctx = LocalContext.current
         val dictLocale = header.mLocaleString.constructLocale()
-        val enabledLocales = SubtypeSettings.getEnabledSubtypes().map { it.locale() }
-        val enabledLanguages = enabledLocales.map { it.language }
-        val comparer = compareBy<Locale>(
-            { it != mainLocale },
-            { it !in enabledLocales },
-            { it != dictLocale },
-            { it.language !in enabledLanguages },
-            { it.script() != dictLocale.script() }
-        )
-        val locales = SubtypeSettings.getAvailableSubtypeLocales()
-            .filter { it.script() == dictLocale.script() || it.script() == mainLocale?.script() }
-            .sortedWith(comparer)
-        var locale by remember {
-            mutableStateOf(mainLocale
-                ?: RichInputMethodManager.getInstance().findSubtypeForHintLocale(dictLocale)?.locale()
-                ?: dictLocale.takeIf { it in locales }
-                ?: locales.first())
-        }
+        val (locales, initial) = remember { dictionaryLocaleChoices(dictLocale, mainLocale) }
+        var locale by remember { mutableStateOf(initial) }
         val cacheDir = DictionaryInfoUtils.getCacheDirectoryForLocale(locale, ctx)
         val dictFile = File(cacheDir, header.mIdString.substringBefore(":") + "_" + DictionaryInfoUtils.USER_DICTIONARY_SUFFIX)
         val type = header.mIdString.substringBefore(":")
         val info = header.info(LocalConfiguration.current.locale())
         ThreeButtonAlertDialog(
             onDismissRequest = { onDismissRequest(); cachedFile.delete() },
-            onConfirmed = {
-                dictFile.parentFile?.mkdirs()
-                dictFile.delete()
-                cachedFile.renameTo(dictFile)
-                if (type == Dictionary.TYPE_MAIN) {
-                    // replaced main dict, remove the one created from internal data
-                    val internalMainDictFile = File(cacheDir, DictionaryInfoUtils.MAIN_DICT_FILE_NAME)
-                    internalMainDictFile.delete()
-                }
-                val newDictBroadcast = Intent(DictionaryPackConstants.NEW_DICTIONARY_INTENT_ACTION)
-                ctx.sendBroadcast(newDictBroadcast)
-            },
+            onConfirmed = { installDictionary(ctx, cachedFile, header, locale) },
             confirmButtonText = stringResource(if (dictFile.exists()) R.string.replace_dictionary else android.R.string.ok),
             title = { Text(stringResource(R.string.add_new_dictionary_title)) },
             content = {
@@ -124,7 +98,8 @@ fun NewDictionaryDialog(
     }
 }
 
-private fun checkDict(file: File): Pair<Int?, DictionaryHeader?> {
+/** The file's error message, or its header if it is a usable dictionary (converted to binary if needed). */
+internal fun checkDict(file: File): Pair<Int?, DictionaryHeader?> {
     convertDictIfNecessary(file)
     val newHeader = DictionaryInfoUtils.getDictionaryFileHeaderOrNull(file)
         ?: return R.string.dictionary_file_error to null
@@ -150,4 +125,43 @@ private fun convertDictIfNecessary(file: File) {
         DictIO.writeBinaryDictionary(path, fusionDict)
     } catch (_: Exception) {
     }
+}
+
+/** Languages a dictionary for [dictLocale] can be added to, most fitting first, and the one to suggest. */
+internal fun dictionaryLocaleChoices(dictLocale: Locale, mainLocale: Locale?): Pair<List<Locale>, Locale> {
+    val enabledLocales = SubtypeSettings.getEnabledSubtypes().map { it.locale() }
+    val enabledLanguages = enabledLocales.map { it.language }
+    val comparer = compareBy<Locale>(
+        { it != mainLocale },
+        { it !in enabledLocales },
+        { it != dictLocale },
+        { it.language !in enabledLanguages },
+        { it.script() != dictLocale.script() }
+    )
+    val locales = SubtypeSettings.getAvailableSubtypeLocales()
+        .filter { it.script() == dictLocale.script() || it.script() == mainLocale?.script() }
+        .sortedWith(comparer)
+    val initial = mainLocale
+        ?: RichInputMethodManager.getInstance().findSubtypeForHintLocale(dictLocale)?.locale()
+        ?: dictLocale.takeIf { it in locales }
+        ?: locales.first()
+    return locales to initial
+}
+
+/** Where a dictionary of [type] for [locale] is stored. */
+internal fun addedDictionaryFile(context: Context, locale: Locale, type: String) =
+    File(DictionaryInfoUtils.getCacheDirectoryForLocale(locale, context), type + "_" + DictionaryInfoUtils.USER_DICTIONARY_SUFFIX)
+
+/** Moves the checked [cachedFile] into place for [locale], replacing one of the same type, and tells the keyboard. */
+internal fun installDictionary(context: Context, cachedFile: File, header: DictionaryHeader, locale: Locale) {
+    val type = header.mIdString.substringBefore(":")
+    val dictFile = addedDictionaryFile(context, locale, type)
+    dictFile.parentFile?.mkdirs()
+    dictFile.delete()
+    cachedFile.renameTo(dictFile)
+    if (type == Dictionary.TYPE_MAIN) {
+        // replaced main dict, remove the one created from internal data
+        File(DictionaryInfoUtils.getCacheDirectoryForLocale(locale, context), DictionaryInfoUtils.MAIN_DICT_FILE_NAME).delete()
+    }
+    context.sendBroadcast(Intent(DictionaryPackConstants.NEW_DICTIONARY_INTENT_ACTION))
 }

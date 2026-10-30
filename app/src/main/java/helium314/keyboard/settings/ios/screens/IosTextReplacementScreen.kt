@@ -67,7 +67,7 @@ import helium314.keyboard.settings.ios.IosGlassButton
 import helium314.keyboard.settings.ios.IosGroupShape
 import helium314.keyboard.settings.ios.IosRow
 import helium314.keyboard.settings.ios.IosScreen
-import helium314.keyboard.settings.ios.IosSheetMotion
+import helium314.keyboard.settings.ios.IosSheetCard
 import helium314.keyboard.settings.ios.IosSeparator
 import helium314.keyboard.settings.ios.IosTextReplacements
 import helium314.keyboard.settings.ios.LocalIosColors
@@ -157,92 +157,29 @@ private fun PlusButton(onClick: () -> Unit) {
     }
 }
 
-const val IosSheetTag = "ios_sheet"
-
-/**
- * iOS-style card with Отменить / title / Готово and the two fields; fades and scales in, and out again before
- * [onDismiss] (also after [onSave]) removes it.
- */
+/** The phrase and shortcut fields in an [IosSheetCard]; «Готово» saves them. */
 @Composable
 private fun ReplacementSheet(initial: TextReplacement, onDismiss: () -> Unit, onSave: (String, String) -> Unit) {
-    val colors = LocalIosColors.current
     // cursor at the end when editing an entry
     var phrase by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue(initial.word, TextRange(initial.word.length))) }
     var shortcut by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(initial.shortcut.orEmpty(), TextRange(initial.shortcut.orEmpty().length)))
     }
-    val canSave = phrase.text.isNotBlank() && shortcut.text.isNotBlank()
     val phraseFocus = remember { FocusRequester() }
-    // heading for shown from the start, so the fields are composed (and focusable) in the dialog's first frame
-    val shown = remember { MutableTransitionState(false).apply { targetState = true } }
-    var closing by remember { mutableStateOf(false) }
-    val close = { closing = true; shown.targetState = false }
-    LaunchedEffect(shown.isIdle, shown.currentState) { if (closing && shown.isIdle && !shown.currentState) onDismiss() }
-    val spec = tween<Float>(IosSheetMotion.DurationMillis)
-
-    Dialog(close, DialogProperties(usePlatformDefaultWidth = false)) {
-        // focus and keyboard must be requested from inside the dialog window, once its content is attached
-        val dialogWindow = (LocalView.current.parent as? DialogWindowProvider)?.window
-        // the card animates itself (below) instead of the platform's dialog window animation
-        SideEffect { dialogWindow?.setWindowAnimations(0) }
-        val keyboard = LocalSoftwareKeyboardController.current
-        LaunchedEffect(Unit) {
-            dialogWindow?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
-            awaitFrame()
-            phraseFocus.requestFocus()
-            keyboard?.show()
-        }
-        AnimatedVisibility(
-            shown,
-            enter = fadeIn(spec) + scaleIn(spec, initialScale = IosSheetMotion.InitialScale),
-            exit = fadeOut(spec) + scaleOut(spec, targetScale = IosSheetMotion.InitialScale),
-        ) {
-            Column(
-                Modifier
-                    .testTag(IosSheetTag)
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth()
-                    .background(colors.sheet, IosGroupShape)
-                    .padding(bottom = 16.dp)
-            ) {
-                Box(Modifier.fillMaxWidth().heightIn(min = 56.dp).padding(horizontal = 16.dp)) {
-                    SheetButton(stringResource(R.string.ios_cancel), colors.tint, FontWeight.Normal, Modifier.align(Alignment.CenterStart), close)
-                    BasicText(
-                        stringResource(R.string.ios_text_replacement),
-                        Modifier.align(Alignment.Center),
-                        style = TextStyle(color = colors.text, fontSize = 17.sp, fontWeight = FontWeight.SemiBold),
-                    )
-                    SheetButton(
-                        stringResource(R.string.ios_done),
-                        if (canSave) colors.tint else colors.secondaryText,
-                        FontWeight.SemiBold,
-                        Modifier.align(Alignment.CenterEnd),
-                    ) {
-                        if (canSave && !closing) {
-                            onSave(phrase.text.trim(), shortcut.text.trim())
-                            close()
-                        }
-                    }
-                }
-                Column(Modifier.padding(horizontal = 16.dp).fillMaxWidth().iosPanel(IosGroupShape)) {
-                    SheetField(stringResource(R.string.ios_phrase), phrase, { phrase = it }, phraseFocus)
-                    IosSeparator()
-                    SheetField(stringResource(R.string.ios_shortcut), shortcut, { shortcut = it })
-                }
-            }
+    IosSheetCard(
+        stringResource(R.string.ios_text_replacement),
+        stringResource(R.string.ios_done),
+        canConfirm = phrase.text.isNotBlank() && shortcut.text.isNotBlank(),
+        onConfirm = { onSave(phrase.text.trim(), shortcut.text.trim()) },
+        onDismiss = onDismiss,
+        focus = phraseFocus,
+    ) {
+        Column(Modifier.padding(horizontal = 16.dp).fillMaxWidth().iosPanel(IosGroupShape)) {
+            SheetField(stringResource(R.string.ios_phrase), phrase, { phrase = it }, phraseFocus)
+            IosSeparator()
+            SheetField(stringResource(R.string.ios_shortcut), shortcut, { shortcut = it })
         }
     }
-}
-
-@Composable
-private fun SheetButton(text: String, color: Color, weight: FontWeight, modifier: Modifier, onClick: () -> Unit) {
-    BasicText(
-        text,
-        modifier
-            .clickable(remember { MutableInteractionSource() }, indication = null, role = Role.Button, onClick = onClick)
-            .padding(vertical = 8.dp),
-        style = TextStyle(color = color, fontSize = 17.sp, fontWeight = weight),
-    )
 }
 
 @Composable

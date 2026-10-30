@@ -15,7 +15,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import helium314.keyboard.settings.ios.screens.IosDeleteTag
-import helium314.keyboard.settings.ios.screens.IosSheetTag
+import helium314.keyboard.settings.ios.IosSheetTag
 import helium314.keyboard.settings.ios.screens.IosTextReplacementScreen
 import org.junit.Rule
 import org.junit.runner.RunWith

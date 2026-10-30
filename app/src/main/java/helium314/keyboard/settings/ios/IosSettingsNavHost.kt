@@ -48,6 +48,9 @@ import helium314.keyboard.settings.ios.screens.IosAboutScreen
 import helium314.keyboard.settings.ios.screens.IosAddKeyboardScreen
 import helium314.keyboard.settings.ios.screens.IosAppearanceScreen
 import helium314.keyboard.settings.ios.screens.IosDictionariesScreen
+import helium314.keyboard.settings.ios.screens.IosDictionaryFileScreen
+import helium314.keyboard.settings.ios.screens.IosDictionaryLanguageScreen
+import helium314.keyboard.latin.common.LocaleUtils.constructLocale
 import helium314.keyboard.settings.ios.screens.IosKeyboardsScreen
 import helium314.keyboard.settings.ios.screens.IosLayoutScreen
 import helium314.keyboard.settings.ios.screens.IosLicensesScreen
@@ -65,6 +68,8 @@ object IosRoute {
     const val AddKeyboard = "ios_add_keyboard"
     const val Layout = "ios_layout/" // + Uri.encode(SettingsSubtype pref string)
     const val Dictionaries = "ios_dictionaries"
+    const val DictionaryLanguage = "ios_dictionary_language/" // + language tag
+    const val DictionaryFile = "ios_dictionary_file/" // + language tag + "/" + dictionary type
     const val TextReplacement = "ios_text_replacement"
     const val Appearance = "ios_appearance"
     const val About = "ios_about"
@@ -408,6 +413,13 @@ private fun Page(
         route == IosRoute.Appearance -> IosAppearanceScreen(goBack)
         route == IosRoute.About -> IosAboutScreen(goBack, navigate)
         route == IosRoute.Licenses -> IosLicensesScreen(goBack)
-        route == IosRoute.Dictionaries -> IosDictionariesScreen(goBack)
+        route == IosRoute.Dictionaries ->
+            IosDictionariesScreen(goBack, onOpenLanguage = { navigate(IosRoute.DictionaryLanguage + it.toLanguageTag()) })
+        route.startsWith(IosRoute.DictionaryLanguage) ->
+            IosDictionaryLanguageScreen(route.removePrefix(IosRoute.DictionaryLanguage).constructLocale(), goBack, navigate)
+        route.startsWith(IosRoute.DictionaryFile) -> {
+            val (tag, type) = route.removePrefix(IosRoute.DictionaryFile).split('/', limit = 2)
+            IosDictionaryFileScreen(tag.constructLocale(), type, goBack)
+        }
     }
 }
